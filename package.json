@@ -1,0 +1,41 @@
+{
+  "name": "carpenters",
+  "description": "Ingest utility for Archivematica",
+  "version": "0.0.1",
+  "author": {
+    "name": "Sean Watkins",
+    "email": "slwatkins@uh.edu"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:uhlibraries-digital/carpenters.git"
+  },
+  "license": "MIT",
+  "productName": "Carpenters",
+  "appBundleId": "Carpenters.app",
+  "helperBundleId": "Carpenters.app.helper",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron main.js",
+    "build": "babel-node scripts/build.js --platform=all",
+    "build:osx": "babel-node scripts/build.js --platform=darwin",
+    "build:win": "babel-node scripts/build.js --platform=win32",
+    "build:linux": "babel-node scripts/build.js --platform=linux"
+  },
+  "dependencies": {
+    "csv-stringify": "^1.0.2",
+    "jquery": "^1.7.2",
+    "mkdirp": "^0.5.1",
+    "rimraf": "^2.5.2",
+    "xlsx": "^0.8.0"
+  },
+  "devDependencies": {
+    "babel": "^5.8.29",
+    "denodeify": "^1.2.1",
+    "electron-prebuilt": "^0.36.0",
+    "electron-builder": "^2.8.3",
+    "electron-packager": "^7.0.0",
+    "lodash": "^3.10.1",
+    "minimist": "^1.2.0"
+  }
+}

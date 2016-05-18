@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Carpenters</title>
+    <link rel="stylesheet" type="text/css" href="assets/stylesheets/css/toggle-switch.css">
+    <link rel="stylesheet" type="text/css" href="assets/stylesheets/css/main.css">
+    <link rel="stylesheet" type="text/css" href="assets/stylesheets/css/logger.css">
+    <link rel="stylesheet" type="text/css" href="assets/stylesheets/css/settings.css">
+    <link rel="stylesheet" type="text/css" href="assets/stylesheets/css/font-awesome.min.css">
+
+    <script>
+      window.$ = window.jQuery = require('jquery');
+      var remote = require('remote'); 
+      var dialog = remote.require('dialog'); 
+      var fs = require('fs');
+
+      $(document).ready(function(){
+        initSettings();
+        if ( process.platform !== 'darwin' ) {
+          $('#logger-save-button').css('padding-right', '35px');
+        }
+      });
+    </script>
+    <script type="text/javascript" src="assets/javascript/settings.js"></script>
+    <script type="text/javascript" src="assets/javascript/reader.js"></script>
+    <script type="text/javascript" src="assets/javascript/writer.js"></script>
+    <script type="text/javascript" src="assets/javascript/logger.js"></script>
+    
+  </head>
+  <body>
+    <div id="container">
+      <div id="settings-button" onclick="displaySettings()">
+        <i class="fa fa-cog" aria-hidden="true"></i>
+      </div>
+
+      <div id="dnd">
+        <div class="dnd-prompt">Drop XSLT preservation file here or <a href="#" onclick="openFile()">open file</a></div>
+      </div>
+      
+      <div id="logger-display">
+        <ul class="logger-display-list">
+        </ul>
+      </div>
+      <div id="logger-save-button" onclick="logger.save()"><i class="fa fa-floppy-o" aria-hidden="true"></i> Save Log</div>
+
+      <div id="settings" class="modal">
+        <div class="modal-content">
+          <form id="settings-form">
+            <div class="input-group">
+              <label for="mint_arks" class="switch-light switch-plex" onclick="toggleSwitch(this);">
+                <input type="checkbox" id="mint_arks">
+                <strong class="switch-label">Mint Arks</strong>
+                <span class="switch-options"><span>Off</span><span>On</span><a></a></span>
+              </label>
+            </div>
+            <div class="input-group">
+              <label for="mint_url">Mint URL</label>
+              <input type="text" id="mint_url" name="mint_url" />
+            </div>
+            <div class="input-group">
+              <label for="destroy_url">Destroy URL</label>
+              <input type="text" id="destroy_url" name="destroy_url" />
+            </div>
+            <div class="input-group">
+              <label for="api_key">API Key</label>
+              <input type="text" id="api_key" name="api_key" />
+            </div>
+          </form>
+          <div class="input-buttons">
+            <button type="button" class="btn btn-default" onclick="closeSettings();">Cancel</button>
+            <button type="button" class="btn btn-action" onclick="saveSettings()">Save Changes</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </body>
+</html>
