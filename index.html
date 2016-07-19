@@ -7,12 +7,11 @@
     <link rel="stylesheet" type="text/css" href="assets/stylesheets/css/main.css">
     <link rel="stylesheet" type="text/css" href="assets/stylesheets/css/logger.css">
     <link rel="stylesheet" type="text/css" href="assets/stylesheets/css/settings.css">
+    <link rel="stylesheet" type="text/css" href="assets/stylesheets/css/manual_mint.css">
     <link rel="stylesheet" type="text/css" href="assets/stylesheets/css/font-awesome.min.css">
 
     <script>
       window.$ = window.jQuery = require('jquery');
-      var remote = require('remote'); 
-      var dialog = remote.require('dialog'); 
       var fs = require('fs');
 
       $(document).ready(function(){
@@ -23,9 +22,11 @@
       });
     </script>
     <script type="text/javascript" src="assets/javascript/settings.js"></script>
-    <script type="text/javascript" src="assets/javascript/reader.js"></script>
+    <script type="text/javascript" src="assets/javascript/file_handler.js"></script>
+    <script type="text/javascript" src="assets/javascript/metadata_reader.js"></script>
     <script type="text/javascript" src="assets/javascript/writer.js"></script>
     <script type="text/javascript" src="assets/javascript/logger.js"></script>
+    <script type="text/javascript" src="assets/javascript/manual_mint.js"></script>
     
   </head>
   <body>
@@ -35,7 +36,11 @@
       </div>
 
       <div id="dnd">
-        <div class="dnd-prompt">Drop XSLT preservation file here or <a href="#" onclick="openFile()">open file</a></div>
+        <div class="dnd-prompt">Drop XLSX preservation file here or <a href="#" onclick="openFile()">open file</a></div>
+      </div>
+
+      <div id="controller">
+        <button class="btn btn-action" onclick="displayMinter()">Mint Ark</button>
       </div>
       
       <div id="logger-display">
@@ -43,6 +48,64 @@
         </ul>
       </div>
       <div id="logger-save-button" onclick="logger.save()"><i class="fa fa-floppy-o" aria-hidden="true"></i> Save Log</div>
+
+      <div id="minter" class="modal">
+        <div class="modal-content">
+          <div class="display">
+            <form id="minter-form">
+              <h2>ERC</h2>
+              <div class="input-group">
+                <label for="minter_erc_who">Who</label>
+                <input type="text" id="minter_erc_who" name="minter_erc_who" />
+              </div>
+              <div class="input-group">
+                <label for="minter_erc_what">What</label>
+                <input type="text" id="minter_erc_what" name="minter_erc_what" />
+              </div>
+              <div class="input-group">
+                <label for="minter_erc_when">When</label>
+                <input type="text" id="minter_erc_when" name="minter_erc_when" />
+              </div>
+              <div class="input-group">
+                <label for="minter_erc_where">Where</label>
+                <input type="text" id="minter_erc_where" name="minter_erc_where" />
+                <p>Use $ark$ in place of a ARK identifier</p>
+              </div>
+            </form>
+            <div class="input-buttons">
+              <button type="button" class="btn btn-default" onclick="closeMinter();">Cancel</button>
+              <button type="button" class="btn btn-action" onclick="mintArk();">Mint</button>
+            </div>
+          </div>
+          <div class="loading">
+            <h2>Generating ARK</h2>
+            <p><i class="fa fa-spin fa-circle-o-notch" aria-hidden="true"></i></p>
+          </div>
+          <div class="response">
+            <div class="content">
+              <h2>ARK Created</h2>
+              <div class="input-group">
+                <input id="ark_identifier" type="text" />
+                <div class="input-buttons" title="Copy to clipboard">
+                  <button class="minter-btn" onclick="minterCopyToClipboard('#ark_identifier')">
+                    <img src="assets/images/clippy.svg" />
+                  </button>
+                </div>
+              </div>
+              <div class="erc">
+                erc: <br />
+                who: <span class="who"></span><br />
+                what: <span class="what"></span><br />
+                when: <span class="when"></span><br />
+                where: <span class="where"></span><br />
+              </div>
+            </div>
+            <div class="input-buttons">
+              <button type="button" class="btn btn-action" onclick="closeMinter();">Ok</button>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <div id="settings" class="modal">
         <div class="modal-content">
@@ -59,12 +122,21 @@
               <input type="text" id="mint_url" name="mint_url" />
             </div>
             <div class="input-group">
-              <label for="destroy_url">Destroy URL</label>
-              <input type="text" id="destroy_url" name="destroy_url" />
+              <label for="update_url">Update URL</label>
+              <input type="text" id="update_url" name="update_url" />
             </div>
             <div class="input-group">
               <label for="api_key">API Key</label>
               <input type="text" id="api_key" name="api_key" />
+            </div>
+            <div class="input-group">
+              <label for="erc_who">ERC Who</label>
+              <input type="text" id="erc_who" name="erc_who" />
+            </div>
+            <div class="input-group">
+              <label for="erc_where">ERC Where</label>
+              <input type="text" id="erc_where" name="erc_where" />
+              <p>Use $ark$ in place of a ARK identifier</p>
             </div>
           </form>
           <div class="input-buttons">

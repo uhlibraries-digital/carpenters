@@ -56,7 +56,7 @@ const ELECTRON_PACKAGER_OPTS = {
   overwrite: true,
   dir: '.',
   out: BUILD_PATH,
-  cache: CACHE_PATH,
+  'download.cache': CACHE_PATH,
   ignore: ignoreBuildFiles()
 };
 

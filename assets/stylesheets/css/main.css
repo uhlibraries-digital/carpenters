@@ -42,6 +42,12 @@ body {
   line-height: 60px;
 }
 
+#controller {
+  text-align: right;
+  margin: 0 20px 20px;
+  height: 36px;
+}
+
 .btn {
   padding: 6px 1pc;
   font-family: Open Sans Bold,Helvetica Neue,Helvetica,Arial,sans-serif;

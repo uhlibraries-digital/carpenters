@@ -9,7 +9,7 @@
   z-index: 10;
 }
 
-#settings label {
+label {
   display: table-cell;
   font-size: 14px;
   width: 100px;
@@ -22,14 +22,23 @@
   border-bottom-right-radius: 0;
 }
 
-#settings .input-group {
+.input-group {
   box-sizing: border-box;
   display: table;
   margin-bottom: 20px;
   width: 100%;
 }
 
-#settings input[type=text]{
+#settings p {
+  font-size: 12px;
+  line-height: 12px;
+  padding: 0;
+  margin: 4px;
+  display: block;
+  position: absolute;
+}
+
+input[type=text]{
   box-sizing: border-box;
   display: table-cell;
   width: 100%;
@@ -44,7 +53,7 @@
   border: 1px solid #ccc;
 }
 
-#settings .input-buttons {
+.input-buttons {
   text-align: right;
 }
 
