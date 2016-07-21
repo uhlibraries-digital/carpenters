@@ -35,7 +35,13 @@ function process_workbook(workbook, path) {
   
   locationpath = path.match(/.*[/\\]/);
 
-  mint_sip_package(dp_model);
+  if (settings.mint_arks) {
+    mint_sip_package(dp_model);
+  }
+  else {
+    dp_model.metadata['dcterms.identifier'] = '';
+    process_metadata_objects(dp_model, '');
+  }
 }
 
 /**
