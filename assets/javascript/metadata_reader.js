@@ -585,28 +585,37 @@ function rollback(){
     delete_identifier(ark);
   }
 
-  logger.warn('Moving files back to "' + locationpath + '"');
-  var files = walk(locationpath + 'sip/objects');
+  rollbackFiles(locationpath, 'sip');
+  rollbackFiles(locationpath, 'dip');
 
+  logger.warn('Done');
+}
+
+/**
+ * Movies files back to original location
+ *
+ * @param String root_dir The root location
+ * @param String dir The directory to moves files out of
+ */
+function rollbackFiles(root_dir, dir) {
+  logger.warn('Moving files back to "' + root + '"');
+  var files = walk(locationpath + dir + '/objects');
   files.forEach(function(file){
     var filename = file.match(/[^\/\\]+$/)[0];
     try {
-      fs.renameSync(file, locationpath + filename);
-      logger.log('Moved file "' + filename + '" back to "' + locationpath + '"');
+      fs.renameSync(file, root_dir + filename);
+      logger.log('Moved file "' + filename + '" back to "' + root_dir + '"');
     } catch (err) {
       logger.error(err.message);
     }
   });
 
-  var ignestpath = locationpath + 'sip';
-  logger.log('Removing sip directory "' + ignestpath + '"');
-  rimraf(ignestpath, function(err) {
+  logger.log('Removing ' + dir + ' directory');
+  rimraf(root_dir + dir, function(err) {
     if (err) {
       console.log('Error in removing directory in rollback(): ' + err.message)
     }
-  });
-
-  logger.warn('Done');
+  });  
 }
 
 /**
