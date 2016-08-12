@@ -59,6 +59,11 @@ function build_dp_model(worksheet) {
   $.each(data, function(index, row) {
     var level = row.hierarchy.level;
 
+    if ( level === undefined ) {
+      // Every valid row should have a level. Skipping
+      return true;
+    }
+
     if (is_file(row)) {
       var file = new cdm.cdmFile(row.file.filename, row.metadata, row.file);
       c_object.files.push(file);
