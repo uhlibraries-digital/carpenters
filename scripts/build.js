@@ -50,7 +50,7 @@ const ELECTRON_PACKAGER_OPTS = {
   'app-version': pkg.version,
   'app-bundle-id': pkg.appBundleId,
   'helper-bundle-id': pkg.helperBundleId,
-  version: pkg.devDependencies['electron-prebuilt'].replace('^', ''),
+  //version: pkg.devDependencies['electron-prebuilt'].replace('^', ''),
   asar: true,
   prune: true,
   overwrite: true,
