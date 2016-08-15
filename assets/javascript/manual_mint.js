@@ -13,6 +13,7 @@ function displayMinter() {
   $('#minter .display').show();
 
   $('#minter_erc_who').val(settings.erc_who);
+  $('#minter_erc_what').val('');
   $('#minter_erc_when').val(formatTodaysDate());
   $('#minter_erc_where').val(settings.erc_where);
 
