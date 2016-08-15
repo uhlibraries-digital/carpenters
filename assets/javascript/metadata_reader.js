@@ -353,16 +353,10 @@ function output_csv_files() {
       logger.log('Done');
   });
 
-
-  var date = new Date();
-  var month = date.getMonth() + 1;
   var submissionDocumentation = metadatadir + '/submissionDocumentation';
   mkdirp.sync(submissionDocumentation);
   writer.write(logger.toString(), submissionDocumentation + 
-    '/carpenters-' +
-    date.getFullYear() + '-' +
-    (!month[1] ? '0' : '') + month + '-' +
-    date.getDate() + '.log'
+    '/carpenters-' + formatTodaysDate() + '.log'
   );
 
 }
@@ -513,7 +507,7 @@ function walk(dir, filelist) {
     logger.error('Unable to read directory ' + dir);
     return [];
   }
-  
+
   filelist = filelist || [];
   files.forEach(function(file) {
     if (fs.statSync(dir + '/' + file).isDirectory()) {
@@ -619,8 +613,8 @@ function rollback(){
   rollbackFiles(locationpath, 'sip');
   rollbackFiles(locationpath, 'dip');
 
-  if (dp_model_root && dp_model_root.metadata) {
-    var ark = dp_model_root.metadata['dcterms.identifier'];
+  var ark = dp_model_root.metadata['dcterms.identifier'];
+  if (ark !== '') {
     logger.warn('Rolled back: ' + ark);
   }
 

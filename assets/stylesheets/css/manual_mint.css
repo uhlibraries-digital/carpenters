@@ -7,15 +7,15 @@
   position: absolute;
 }
 
-#minter .loading, #minter .response {
+#minter .loading, #minter .response, #editor .loading, #editor .saving, #editor .edit {
   display: none;
 }
 
-#minter .loading h2 {
+#minter .loading h2, #editor .loading h2, #editor .saving h2 {
   text-align: center;
 }
 
-#minter .loading p {
+#minter .loading p, #editor .loading p, #editor .saving p {
   text-align: center;
   font-size: 40px;
   line-height: 40px;
@@ -39,7 +39,7 @@
   font-size: 24px;
 }
 
-#minter .response .input-group input[type=text]{
+#minter .response .input-group input[type=text], #editor .getter .input-group input[type=text]{
   position: relative;
   border-radius: 3px;
   border-top-right-radius: 0;
@@ -53,7 +53,7 @@
   vertical-align: middle;
 }
 
-#minter .response .input-group button img {
+#minter .response .input-group button img, #editor .getter .input-group button i {
   width: 16px;
   height: 16px;
 }

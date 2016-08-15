@@ -3,7 +3,6 @@
   <head>
     <meta charset="UTF-8">
     <title>Carpenters</title>
-    <link rel="stylesheet" type="text/css" href="assets/stylesheets/css/toggle-switch.css">
     <link rel="stylesheet" type="text/css" href="assets/stylesheets/css/main.css">
     <link rel="stylesheet" type="text/css" href="assets/stylesheets/css/logger.css">
     <link rel="stylesheet" type="text/css" href="assets/stylesheets/css/settings.css">
@@ -40,8 +39,12 @@
       </div>
 
       <div id="controller">
-        <button class="btn btn-action" onclick="displayMinter()">Mint Ark</button>
-        <button class="btn btn-action" onclick="rollback()">Roll Back</button>
+        <div class="btn-group">
+          <button class="btn btn-action on automint" onclick="toggleMinter()">Auto Mint: <span class="status">on</span></button>
+          <button class="btn btn-action" onclick="rollback()">Roll Back</button>
+          <button class="btn btn-action" onclick="displayMinter()">Mint Ark</button>
+          <button class="btn btn-action" onclick="editArk()">Edit Ark</button>
+        </div>
       </div>
       
       <div id="logger-display">
@@ -108,16 +111,59 @@
         </div>
       </div>
 
+      <div id="editor" class="modal">
+        <div class="modal-content">
+          <div class="getter">
+            <h2>ARK</h2>
+            <div class="input-group">
+              <input id="edit_ark_identifier" type="text" placeholder="ARK identifier to edit" />
+            </div>
+            <div class="input-buttons">
+              <button type="button" class="btn btn-default" onclick="closeArkEditor();">Cancel</button>
+              <button type="button" class="btn btn-action" onclick="getArk();">Ok</button>
+            </div>
+          </div>
+          <div class="loading">
+            <h2>Getting ARK information</h2>
+            <p><i class="fa fa-spin fa-circle-o-notch" aria-hidden="true"></i></p>
+          </div>
+          <div class="edit">
+             <form id="editor-form">
+              <h2>ERC</h2>
+              <input type="hidden" id="editor_ark" />
+              <div class="input-group">
+                <label for="editor_erc_who">Who</label>
+                <input type="text" id="editor_erc_who" name="editor_erc_who" />
+              </div>
+              <div class="input-group">
+                <label for="editor_erc_what">What</label>
+                <input type="text" id="editor_erc_what" name="editor_erc_what" />
+              </div>
+              <div class="input-group">
+                <label for="editor_erc_when">When</label>
+                <input type="text" id="editor_erc_when" name="editor_erc_when" />
+              </div>
+              <div class="input-group">
+                <label for="meditor_erc_where">Where</label>
+                <input type="text" id="editor_erc_where" name="editor_erc_where" />
+              </div>
+            </form>
+            <div class="input-buttons">
+              <button type="button" class="btn btn-default" onclick="closeArkEditor();">Cancel</button>
+              <button type="button" class="btn btn-action" onclick="saveArk();">Save</button>
+            </div>
+          </div>
+          <div class="saving">
+            <h2>Saving ARK information</h2>
+            <p><i class="fa fa-spin fa-circle-o-notch" aria-hidden="true"></i></p>
+          </div>
+        </div>
+      </div>
+
       <div id="settings" class="modal">
         <div class="modal-content">
           <form id="settings-form">
-            <div class="input-group">
-              <label for="mint_arks" class="switch-light switch-plex" onclick="toggleSwitch(this);">
-                <input type="checkbox" id="mint_arks">
-                <strong class="switch-label">Mint Arks</strong>
-                <span class="switch-options"><span>Off</span><span>On</span><a></a></span>
-              </label>
-            </div>
+            <input type="checkbox" style="display: none" id="mint_arks" />
             <div class="input-group">
               <label for="mint_url">Mint URL</label>
               <input type="text" id="mint_url" name="mint_url" />

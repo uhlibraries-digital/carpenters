@@ -4,6 +4,10 @@ function initSettings() {
   if ( !loadSettings() ) {
     displaySettings();
   }
+  else {
+    $('#mint_arks').prop('checked', settings['mint_arks']);
+    updateMinterButton(settings['mint_arks']);
+  }
 }
 
 function loadSettings() {
@@ -55,7 +59,18 @@ function displaySettings() {
   $('#settings').show();
 }
 
-function toggleSwitch(s) {
-  var checkbox = $(s).find('input [type=checkbox]');
-  checkbox.prop('checked', !checkbox.prop('checkbox'));
+function toggleMinter() {
+  var check = !$('#mint_arks').prop('checked');
+  $('#mint_arks').prop('checked', check);
+  
+  updateMinterButton(check);
+
+  settings['mint_arks'] = check;
+  localStorage.setItem("settings", JSON.stringify(settings));
+}
+
+function updateMinterButton(state) {
+  $('.automint').removeClass('on').removeClass('off');
+  $('.automint').addClass(state ? 'on' : 'off');
+  $('.automint .status').text(state ? 'on' : 'off');
 }
