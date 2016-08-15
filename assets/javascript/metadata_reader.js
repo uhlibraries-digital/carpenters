@@ -10,6 +10,7 @@ var stringify = require('csv-stringify');
 var cdm = require('./assets/javascript/cdm.js');
 var rolling_back = false;
 var dp_model_root = null;
+var locationpath = null;
 
 /**
  * Pad to the left side of the string
@@ -352,6 +353,18 @@ function output_csv_files() {
       logger.log('Done');
   });
 
+
+  var date = new Date();
+  var month = date.getMonth() + 1;
+  var submissionDocumentation = metadatadir + '/submissionDocumentation';
+  mkdirp.sync(submissionDocumentation);
+  writer.write(logger.toString(), submissionDocumentation + 
+    '/carpenters-' +
+    date.getFullYear() + '-' +
+    (!month[1] ? '0' : '') + month + '-' +
+    date.getDate() + '.log'
+  );
+
 }
 
 /**
@@ -493,7 +506,14 @@ function get_metadata_from_fields(metadata, fields) {
  * @return Array
  */
 function walk(dir, filelist) {
-  var files = fs.readdirSync(dir);
+  try {
+    var files = fs.readdirSync(dir);
+  }
+  catch(err) {
+    logger.error('Unable to read directory ' + dir);
+    return [];
+  }
+  
   filelist = filelist || [];
   files.forEach(function(file) {
     if (fs.statSync(dir + '/' + file).isDirectory()) {
@@ -585,13 +605,24 @@ function rollback(){
   rolling_back = true;
   logger.warn('ROLLING BACK TO ORIGINAL STATE...');
 
-  var ark = dp_model_root.metadata['dcterms.identifier'];
+  if (!locationpath) {
+    logger.error('Unable to roll back. You must process a preservation file first.');
+    return;
+  }
+
+  /*
   if (ark !== undefined && ark !== '' && ~ark.indexOf('ark:/')) {
     delete_identifier(ark);
   }
+  */
 
   rollbackFiles(locationpath, 'sip');
   rollbackFiles(locationpath, 'dip');
+
+  if (dp_model_root && dp_model_root.metadata) {
+    var ark = dp_model_root.metadata['dcterms.identifier'];
+    logger.warn('Rolled back: ' + ark);
+  }
 
   logger.warn('Done');
 }
@@ -603,7 +634,7 @@ function rollback(){
  * @param String dir The directory to moves files out of
  */
 function rollbackFiles(root_dir, dir) {
-  logger.warn('Moving files back to "' + root + '"');
+  logger.warn('Moving files back to "' + root_dir + '"');
   var files = walk(locationpath + dir + '/objects');
   files.forEach(function(file){
     var filename = file.match(/[^\/\\]+$/)[0];

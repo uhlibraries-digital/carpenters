@@ -58,17 +58,19 @@ var logger = {
     ]},
     function (filename){
       if (filename === undefined) return;
-      
-      var output = "";
-      $('.logger-display-list li').each(function(){
-        output += '[' + $(this).data('timestamp') + '] ' + $(this).text() + "\n";
-      });
 
-      fs.writeFile(filename, output, function(err){
+      fs.writeFile(filename, this.toString(), function(err){
         if (err) {
           dialog.showErrorBox("Failed to save log file", err.message);
         }
       });
     });
+  },
+  toString: function() {
+    var output = "";
+    $('.logger-display-list li').each(function(){
+      output += '[' + $(this).data('timestamp') + '] ' + $(this).text() + "\n";
+    });
+    return output;
   }
 };
