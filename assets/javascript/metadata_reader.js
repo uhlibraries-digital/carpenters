@@ -40,9 +40,44 @@ function process_workbook(workbook, path) {
     mint_sip_package(dp_model);
   }
   else {
-    dp_model.metadata['dcterms.identifier'] = '';
-    process_metadata_objects(dp_model, '');
+    askForArk();
   }
+}
+
+/**
+ * Displays a dialog to ask for a ARK if minting is off
+ */
+function askForArk() {
+  $('#processark').animate({
+    opacity: 1,
+    top: "0px"
+  });
+  $('#processark').show();
+}
+
+/**
+ * Processes preservation file with the ARK provided
+ *
+ * @see askForArk
+ */
+function processWithArk() {
+  var ark = $('#process_ark_identifier').val();
+
+  logger.log('Processing preservation file without minting a new ark')
+  if (ark !== '') {
+    logger.log('Using ark: ' + ark, 'good');
+  }
+
+  dp_model_root.metadata['dcterms.identifier'] = ark;
+  process_metadata_objects(dp_model_root, ark);
+
+  $('#processark').animate({
+    opacity: 0,
+    top: "-300px"
+  }, 400, function(){
+    $(this).hide();
+    $('#process_ark_identifier').val('');
+  });
 }
 
 /**

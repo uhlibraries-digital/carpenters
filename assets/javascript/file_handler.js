@@ -31,7 +31,8 @@ $(document).ready(function(){
   $('#dnd').on('drop', function(e){
     e.stopPropagation();
     e.preventDefault();
-
+    $('#dnd').removeClass('draghover');
+    
     var files = e.originalEvent.dataTransfer.files;
 
     logger.clear();
