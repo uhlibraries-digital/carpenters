@@ -59,7 +59,7 @@ var logger = {
     function (filename){
       if (filename === undefined) return;
 
-      fs.writeFile(filename, this.toString(), function(err){
+      fs.writeFile(filename, logger.toString(), function(err){
         if (err) {
           dialog.showErrorBox("Failed to save log file", err.message);
         }
