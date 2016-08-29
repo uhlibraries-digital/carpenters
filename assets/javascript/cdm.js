@@ -11,8 +11,9 @@
  * @param String title The collection title
  * @param Object metadata The collection's metadata
  */
-cdmCollection = function(title, metadata) {
+cdmCollection = function(title, metadata, label) {
   this.title = title || '';
+  this.label = label || 'unknown';
   this.metadata = metadata || '';
   this.members = [];
 };
@@ -149,7 +150,7 @@ cdmObject.prototype.hasFiles = function() {
 cdmObject.prototype.hasFilesWithPartsType = function(type) {
   if (!this.hasFiles()) return false;
   for( var i = 0; i < this.files.length; i++ ){
-    if (this.files[i].hasType(type)) { 
+    if (this.files[i].hasType(type)) {
       return true;
     }
   }
@@ -160,7 +161,7 @@ module.exports.cdmObject = cdmObject;
 
 /**
  * A file object
- * 
+ *
  * @param String filename The filename
  * @param Object metadata The metadata for the file
  * @param Object ext The types information of the file
@@ -169,7 +170,7 @@ cdmFile = function(filename, metadata, ext) {
   this.parent = null;
   this.filename = filename || '';
   this.metadata = metadata || {};
-  
+
   this.ext = {};
   var keys = Object.keys(ext);
   for( var i = 0; i < keys.length; i++ ){

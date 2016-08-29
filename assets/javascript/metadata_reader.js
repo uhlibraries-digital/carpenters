@@ -33,7 +33,7 @@ function process_workbook(workbook, path) {
   var worksheet = workbook.Sheets[workbook.SheetNames[0]];
   dp_model = build_dp_model(worksheet);
   if ( dp_model === false ) return;
-  
+
   locationpath = path.match(/.*[/\\]/);
 
   if (settings.mint_arks) {
@@ -136,7 +136,7 @@ function build_dp_model(worksheet) {
       c_object = obj;
     }
     else if (is_collection(row)) {
-      dp_model_root = c_object = new cdm.cdmCollection(row.metadata['dcterms.title'], row.metadata);
+      dp_model_root = c_object = new cdm.cdmCollection(row.metadata['dcterms.title'], row.metadata, row.hierarchy[level]);
     }
 
     prev_level = level;
@@ -215,7 +215,7 @@ function worksheet_to_array(worksheet) {
         row.hierarchy.level = c;
       }
 
-      row.hierarchy.push(h); 
+      row.hierarchy.push(h);
     }
 
     // file information
@@ -255,7 +255,7 @@ function process_metadata_objects(dp_model, ark) {
     object.order = padLeft((index + 1).toString(), 3, '0')
     process_object_files(object, ark);
   });
-  
+
   output_csv_files();
 }
 
@@ -264,7 +264,7 @@ function process_metadata_objects(dp_model, ark) {
  *
  * @param Object obj The root dp model object
  * @return Array
- */ 
+ */
 function get_objects(obj) {
   var objects = [];
   if (obj.hasMembers()){
@@ -296,7 +296,7 @@ function process_object_files(object, ark) {
     /* Handle Preservation Masters and Modified Masters */
     $.each(['pm', 'mm'], function(index, type){
       if (file.hasType(type)) {
-        var dest = locationpath + 'sip/objects/' + type + '/' + object.parts;
+        var dest = locationpath + dp_model_root.label + '/objects/' + type + '/' + object.parts;
         move_file(file.getFilenameByType(type), dest);
       }
     });
@@ -361,11 +361,11 @@ function get_parts_path(object) {
 function output_csv_files() {
   logger.log('Building Archivematica SIP CSV...');
   var out = build_am_csv_array();
-  var metadatadir = locationpath + 'sip/metadata';
+  var metadatadir = locationpath + dp_model_root.label + '/metadata';
   mkdirp.sync(metadatadir);
 
-  mkdirp.sync(locationpath + 'sip/logs');
-  
+  mkdirp.sync(locationpath + dp_model_root.label + '/logs');
+
   stringify(out, function(err, output) {
       if (err) {
         console.log('Error in csv-strigify: ' + err.message)
@@ -390,7 +390,7 @@ function output_csv_files() {
 
   var submissionDocumentation = metadatadir + '/submissionDocumentation';
   mkdirp.sync(submissionDocumentation);
-  writer.write(logger.toString(), submissionDocumentation + 
+  writer.write(logger.toString(), submissionDocumentation +
     '/carpenters-' + formatTodaysDate() + '.log'
   );
 
@@ -429,7 +429,7 @@ function build_am_csv_array() {
         output_am_metadata.push(build_am_row_array(Object.assign(object.metadata, { parts: pre_parts + object.parts })));
         $.each(object.files, function(index, file){
           if (file.hasType(type)) {
-            output_am_metadata.push(build_am_row_array(Object.assign(file.metadata, 
+            output_am_metadata.push(build_am_row_array(Object.assign(file.metadata,
               { parts: pre_parts + object.parts + '/' + file.getFilenameByType(type) }
             )));
           }
@@ -603,7 +603,7 @@ function update_erc_where(ark) {
   if (settings.erc_where === '') return;
   var where = settings.erc_where.replace('$ark$', encodeURIComponent(ark));
 
-  if (settings.update_url.slice(-1) !== '/') { 
+  if (settings.update_url.slice(-1) !== '/') {
     settings.update_url += '/'
   }
 
@@ -645,7 +645,7 @@ function rollback(){
   }
   */
 
-  rollbackFiles(locationpath, 'sip');
+  rollbackFiles(locationpath, dp_model_root.label);
   rollbackFiles(locationpath, 'dip');
 
   var ark = dp_model_root.metadata['dcterms.identifier'];
@@ -680,7 +680,7 @@ function rollbackFiles(root_dir, dir) {
     if (err) {
       console.log('Error in removing directory in rollback(): ' + err.message)
     }
-  });  
+  });
 }
 
 /**
@@ -689,7 +689,7 @@ function rollbackFiles(root_dir, dir) {
  * @param String ark The ARK identifier to delete
  */
 function delete_identifier(ark){
-  if (settings.update_url.slice(-1) !== '/') { 
+  if (settings.update_url.slice(-1) !== '/') {
     settings.update_url += '/'
   }
 
@@ -719,5 +719,5 @@ function formatTodaysDate() {
   month = (month < 10) ? '0' + month : month;
   day = (day < 10) ? '0' + day : day;
 
-  return year + '-' + month + '-' + day; 
+  return year + '-' + month + '-' + day;
 }
