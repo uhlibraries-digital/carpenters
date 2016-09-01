@@ -116,7 +116,7 @@ function build_dp_model(worksheet) {
         c_object.push(obj);
       }
       else {
-        for (var i = prev_level; i !== level; i--) {
+        for (var i = prev_level; i >= level; i--) {
           c_object = c_object.parent;
         }
         c_object.push(obj);
