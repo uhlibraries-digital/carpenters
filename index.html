@@ -15,6 +15,7 @@
 
       $(document).ready(function(){
         initSettings();
+        initMetadataReader();
         if ( process.platform !== 'darwin' ) {
           $('#logger-save-button').css('padding-right', '35px');
         }
@@ -26,7 +27,7 @@
     <script type="text/javascript" src="assets/javascript/writer.js"></script>
     <script type="text/javascript" src="assets/javascript/logger.js"></script>
     <script type="text/javascript" src="assets/javascript/manual_mint.js"></script>
-    
+
   </head>
   <body>
     <div id="container">
@@ -46,7 +47,7 @@
           <button class="btn btn-action" onclick="editArk()">Edit Ark</button>
         </div>
       </div>
-      
+
       <div id="logger-display">
         <ul class="logger-display-list">
         </ul>
@@ -164,6 +165,10 @@
         <div class="modal-content">
           <form id="settings-form">
             <input type="checkbox" style="display: none" id="mint_arks" />
+            <div class="input-group">
+              <label for="erc_who">MAP URL</label>
+              <input type="text" id="map_url" name="map_url" />
+            </div>
             <div class="input-group">
               <label for="mint_url">Mint URL</label>
               <input type="text" id="mint_url" name="mint_url" />

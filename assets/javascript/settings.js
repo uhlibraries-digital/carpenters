@@ -32,6 +32,7 @@ function saveSettings() {
   localStorage.setItem("settings", JSON.stringify(settings));
 
   closeSettings();
+  initMetadataReader();
 }
 
 function closeSettings() {
@@ -62,7 +63,7 @@ function displaySettings() {
 function toggleMinter() {
   var check = !$('#mint_arks').prop('checked');
   $('#mint_arks').prop('checked', check);
-  
+
   updateMinterButton(check);
 
   settings['mint_arks'] = check;

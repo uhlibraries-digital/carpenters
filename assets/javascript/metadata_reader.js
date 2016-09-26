@@ -8,9 +8,20 @@ var mkdirp = require('mkdirp');
 var rimraf = require('rimraf');
 var stringify = require('csv-stringify');
 var cdm = require('./assets/javascript/cdm.js');
+var map = require('./assets/javascript/map.js');
 var rolling_back = false;
 var dp_model_root = null;
 var locationpath = null;
+
+/**
+ * Initilize when application starts
+ */
+function initMetadataReader() {
+  map.load(settings.map_url)
+    .fail(function() {
+      console.error('Failed to get MAP at: ' + url);
+    });
+}
 
 /**
  * Pad to the left side of the string
@@ -32,7 +43,7 @@ function padLeft(str, l, c) {
 function process_workbook(workbook, path) {
   var worksheet = workbook.Sheets[workbook.SheetNames[0]];
   dp_model = build_dp_model(worksheet);
-  if ( dp_model === false ) return;
+  if ( !dp_model ) { return; }
 
   locationpath = path.match(/.*[/\\]/);
 
@@ -68,15 +79,14 @@ function processWithArk() {
     logger.log('Using ark: ' + ark, 'good');
   }
 
-  dp_model_root.metadata['dcterms.identifier'] = ark;
-  process_metadata_objects(dp_model_root, ark);
-
   $('#processark').animate({
     opacity: 0,
     top: "-300px"
   }, 400, function(){
     $(this).hide();
     $('#process_ark_identifier').val('');
+    dp_model_root.metadata['dcterms.identifier'] = ark;
+    process_metadata_objects(dp_model_root, ark);
   });
 }
 
@@ -88,6 +98,8 @@ function processWithArk() {
  */
 function build_dp_model(worksheet) {
   var data = worksheet_to_array(worksheet);
+  if (data === false) { return false; }
+
   var c_object = null;
   var prev_level = null;
   var object_sequence = 0;
@@ -200,6 +212,10 @@ function worksheet_to_array(worksheet) {
   for ( var c = range.s.c; c <= range.e.c; c++ ) {
     var cell = xlsx.utils.encode_cell({r: 0, c: c});
     headers[c] = worksheet[cell].v;
+  }
+
+  if (!verify_metadata_map(headers)) {
+    return false;
   }
 
   for ( var r = 1; r <= range.e.r; r++ ) {
@@ -403,18 +419,9 @@ function output_csv_files() {
  */
 function build_am_csv_array() {
   // Build the headers for the AM output
-  output_am_metadata = [[
-    'parts',
-    'dcterms.title',
-    'dcterms.creator',
-    'dc.date',
-    'dcterms.description',
-    'dcterms.publisher',
-    'dcterms.isPartOf',
-    'dc.rights',
-    'dcterms.accessRights',
-    'dcterms.identifier'
-  ]];
+
+  var headers = ['parts'].concat(map.get_full_names());
+  output_am_metadata = [headers];
 
   var coll_row = Object.assign(dp_model_root.metadata, { parts: 'objects' });
   output_am_metadata.push(build_am_row_array(coll_row));
@@ -461,18 +468,13 @@ function build_am_row_array(item) {
    *  dcterms.accessRights
    *  dcterms.identifier
    */
-  return [
-    item['parts'] || '',
-    item['dcterms.title'] || '',
-    item['dcterms.creator'] || '',
-    item['dc.date'] || '',
-    item['dcterms.description'] || '',
-    item['dcterms.publisher'] || '',
-    item['dcterms.isPartOf'] || '',
-    item['dc.rights'] || '',
-    item['dcterms.accessRights'] || '',
-    item['dcterms.identifier'] || ''
-  ];
+
+  var row = [];
+  row.push(item['parts'] || '');
+  $.each(map.get_full_names(), (index, name) => {
+    row.push(item[name] || '');
+  });
+  return row;
 }
 
 /**
@@ -720,4 +722,39 @@ function formatTodaysDate() {
   day = (day < 10) ? '0' + day : day;
 
   return year + '-' + month + '-' + day;
+}
+
+/**
+ * Varifies the headers contain everything against the MAP
+ *
+ * @param Array headers The headers contained in the spreadsheet
+ * @return Boolean True if the headers match what's in the MAP, otherwise False
+ */
+function verify_metadata_map(headers) {
+  if ( !map.fields ) {
+    logger.error('ERROR: The MAP was not able to load. Please make sure you have the correct' +
+                 ' MAP URL in settings and try again. If it continues, there may be a network issue.');
+    return false;
+  }
+  
+  var check_headers = headers.slice(10); // Ignoring hierarchy and file information columns
+  var good = true;
+
+  $.each(map.fields, (index, field) => {
+    if (
+      !check_headers.find(fullname => fullname === (field.namespace + '.' + field.name)) &&
+      field.name !== 'identifier'
+    ) {
+      logger.error('ERROR: ' + field.namespace + '.' + field.name + ' is in the MAP but not in the XLSX preservation file.');
+      good = false;
+    }
+  });
+
+  $.each(check_headers, (index, name) => {
+    if (!map.get_field_by_full_name(name)) {
+      logger.warn('WARNING: ' + name + ' was found in the XLSX preservation file but not in the MAP.');
+    }
+  });
+
+  return good;
 }
