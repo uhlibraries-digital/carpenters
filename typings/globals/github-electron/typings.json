@@ -1,0 +1,8 @@
+{
+  "resolution": "main",
+  "tree": {
+    "src": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/32b5d0a12c4a8e5be4e51c82d8636de022b6b4ec/github-electron/github-electron.d.ts",
+    "raw": "registry:dt/github-electron#1.4.1+20160928142324",
+    "typings": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/32b5d0a12c4a8e5be4e51c82d8636de022b6b4ec/github-electron/github-electron.d.ts"
+  }
+}

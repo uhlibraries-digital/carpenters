@@ -1,0 +1,185 @@
+<div class="ingest-container">
+  <div class="settings" (click)="openSettings(settingsDisplay)"><i class="fa fa-cog" aria-hidden="true"></i></div>
+  <div class="dnd-container">
+    <div
+      class="dnd"
+      (dragover)="false"
+      (dragend)="false"
+      (drop)="handleDrop($event)">
+      <div class="prompt">Drop XLSX preservation file here or
+        <button
+          class="btn btn-primary"
+          (click)="openFile()">
+          open file
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="controller">
+    <div class="btn-group" role="group">
+      <button
+        type="button"
+        [class]="settings.mint_arks ? 'btn btn-success' : 'btn btn-danger'"
+        (click)="toggleAutoMint()">
+        Auto Mint: <span class="status">{{ settings.mint_arks ? 'on' : 'off' }}</span>
+      </button>
+      <button
+        type="button"
+        class="btn btn-primary"
+        (click)="rollback()">Roll Back</button>
+      <button
+        type="button"
+        class="btn btn-primary"
+        (click)="openMinter(mintArkDisplay)">Mint Ark</button>
+      <button
+        type="button"
+        class="btn btn-primary"
+        (click)="openEditor(arkEditorDisplay)">Edit Ark</button>
+    </div>
+  </div>
+</div>
+
+<template #settingsDisplay let-c="close" let-d="dismiss">
+  <div class="modal-header">
+    <h4 class="modal-title">Settings</h4>
+  </div>
+  <div class="modal-body">
+    <div class="input-group form-group">
+      <label for="settingsMapUrl" class="input-group-addon settings-label">MAP URL</label>
+      <input id="settingsMapUrl" class="form-control" type="text" [(ngModel)]="settings.map_url" />
+    </div>
+    <div class="input-group form-group">
+      <label for="settingsMintUrl" class="input-group-addon settings-label">Mint URL</label>
+      <input id="settingsMintUrl" class="form-control" type="text" [(ngModel)]="settings.mint_url" />
+    </div>
+    <div class="input-group form-group">
+      <label for="settingsUpdateUrl" class="input-group-addon settings-label">Update URL</label>
+      <input id="settingsUpdateUrl" class="form-control" type="text" [(ngModel)]="settings.update_url" />
+    </div>
+    <div class="input-group form-group">
+      <label for="settingsApiKey" class="input-group-addon settings-label">API Key</label>
+      <input id="settingsApiKey" class="form-control" type="text" [(ngModel)]="settings.api_key" />
+    </div>
+    <div class="input-group form-group">
+      <label for="settingsErcWho" class="input-group-addon settings-label">ERC Who</label>
+      <input id="settingsErcWho" class="form-control" type="text" [(ngModel)]="settings.erc_who" />
+    </div>
+    <div class="form-group">
+      <div class="input-group">
+        <label for="settingsErcWhere" class="input-group-addon settings-label">ERC Where</label>
+        <input id="settingsErcWhere" class="form-control" type="text" [(ngModel)]="settings.erc_where" />
+      </div>
+      <p class="form-text text-muted">Use $ark$ in place of a ARK identifier</p>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="d()">Close</button>
+    <button type="button" class="btn btn-primary" (click)="c()">Save</button>
+  </div>
+</template>
+
+<template #arkRequestDisplay let-d="dismiss" let-c="close">
+  <div class="modal-header">
+    <h4 class="modal-title">ARK Identifier</h4>
+  </div>
+  <div class="modal-body">
+    <div class="input-group form-group">
+      <input
+        id="arkIdentifier"
+        class="form-control"
+        type="text"
+        [(ngModel)]="arkIdentifier"
+        placeholder="ARK identifier to use or leave blank"/>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="d()">Cancel</button>
+    <button type="button" class="btn btn-primary" (click)="c()">Ok</button>
+  </div>
+</template>
+
+<template #mintArkDisplay let-d="dismiss" let-c="close">
+  <div class="modal-header">
+    <h4 class="modal-title" *ngIf="!arkIdentifier">ERC</h4>
+    <h4 class="modal-title" *ngIf="arkIdentifier">ARK Created</h4>
+  </div>
+  <div class="modal-body">
+    <div class="erc-input" *ngIf="!arkIdentifier && erc !== null">
+      <div class="input-group form-group">
+        <label class="input-group-addon">Who</label>
+        <input class="form-control" type="text" [(ngModel)]="erc.who" />
+      </div>
+      <div class="input-group form-group">
+        <label class="input-group-addon">What</label>
+        <input class="form-control" type="text" [(ngModel)]="erc.what" />
+      </div>
+      <div class="input-group form-group">
+        <label class="input-group-addon">When</label>
+        <input class="form-control" type="text" [(ngModel)]="erc.when" />
+      </div>
+      <div class="form-group">
+        <div class="input-group">
+          <label class="input-group-addon">Where</label>
+          <input class="form-control" type="text" [(ngModel)]="erc.where" />
+        </div>
+        <p class="form-text text-muted">Use $ark$ in place of a ARK identifier</p>
+      </div>
+    </div>
+    <div class="ark-created" *ngIf="arkIdentifier">
+      <div class="form-group">
+        <div class="input-group">
+          <label class="input-group-addon">Ark Identifier</label>
+          <input class="form-control" type="text" [(ngModel)]="arkIdentifier" />
+          <div class="btn btn-group-addon" (click)="copyToClipboard(arkIdentifier)">
+            <img class="copy-image" src="images/clippy.svg" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="d()">Close</button>
+    <button type="button" class="btn btn-primary" (click)="generateArk()" *ngIf="!arkIdentifier && !processingArk">Generate</button>
+    <button type="button" class="btn btn-primary" *ngIf="processingArk"><i class="fa fa-spin fa-circle-o-notch" aria-hidden="true"></i></button>
+  </div>
+</template>
+
+<template #arkEditorDisplay let-d="dismiss" let-c="close">
+  <div class="modal-header">
+    <h4 class="modal-title">Edit ARK</h4>
+  </div>
+  <div class="modal-body">
+    <div class="editor-ark" *ngIf="erc === null">
+      <div class="form-group input-group">
+        <label class="input-group-addon">Ark Identifier</label>
+        <input class="form-control" type="text" [(ngModel)]="arkIdentifier" />
+      </div>
+    </div>
+    <div class="editor-erc" *ngIf="erc !== null">
+      <div class="input-group form-group">
+        <label class="input-group-addon">Who</label>
+        <input class="form-control" type="text" [(ngModel)]="erc.who" />
+      </div>
+      <div class="input-group form-group">
+        <label class="input-group-addon">What</label>
+        <input class="form-control" type="text" [(ngModel)]="erc.what" />
+      </div>
+      <div class="input-group form-group">
+        <label class="input-group-addon">When</label>
+        <input class="form-control" type="text" [(ngModel)]="erc.when" />
+      </div>
+      <div class="form-group">
+        <div class="input-group">
+          <label class="input-group-addon">Where</label>
+          <input class="form-control" type="text" [(ngModel)]="erc.where" />
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="d()">Close</button>
+    <button type="button" class="btn btn-primary" (click)="getArkForEdit()" *ngIf="erc === null && !processingArk">Edit</button>
+    <button type="button" class="btn btn-primary" *ngIf="processingArk"><i class="fa fa-spin fa-circle-o-notch" aria-hidden="true"></i></button>
+    <button type="button" class="btn btn-primary" (click)="c()" *ngIf="erc">Save</button>
+  </div>
+</template>

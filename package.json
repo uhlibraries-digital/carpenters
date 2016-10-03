@@ -1,41 +1,69 @@
 {
   "name": "carpenters",
   "description": "Ingest utility for Archivematica",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "author": {
     "name": "Sean Watkins",
     "email": "slwatkins@uh.edu"
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:uhlibraries-digital/carpenters.git"
+    "url": "https://github.com/uhlibraries-digital/carpenters"
   },
   "license": "MIT",
   "productName": "Carpenters",
   "appBundleId": "Carpenters.app",
   "helperBundleId": "Carpenters.app.helper",
-  "main": "main.js",
+  "main": "app/main.js",
   "scripts": {
-    "start": "electron main.js",
-    "build": "babel-node scripts/build.js --platform=all",
-    "build:osx": "babel-node scripts/build.js --platform=darwin",
-    "build:win": "babel-node scripts/build.js --platform=win32",
-    "build:linux": "babel-node scripts/build.js --platform=linux"
-  },
-  "dependencies": {
-    "csv-stringify": "^1.0.2",
-    "jquery": "^1.7.2",
-    "mkdirp": "^0.5.1",
-    "rimraf": "^2.5.2",
-    "xlsx": "^0.8.0"
+    "build": "webpack --progress --profile --colors --display-error-details --display-cached",
+    "watch": "webpack --watch --progress --profile --colors --display-error-details --display-cached",
+    "electron": "npm run build && electron app",
+    "package": "npm run build && babel-node scripts/package.js --platform=all",
+    "package:osx": "npm run build && babel-node scripts/package.js --platform=darwin",
+    "package:win": "npm run build && babel-node scripts/package.js --platform=win32",
+    "package:linux": "npm run build && babel-node scripts/package.js --platform=linux",
+    "postinstall": "typings install"
   },
   "devDependencies": {
+    "@angular/common": "2.0.0",
+    "@angular/compiler": "2.0.0",
+    "@angular/core": "2.0.0",
+    "@angular/forms": "2.0.0",
+    "@angular/http": "2.0.0",
+    "@angular/platform-browser": "2.0.0",
+    "@angular/platform-browser-dynamic": "2.0.0",
+    "@angular/router": "3.0.0",
+    "@angular/upgrade": "2.0.0",
+    "@ng-bootstrap/ng-bootstrap": "^1.0.0-alpha.6",
     "babel": "^5.8.29",
+    "core-js": "^2.4.1",
+    "csv-stringify": "^1.0.2",
     "denodeify": "^1.2.1",
-    "electron-prebuilt": "^1.2.7",
-    "electron-builder": "^5.12.1",
     "electron-packager": "^7.3.0",
+    "electron-prebuilt": "^1.3.4",
+    "es6-shim": "^0.34.0",
+    "json-loader": "^0.5.4",
     "lodash": "^3.10.1",
-    "minimist": "^1.2.0"
+    "minimist": "^1.2.0",
+    "mkdirp": "^0.5.1",
+    "node-sass": "^3.8.0",
+    "raw-loader": "^0.5.1",
+    "reflect-metadata": "^0.1.3",
+    "rimraf": "^2.5.2",
+    "rxjs": "5.0.0-beta.12",
+    "sass-loader": "^4.0.0",
+    "systemjs": "0.19.27",
+    "ts-loader": "^0.8.2",
+    "typescript": "^2.0.2",
+    "typings": "^1.3.2",
+    "webpack": "^1.13.2",
+    "webpack-dev-server": "^1.16.1",
+    "xlsx": "^0.8.0"
+  },
+  "dependencies": {
+    "bootstrap": "^4.0.0-alpha.4",
+    "font-awesome": "^4.6.3",
+    "zone.js": "^0.6.13"
   }
 }

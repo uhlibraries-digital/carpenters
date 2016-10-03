@@ -1,46 +1,42 @@
 # Carpenters
 
-Ingest utility for Archivematica built on [Electron](http://electron.atom.io/).
+Ingest utility for Archivematica.
 
-## To Use
-
-Clone and run this repository. You will need [Node.js](https://nodejs.org/en/download/) installed. From the command line:
-
-```bash
-git clone https://github.com/uhlibraries-digital/carpenters.git
-# Go to the repository
-cd carpenters
-# Install dependencies and run the app
-npm install && npm start
-```
-
-Carpenters takes in a XLSX file containing the metadata and location of files. You will need to place the metadata file and object files similar to this:
+Carpenters takes in a XLSX file containing the metadata and files. You will need to place the metadata file and object files similar to this:
 
 ```
 mycollection/
-├── mycollection_metadata.xlsx
+├── mycollection.xlsx
 ├── object_001.jpg
 ├── object_001_pm.tiff
 ├── object_002.jpg
 └── object_002_pm.tiff
 ```
 
-### Building
+Preservation XLSX ingest example and template can be found in [examples](examples).
 
-You can build Carpenters by running the following commands based on your target system:
+### Packaging
 
-* `npm run build:osx` will build for MacOS X x64
-* `npm run build:win` will build for Windows x64
-* `npm run build:linux` will build for Linux x64
-* `npm run build` will build all the above
+You can package Carpenters by running the following commands based on your target system:
 
-All builds are stored in the `build` directory that gets created during the build process.
+* `npm run package:osx` will package for MacOS X x64
+* `npm run package:win` will package for Windows x64
+* `npm run package:linux` will package for Linux x64
+* `npm run package` will package all the above
+
+All packages are stored in the `bin` directory that gets created during the build process.
 
 To learn more about distributing, please read the [Application Distribution](http://electron.atom.io/docs/tutorial/application-distribution/) documentation from Electron.
 
-### Dependences
+### Development
 
-When 'Mint Arks' is enabled in settings Carpenters needs [Greens](https://github.com/uhlibraries-digital/greens) installed.
+Carpenters is built with [Angular 2](https://angular.io/) using Typescript. The main application starts in `app/app.ts`.
+
+To build the application you can run one of these commands:
+
+* `npm run build` will build the application
+* `npm run election` will build the application and start electron
+* `npm run watch` will watch the directory for changes and re-build the application
 
 ## License
 
