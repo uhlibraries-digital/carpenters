@@ -4,7 +4,9 @@ const packager = require('electron-packager');
 const denodeify = require('denodeify');
 const path = require('path'), join = path.join;
 const lodash = require('lodash'), escapeRegExp = lodash.escapeRegExp;
-const fs = require('fs'), readdirSync = fs.readdirSync;
+const fs = require('fs'), readdirSync = fs.readdirSync, unlinkSync = fs.unlinkSync;
+const renameSync = fs.renameSync;
+const rimraf = require('rimraf');
 
 const ROOT_PATH = join(__dirname, '..');
 const BUILD_PATH = join(ROOT_PATH, 'bin');
@@ -84,7 +86,34 @@ const TASKS = [
  * Package electron app through electron-packager
  */
 async function packElectronApp(opts) {
-  return denodeify(packager).call(packager, opts);
+  return denodeify(packager).call(packager, opts).then(postPack);
+}
+
+function postPack(appPaths) {
+  var appPath = appPaths.toString();
+  var dir = appPath.split('/').slice(-1);
+  var binDir = appPath.split('/').slice(0,-1).join('/');
+  var platform = dir.toString().split('-')[1];
+
+  if( platform === 'darwin' ) {
+    platform = 'macos';
+  }
+  if ( platform === 'win32' ) {
+    platform = 'win';
+  }
+
+  unlinkSync(appPath + '/LICENSE');
+  unlinkSync(appPath + '/LICENSES.chromium.html');
+  unlinkSync(appPath + '/version');
+
+  var newName = binDir + '/' + pkg.productName + '-' + platform + '-' + pkg.version;
+
+  rimraf(newName, function(err){
+    if (err) {
+      throw err;
+    }
+    renameSync(appPath, newName);
+  });
 }
 
 /**
