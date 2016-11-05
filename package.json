@@ -35,7 +35,7 @@
     "@angular/platform-browser-dynamic": "2.0.0",
     "@angular/router": "3.0.0",
     "@angular/upgrade": "2.0.0",
-    "@ng-bootstrap/ng-bootstrap": "^1.0.0-alpha.6",
+    "@ng-bootstrap/ng-bootstrap": "^1.0.0-alpha.7",
     "babel": "^5.8.29",
     "core-js": "^2.4.1",
     "csv-stringify": "^1.0.2",

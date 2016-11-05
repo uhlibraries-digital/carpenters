@@ -19,7 +19,7 @@ import { CsvService } from './shared/csv.service';
     BrowserModule,
     FormsModule,
     HttpModule,
-    NgbModule
+    NgbModule.forRoot()
   ],
   declarations: [
     AppComponent,
