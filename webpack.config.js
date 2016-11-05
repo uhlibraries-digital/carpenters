@@ -43,21 +43,8 @@ module.exports = {
         test: /\.json$/,
         loader: 'json-loader'
       }
-    ],
-    noParse: [
-      /jszip.js$/
     ]
   },
-
-  node: {
-    fs: 'empty'
-  },
-
-  externals: [
-    {
-      './cptable': 'var cptable'
-    }
-  ],
 
   plugins: [
     new CommonsChunkPlugin({ name: 'angular2', filename: 'angular2.js', minChunks: Infinity }),

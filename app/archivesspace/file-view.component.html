@@ -1,0 +1,53 @@
+<div *ngFor="let c of children" class="file-container">
+  <div *ngIf="c.selected" class="file">
+    <div class="title">{{ c.title }}</div>
+    <div class="level">
+      <span *ngFor="let p of getParents(c)" [ngClass]="containerClass(p)">{{ p.title }}</span>
+      <span [ngClass]="containerClass(c)">{{ displayContainer(c) }}</span>
+    </div>
+    <div class="file-list">
+      <ul class="files">
+        <li class="file" *ngFor="let file of c.files; let i = index">
+          <div
+            class="{{file.purpose}}">
+            <i class="fa fa-file-text-o" aria-hidden="true"></i> {{ file.name }}
+            <i
+              class="fa fa-trash remove"
+              aria-hidden="true"
+              (click)="removeFile(c, i)"></i>
+          </div>
+        </li>
+      </ul>
+    </div>
+    <div class="row file-drop">
+      <div class="col-xs-4">
+        <div
+          class="drop preservation"
+          (dragenter)="handleDragEnter($event.target)"
+          (dragleave)="handleDragLeave($event.target)"
+          (dragover)="false"
+          (dragend)="false"
+          (drop)="handleDrop(c, 'preservation', $event)">Drop Preservation File</div>
+      </div>
+      <div class="col-xs-4">
+        <div
+          class="drop modified-master"
+          (dragenter)="handleDragEnter($event.target)"
+          (dragleave)="handleDragLeave($event.target)"
+          (dragover)="false"
+          (dragend)="false"
+          (drop)="handleDrop(c, 'modified-master', $event)">Drop Modified Master File</div>
+      </div>
+      <div class="col-xs-4">
+        <div
+          class="drop access-copy"
+          (dragenter)="handleDragEnter($event.target)"
+          (dragleave)="handleDragLeave($event.target)"
+          (dragover)="false"
+          (dragend)="false"
+          (drop)="handleDrop(c, 'access-copy', $event)">Drop Access Copy</div>
+      </div>
+    </div>
+  </div>
+  <file-view [children]="c.children"></file-view>
+</div>

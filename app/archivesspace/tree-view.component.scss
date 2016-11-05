@@ -1,0 +1,69 @@
+@import '../scss/_variables';
+
+.tree {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  padding-left: 17px;
+
+  .item {
+    position: relative;
+    -webkit-user-select: none;
+
+    .subselection {
+      background-color: $green;
+    }
+
+    &.children::before {
+      font-family: 'FontAwesome';
+      content: '\f054';
+      font-size: 0.6em;
+      width: 17px;
+      height: 17px;
+      line-height: 17px;
+      vertical-align: middle;
+      text-align: center;
+      position: absolute;
+      top: 4px;
+      left: -4px;
+      transition: transform 0.15s;
+    }
+    &.children {
+      > .form-check-input {
+        margin-left: 0;
+      }
+      > .table .title {
+        cursor: pointer;
+      }
+    }
+    &.expanded::before {
+      transition: 0.15s;
+      transform: rotate(90deg);
+    }
+
+    .table {
+      display: table;
+      margin: 0;
+
+      .title {
+        display: table-cell;
+        width: 100%;
+      }
+
+      .form-check-input {
+        margin-left: 15px;
+      }
+    }
+
+    .container {
+      font-size: 0.8em;
+      padding-left: 38px;
+      color: $container-file-level;
+      margin: 0;
+
+      &.item {
+        color: $container-item-level;
+      }
+    }
+  }
+}

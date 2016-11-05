@@ -1,0 +1,56 @@
+.modal-body {
+  background-color: $background-color;
+}
+
+.modal-header {
+  background-color: $light-background-color;
+  border-bottom: 1px solid #000;
+}
+
+.modal-footer {
+  background-color: $light-background-color;
+  border-top: 1px solid #000;
+}
+
+.modal-body-with-panes {
+  position: relative;
+  padding: 0;
+
+  .modal-body-scroll {
+    max-height: 25pc;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .modal-nav-pane {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 10pc;
+    overflow-x: hidden;
+    overflow-y: auto;
+    background-color: $darker-background-color;
+    background-repeat: no-repeat;
+  }
+
+  .modal-body-pane {
+    height: 25pc;
+    padding: 20px;
+    margin-left: 10pc;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .modal-nav-list .item {
+    display: block;
+    padding: 10px 20px;
+    cursor: pointer;
+  }
+
+  .modal-nav-list .selected {
+    color: $light-text-color;
+    background-color: $select-background-color;
+  }
+
+}

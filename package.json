@@ -1,7 +1,7 @@
 {
   "name": "carpenters",
-  "description": "Ingest utility for Archivematica",
-  "version": "1.0.0-beta.1",
+  "description": "Digital preservation ingest utility",
+  "version": "2.0.0-alpha.1",
   "author": {
     "name": "Sean Watkins",
     "email": "slwatkins@uh.edu"
@@ -35,10 +35,9 @@
     "@angular/platform-browser-dynamic": "2.0.0",
     "@angular/router": "3.0.0",
     "@angular/upgrade": "2.0.0",
-    "@ng-bootstrap/ng-bootstrap": "^1.0.0-alpha.6",
+    "@ng-bootstrap/ng-bootstrap": "^1.0.0-alpha.7",
     "babel": "^5.8.29",
     "core-js": "^2.4.1",
-    "csv-stringify": "^1.0.2",
     "denodeify": "^1.2.1",
     "electron-packager": "^7.3.0",
     "electron-prebuilt": "^1.3.4",
@@ -46,7 +45,6 @@
     "json-loader": "^0.5.4",
     "lodash": "^3.10.1",
     "minimist": "^1.2.0",
-    "mkdirp": "^0.5.1",
     "node-sass": "^3.8.0",
     "raw-loader": "^0.5.1",
     "reflect-metadata": "^0.1.3",
@@ -58,8 +56,7 @@
     "typescript": "^2.0.2",
     "typings": "^1.3.2",
     "webpack": "^1.13.2",
-    "webpack-dev-server": "^1.16.1",
-    "xlsx": "^0.8.0"
+    "webpack-dev-server": "^1.16.1"
   },
   "dependencies": {
     "bootstrap": "^4.0.0-alpha.4",

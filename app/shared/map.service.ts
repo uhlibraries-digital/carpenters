@@ -27,7 +27,7 @@ export class MapService {
   }
 
   private handleError(error: any): Promise<any> {
-    console.error('An error occured', error);
+    console.error('An error occured with MAP', error);
     return Promise.reject(error.message || error);
   }
 

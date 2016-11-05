@@ -14,19 +14,17 @@ export class GreensService {
 
   constructor(private http: Http) { }
 
-  setMintUrl(url: string) {
-    this.mintUrl = url;
-  }
-
-  setUpdateUrl(url: string) {
-    if (url.slice(-1) !== '/') {
-      url += '/';
-    }
-    this.updateUrl = url;
-  }
-
   setApiKey(key: string) {
     this.apiKey = key;
+  }
+
+  setEndpoint(endpoint: string, prefix?: string) {
+    if (endpoint.slice(-1) !== '/') {
+      endpoint += '/';
+    }
+
+    this.mintUrl = endpoint + 'arks/mint/' + prefix;
+    this.updateUrl = endpoint + 'id/';
   }
 
   mint(erc: Erc = null): Promise<string> {

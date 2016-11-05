@@ -1,0 +1,44 @@
+@import '../scss/_variables';
+
+.resource-selection {
+  padding: 20px;
+  background-color: $light-background-color;
+  border-bottom: 1px solid $darker-background-color;
+}
+
+.resource-tree-container,
+.resource-file-container {
+  overflow-y: auto;
+  position: absolute;
+  top: 119px;
+  bottom: 0;
+  width: 100%;
+  background-color: $light-background-color;
+
+  .resource-tree {
+    padding: 20px;
+  }
+}
+
+.resource-file-container {
+  padding: 20px;
+}
+
+.loading-container {
+  text-align: center;
+  position: absolute;
+  top: 85px;
+  left: 0;
+  right:0;
+  z-index: 100;
+
+  .loading {
+    padding: 5px 20px;
+    font-size: 1em;
+    display: inline-block;
+    background-color: #528bff;
+    color: #fff;
+    border-color: #181a1f;
+    border-radius: 3px;
+  }
+}

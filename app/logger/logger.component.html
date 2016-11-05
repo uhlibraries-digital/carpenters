@@ -1,8 +1,0 @@
-<div #loggerscroll class="logger-container scrollbars">
-  <ol>
-    <li *ngFor="let entry of entries" [class]="entry.type">{{ entry.message }}</li>
-  </ol>
-  <div class="save-btn" (click)="saveLog()">
-    <i class="fa fa-floppy-o" aria-hidden="true"></i> Save Log
-  </div>
-</div>

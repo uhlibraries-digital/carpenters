@@ -1,0 +1,41 @@
+<div class="row resource-selection">
+  <div class="form-inline">
+    <div class="form-group">
+      <label class="sr-only">Repository</label>
+      <select #repositoryList class="form-control" [ngModel]="selectedRepository" (ngModelChange)="loadResources($event)">
+        <option *ngFor="let r of repositories" value="{{ r.uri }}">{{ r.name }}</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="sr-only">Resource</label>
+      <select #resourceList class="form-control" [ngModel]="selectedResourceUri" (ngModelChange)="loadResource($event)">
+        <option *ngFor="let resource of resources" value="{{ resource.uri }}">{{ resource.title }}</option>
+      </select>
+    </div>
+  </div>
+</div>
+<div class="row resouce-container" *ngIf="selectedResource">
+  <ngb-tabset>
+    <ngb-tab title="Selection">
+      <template ngbTabContent>
+        <div class="resource-tree-container scrollbars">
+          <div class="resource-tree">
+            <tree-view [children]="selectedResource.tree.children"></tree-view>
+          </div>
+        </div>
+      </template>
+    </ngb-tab>
+    <ngb-tab title="Files">
+      <template ngbTabContent>
+        <div class="resource-file-container scrollbars">
+          <file-view [children]="selectedResource.tree.children"></file-view>
+        </div>
+      </template>
+    </ngb-tab>
+  </ngb-tabset>
+</div>
+<div class="loading-container" *ngIf="loading">
+  <div class="loading">
+    <i class="fa fa-spinner fa-spin" aria-hidden="true"></i> <span>Loading</span>
+  </div>
+</div>

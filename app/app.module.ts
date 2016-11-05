@@ -5,33 +5,41 @@ import { HttpModule }    from '@angular/http';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { AppComponent } from './app.component';
-import { IngestComponent } from './ingest/ingest.component';
-import { LoggerComponent } from './logger/logger.component';
+import { ArchivesSpaceComponent } from './archivesspace/archivesspace.component';
+import { TreeViewComponent } from './archivesspace/tree-view.component';
+import { FileViewComponent } from './archivesspace/file-view.component';
 
-import { MapService } from './shared/map.service';
 import { LocalStorageService } from './shared/local-storage.service';
+import { SessionStorageService } from './shared/session-storage.service';
+import { ArchivesSpaceService } from './shared/archivesspace.service';
+import { MapService } from './shared/map.service';
+import { SaveService } from './shared/save.service';
+import { ExportService } from './shared/export.service';
 import { GreensService } from './shared/greens.service';
-import { LoggerService } from './shared/logger.service';
-import { CsvService } from './shared/csv.service';
+import { PreservationService } from './shared/preservation.service';
 
 @NgModule({
   imports: [
     BrowserModule,
     FormsModule,
     HttpModule,
-    NgbModule
+    NgbModule.forRoot()
   ],
   declarations: [
     AppComponent,
-    IngestComponent,
-    LoggerComponent
+    ArchivesSpaceComponent,
+    TreeViewComponent,
+    FileViewComponent
   ],
   providers: [
-    MapService,
     LocalStorageService,
+    SessionStorageService,
+    ArchivesSpaceService,
+    MapService,
+    SaveService,
+    ExportService,
     GreensService,
-    LoggerService,
-    CsvService
+    PreservationService
   ],
   bootstrap: [ AppComponent ]
 })
