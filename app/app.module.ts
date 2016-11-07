@@ -8,6 +8,7 @@ import { AppComponent } from './app.component';
 import { ArchivesSpaceComponent } from './archivesspace/archivesspace.component';
 import { TreeViewComponent } from './archivesspace/tree-view.component';
 import { FileViewComponent } from './archivesspace/file-view.component';
+import { LoggerComponent } from './logger/logger.component';
 
 import { LocalStorageService } from './shared/local-storage.service';
 import { SessionStorageService } from './shared/session-storage.service';
@@ -17,6 +18,7 @@ import { SaveService } from './shared/save.service';
 import { ExportService } from './shared/export.service';
 import { GreensService } from './shared/greens.service';
 import { PreservationService } from './shared/preservation.service';
+import { LoggerService } from './shared/logger.service';
 
 @NgModule({
   imports: [
@@ -29,7 +31,8 @@ import { PreservationService } from './shared/preservation.service';
     AppComponent,
     ArchivesSpaceComponent,
     TreeViewComponent,
-    FileViewComponent
+    FileViewComponent,
+    LoggerComponent
   ],
   providers: [
     LocalStorageService,
@@ -39,7 +42,8 @@ import { PreservationService } from './shared/preservation.service';
     SaveService,
     ExportService,
     GreensService,
-    PreservationService
+    PreservationService,
+    LoggerService
   ],
   bootstrap: [ AppComponent ]
 })

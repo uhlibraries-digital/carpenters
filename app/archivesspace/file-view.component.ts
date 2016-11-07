@@ -1,6 +1,7 @@
 import { Component, Input, ElementRef, Renderer } from '@angular/core';
 
 import { ArchivesSpaceService } from '../shared/archivesspace.service';
+import { FilesService } from './files.service';
 
 @Component({
   selector: 'file-view',
@@ -13,7 +14,8 @@ export class FileViewComponent {
 
   constructor(
     private asService: ArchivesSpaceService,
-    private renderer: Renderer) {
+    private renderer: Renderer,
+    private files: FilesService) {
   }
 
   getParents(c: any): any[] {
@@ -25,7 +27,11 @@ export class FileViewComponent {
   }
 
   containerClass(c: any): string {
-    return ['container', c.level].join(' ');
+    return ['object-container', c.level].join(' ');
+  }
+
+  removeFile(c: any, index: number): void {
+    c.files.splice(index, 1);
   }
 
   handleDrop(c: any, type: string, e: any): void {
@@ -33,36 +39,24 @@ export class FileViewComponent {
     e.preventDefault();
     this.renderer.setElementClass(e.target, 'hover', false);
 
-    let objectFiles:any[] = [];
-    if (c.files) {
-      objectFiles = c.files;
-    }
-
     let dropFiles:File[] = e.dataTransfer.files;
-    for (let file of dropFiles) {
-      let objectFile: any = {
-        lastModifiedDate: file.lastModifiedDate,
-        name: file.name,
-        path: file.path,
-        size: file.size,
-        type: file.type,
-        purpose: type
-      };
-      objectFiles.push(objectFile);
+    let files = [];
+    for( let file of dropFiles ) {
+      files.push(file.path);
     }
-    c.files = objectFiles;
+    this.files.addFilesToObject(c, type, files);
   }
 
-  handleDragEnter(target: ElementRef) {
+  handleDragEnter(target: ElementRef): void {
     this.renderer.setElementClass(target, 'hover', true);
   }
 
-  handleDragLeave(target: ElementRef) {
+  handleDragLeave(target: ElementRef): void {
     this.renderer.setElementClass(target, 'hover', false);
   }
 
-  removeFile(c: any, index: number): void {
-    c.files.splice(index, 1);
+  addFile(c: any, type: string): void {
+    this.files.addFilesToObject(c, type);
   }
 
 }

@@ -5,6 +5,8 @@ import { readFile } from 'fs';
 
 import { ArchivesSpaceService } from './archivesspace.service';
 
+import { File } from './file';
+
 let { dialog } = remote;
 
 @Injectable()
@@ -81,9 +83,12 @@ export class SaveService {
     let archivalObjects = this.asService.selectedArchivalObjects();
     let objects = [];
     for (let ao of archivalObjects) {
+      let files = ao.files.map((value) => {
+        return { path: value.path, purpose: value.purpose };
+      });
       let object: any = {
         uri: ao.record_uri,
-        files: ao.files,
+        files: files,
         artificial: ao.artificial
       };
       if (ao.artificial) {
@@ -122,7 +127,7 @@ export class SaveService {
       });
       if (found) {
         c.selected = true;
-        c.files = found.files;
+        c.files = this.convertToFileObjects(found.files);
       }
 
       let artificial = selections.filter(function(e) {
@@ -130,6 +135,7 @@ export class SaveService {
       });
       if (artificial.length > 0) {
         artificial = artificial.map(function(value) {
+          value.files = this.convertToFileObjects(value.files);
           value.selected = true;
           value.containers = c.containers;
           value.record_uri = undefined;
@@ -143,6 +149,14 @@ export class SaveService {
 
       this.markSelections(selections, c.children);
     }
+  }
+
+  private convertToFileObjects(files: any[]): File[] {
+    return files.map((value) => {
+      let file = new File(value.path);
+      file.setPurpose(value.purpose);
+      return file;
+    });
   }
 
 }

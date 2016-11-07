@@ -5,11 +5,16 @@ import { ipcRenderer } from 'electron';
 import { ArchivesSpaceService } from '../shared/archivesspace.service';
 import { SaveService } from '../shared/save.service';
 import { LocalStorageService } from '../shared/local-storage.service';
+import { FilesService } from './files.service';
+import { LoggerService } from '../shared/logger.service';
 
 @Component({
   selector: 'archivesspace',
   templateUrl: './archivesspace/archivesspace.component.html',
-  styles: [ require('./archivesspace.component.scss') ]
+  styles: [ require('./archivesspace.component.scss') ],
+  providers: [
+    FilesService
+  ]
 })
 export class ArchivesSpaceComponent implements OnInit {
 
@@ -28,14 +33,23 @@ export class ArchivesSpaceComponent implements OnInit {
     private asService: ArchivesSpaceService,
     private saveService: SaveService,
     private storage: LocalStorageService,
-    private titleService: Title) {
+    private titleService: Title,
+    private files: FilesService,
+    private log: LoggerService) {
   }
 
   ngOnInit(): void {
     this.asService.selectedResourceChanged.subscribe((resource) => {
       this.titleService.setTitle(resource.title);
+      this.selectedRepository = resource.repository.ref;
+
+      if (!this.resources) {
+          this.loadResources(this.selectedRepository);
+      }
+
       this.selectedResource = resource;
       this.selectedResourceUri = resource.uri;
+      this.log.info('Resource "' + resource.title + '" loaded');
     });
 
     this.storage.changed.subscribe(key => {
@@ -83,5 +97,9 @@ export class ArchivesSpaceComponent implements OnInit {
       .then(() => {
         this.loading = false;
       });
+  }
+
+  loadFiles(): void {
+    this.files.loadFiles();
   }
 }

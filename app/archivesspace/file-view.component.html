@@ -6,46 +6,94 @@
       <span [ngClass]="containerClass(c)">{{ displayContainer(c) }}</span>
     </div>
     <div class="file-list">
-      <ul class="files">
-        <li class="file" *ngFor="let file of c.files; let i = index">
+      <div class="row">
+        <div class="col-xs-4">
           <div
-            class="{{file.purpose}}">
-            <i class="fa fa-file-text-o" aria-hidden="true"></i> {{ file.name }}
-            <i
-              class="fa fa-trash remove"
-              aria-hidden="true"
-              (click)="removeFile(c, i)"></i>
+            class="drop preservation"
+            (dragenter)="handleDragEnter($event.target)"
+            (dragleave)="handleDragLeave($event.target)"
+            (dragover)="false"
+            (dragend)="false"
+            (drop)="handleDrop(c, 'preservation', $event)">
+            <span class="label">Preservation Files</span>
+            <span
+              class="btn-add"
+              (click)="addFile(c, 'preservation')">
+              <i class="fa fa-plus" aria-hidden="true"></i>
+            </span>
           </div>
-        </li>
-      </ul>
-    </div>
-    <div class="row file-drop">
-      <div class="col-xs-4">
-        <div
-          class="drop preservation"
-          (dragenter)="handleDragEnter($event.target)"
-          (dragleave)="handleDragLeave($event.target)"
-          (dragover)="false"
-          (dragend)="false"
-          (drop)="handleDrop(c, 'preservation', $event)">Drop Preservation File</div>
-      </div>
-      <div class="col-xs-4">
-        <div
-          class="drop modified-master"
-          (dragenter)="handleDragEnter($event.target)"
-          (dragleave)="handleDragLeave($event.target)"
-          (dragover)="false"
-          (dragend)="false"
-          (drop)="handleDrop(c, 'modified-master', $event)">Drop Modified Master File</div>
-      </div>
-      <div class="col-xs-4">
-        <div
-          class="drop access-copy"
-          (dragenter)="handleDragEnter($event.target)"
-          (dragleave)="handleDragLeave($event.target)"
-          (dragover)="false"
-          (dragend)="false"
-          (drop)="handleDrop(c, 'access-copy', $event)">Drop Access Copy</div>
+          <ul class="files">
+            <li class="file" *ngFor="let file of c.files; let i = index">
+              <div
+                *ngIf="file.purpose === 'preservation'"
+                class="{{file.purpose}}">
+                <i class="fa fa-file-text-o" aria-hidden="true"></i> {{ file.name }}
+                <i
+                  class="fa fa-trash remove"
+                  aria-hidden="true"
+                  (click)="removeFile(c, i)"></i>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <div class="col-xs-4">
+          <div
+            class="drop modified-master"
+            (dragenter)="handleDragEnter($event.target)"
+            (dragleave)="handleDragLeave($event.target)"
+            (dragover)="false"
+            (dragend)="false"
+            (drop)="handleDrop(c, 'modified-master', $event)">
+            <span class="label">Modified Master Files</span>
+            <span
+              class="btn-add"
+              (click)="addFile(c, 'modified-master')">
+              <i class="fa fa-plus" aria-hidden="true"></i>
+            </span>
+          </div>
+          <ul class="files">
+            <li class="file" *ngFor="let file of c.files; let i = index">
+              <div
+                *ngIf="file.purpose === 'modified-master'"
+                class="{{file.purpose}}">
+                <i class="fa fa-file-text-o" aria-hidden="true"></i> {{ file.name }}
+                <i
+                  class="fa fa-trash remove"
+                  aria-hidden="true"
+                  (click)="removeFile(c, i)"></i>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <div class="col-xs-4">
+          <div
+            class="drop access-copy"
+            (dragenter)="handleDragEnter($event.target)"
+            (dragleave)="handleDragLeave($event.target)"
+            (dragover)="false"
+            (dragend)="false"
+            (drop)="handleDrop(c, 'access-copy', $event)">
+            <span class="label">Access Copy Files</span>
+            <span
+              class="btn-add"
+              (click)="addFile(c, 'access-copy')">
+              <i class="fa fa-plus" aria-hidden="true"></i>
+            </span>
+          </div>
+          <ul class="files">
+            <li class="file" *ngFor="let file of c.files; let i = index">
+              <div
+                *ngIf="file.purpose === 'access-copy'"
+                class="{{file.purpose}}">
+                <i class="fa fa-file-text-o" aria-hidden="true"></i> {{ file.name }}
+                <i
+                  class="fa fa-trash remove"
+                  aria-hidden="true"
+                  (click)="removeFile(c, i)"></i>
+              </div>
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
   </div>

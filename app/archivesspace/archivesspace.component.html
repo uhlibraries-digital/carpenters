@@ -14,22 +14,37 @@
     </div>
   </div>
 </div>
-<div class="row resouce-container" *ngIf="selectedResource">
-  <ngb-tabset>
-    <ngb-tab title="Selection">
+<div class="row resouce-container">
+  <ngb-tabset #appTabs>
+    <ngb-tab title="Selection" id="selection">
       <template ngbTabContent>
-        <div class="resource-tree-container scrollbars">
+        <div *ngIf="selectedResource" class="resource-tree-container scrollbars">
           <div class="resource-tree">
             <tree-view [children]="selectedResource.tree.children"></tree-view>
           </div>
         </div>
       </template>
     </ngb-tab>
-    <ngb-tab title="Files">
+    <ngb-tab title="Files" id="files">
       <template ngbTabContent>
-        <div class="resource-file-container scrollbars">
+        <div *ngIf="selectedResource" class="resource-file-container scrollbars">
+          <div class="file-buttons">
+            <button type="button" class="btn btn-primary" (click)="loadFiles()">Load Files</button>
+          </div>
           <file-view [children]="selectedResource.tree.children"></file-view>
         </div>
+      </template>
+    </ngb-tab>
+    <ngb-tab title="ARK Editor" id="editor">
+      <template ngbTabContent>
+        <div class="ark-editor scrollbars">
+
+        </div>
+      </template>
+    </ngb-tab>
+    <ngb-tab title="Log" id="logger">
+      <template ngbTabContent>
+        <logger></logger>
       </template>
     </ngb-tab>
   </ngb-tabset>
