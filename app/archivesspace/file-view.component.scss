@@ -1,6 +1,7 @@
 @import '../scss/_variables';
 
 .file-container {
+  margin-bottom: 20px;
 
   .title {
     font-size: 1.25em;
@@ -103,6 +104,10 @@
       margin-top: 0.5em;
 
       .file {
+        .filename {
+          cursor: pointer;
+          padding-left: 5px;
+        }
         .preservation {
           color: $purple;
         }

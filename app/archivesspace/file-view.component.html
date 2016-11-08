@@ -27,7 +27,8 @@
               <div
                 *ngIf="file.purpose === 'preservation'"
                 class="{{file.purpose}}">
-                <i class="fa fa-file-text-o" aria-hidden="true"></i> {{ file.name }}
+                <i class="fa fa-file-text-o" aria-hidden="true"></i>
+                <span class="filename" (click)="openFile(file.path)">{{ file.name }}</span>
                 <i
                   class="fa fa-trash remove"
                   aria-hidden="true"
@@ -56,7 +57,8 @@
               <div
                 *ngIf="file.purpose === 'modified-master'"
                 class="{{file.purpose}}">
-                <i class="fa fa-file-text-o" aria-hidden="true"></i> {{ file.name }}
+                <i class="fa fa-file-text-o" aria-hidden="true"></i>
+                <span class="filename" (click)="openFile(file.path)">{{ file.name }}</span>
                 <i
                   class="fa fa-trash remove"
                   aria-hidden="true"
@@ -85,7 +87,10 @@
               <div
                 *ngIf="file.purpose === 'access-copy'"
                 class="{{file.purpose}}">
-                <i class="fa fa-file-text-o" aria-hidden="true"></i> {{ file.name }}
+                <i
+                  class="fa fa-file-text-o"
+                  aria-hidden="true"></i>
+                <span class="filename" (click)="openFile(file.path)">{{ file.name }}</span>
                 <i
                   class="fa fa-trash remove"
                   aria-hidden="true"

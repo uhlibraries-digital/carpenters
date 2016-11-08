@@ -1,4 +1,5 @@
 import { Component, Input, ElementRef, Renderer } from '@angular/core';
+import { shell } from 'electron';
 
 import { ArchivesSpaceService } from '../shared/archivesspace.service';
 import { FilesService } from './files.service';
@@ -57,6 +58,10 @@ export class FileViewComponent {
 
   addFile(c: any, type: string): void {
     this.files.addFilesToObject(c, type);
+  }
+
+  openFile(path: string): void {
+    shell.openItem(path);
   }
 
 }

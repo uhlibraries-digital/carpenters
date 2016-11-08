@@ -80,7 +80,7 @@ export class ArchivesSpaceComponent implements OnInit {
   loadRepositories(): void {
     this.asService.getRepositories().then((list) => {
       this.repositories = list;
-      if (list.length === 1) {
+      if (list.length >= 1) {
         this.selectedRepository = list[0].uri;
         this.loadResources(this.selectedRepository);
       }
