@@ -5,16 +5,13 @@ import { ipcRenderer } from 'electron';
 import { ArchivesSpaceService } from '../shared/archivesspace.service';
 import { SaveService } from '../shared/save.service';
 import { LocalStorageService } from '../shared/local-storage.service';
-import { FilesService } from './files.service';
+import { FilesService } from '../shared/files.service';
 import { LoggerService } from '../shared/logger.service';
 
 @Component({
   selector: 'archivesspace',
   templateUrl: './archivesspace/archivesspace.component.html',
-  styles: [ require('./archivesspace.component.scss') ],
-  providers: [
-    FilesService
-  ]
+  styles: [ require('./archivesspace.component.scss') ]
 })
 export class ArchivesSpaceComponent implements OnInit {
 

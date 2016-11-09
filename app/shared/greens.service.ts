@@ -46,7 +46,8 @@ export class GreensService {
       .toPromise()
       .then((response) => {
         let data = response.json();
-        return data.ark;
+        let erc = new Erc(data.ark.who, data.ark.what, data.ark.when, data.ark.where);
+        return erc;
       })
       .catch(this.handleError);
   }
@@ -56,12 +57,13 @@ export class GreensService {
       .toPromise();
   }
 
-  get(id: string): Promise<any> {
+  get(id: string): Promise<Erc> {
     return this.http.get(this.updateUrl + id, this.getOptions())
       .toPromise()
       .then((response) => {
         let data = response.json();
-        return data.ark;
+        let erc = new Erc(data.ark.who, data.ark.what, data.ark.when, data.ark.where);
+        return erc;
       });
   }
 

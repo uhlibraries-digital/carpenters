@@ -4,6 +4,13 @@
   color: $text-color;
 }
 
+.input-group-btn {
+  font-size: inherit;
+  .btn {
+    line-height: 2.5em;
+  }
+}
+
 .input-group,
 .form-group {
   .form-control {

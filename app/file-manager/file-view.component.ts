@@ -2,11 +2,11 @@ import { Component, Input, ElementRef, Renderer } from '@angular/core';
 import { shell } from 'electron';
 
 import { ArchivesSpaceService } from '../shared/archivesspace.service';
-import { FilesService } from './files.service';
+import { FilesService } from '../shared/files.service';
 
 @Component({
   selector: 'file-view',
-  templateUrl: './archivesspace/file-view.component.html',
+  templateUrl: './file-manager/file-view.component.html',
   styles: [ require('./file-view.component.scss') ]
 })
 export class FileViewComponent {

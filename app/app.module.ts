@@ -1,14 +1,15 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule, Title } from '@angular/platform-browser';
-import { FormsModule }   from '@angular/forms';
-import { HttpModule }    from '@angular/http';
+import { FormsModule } from '@angular/forms';
+import { HttpModule } from '@angular/http';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { AppComponent } from './app.component';
 import { ArchivesSpaceComponent } from './archivesspace/archivesspace.component';
 import { TreeViewComponent } from './archivesspace/tree-view.component';
-import { FileViewComponent } from './archivesspace/file-view.component';
+import { FileViewComponent } from './file-manager/file-view.component';
 import { LoggerComponent } from './logger/logger.component';
+import { ArkEditorComponent } from './ark-editor/ark-editor.component';
 
 import { LocalStorageService } from './shared/local-storage.service';
 import { SessionStorageService } from './shared/session-storage.service';
@@ -19,6 +20,7 @@ import { ExportService } from './shared/export.service';
 import { GreensService } from './shared/greens.service';
 import { PreservationService } from './shared/preservation.service';
 import { LoggerService } from './shared/logger.service';
+import { FilesService } from './shared/files.service';
 
 @NgModule({
   imports: [
@@ -32,7 +34,8 @@ import { LoggerService } from './shared/logger.service';
     ArchivesSpaceComponent,
     TreeViewComponent,
     FileViewComponent,
-    LoggerComponent
+    LoggerComponent,
+    ArkEditorComponent
   ],
   providers: [
     LocalStorageService,
@@ -43,7 +46,8 @@ import { LoggerService } from './shared/logger.service';
     ExportService,
     GreensService,
     PreservationService,
-    LoggerService
+    LoggerService,
+    FilesService
   ],
   bootstrap: [ AppComponent ]
 })

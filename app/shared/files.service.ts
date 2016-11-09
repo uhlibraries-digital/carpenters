@@ -2,10 +2,10 @@ import { Injectable } from '@angular/core';
 import { remote } from 'electron';
 import { readdir } from 'fs';
 
-import { ArchivesSpaceService } from '../shared/archivesspace.service';
-import { LoggerService } from '../shared/logger.service';
+import { ArchivesSpaceService } from './archivesspace.service';
+import { LoggerService } from './logger.service';
 
-import { File } from '../shared/file';
+import { File } from './file';
 
 let { dialog } = remote;
 
