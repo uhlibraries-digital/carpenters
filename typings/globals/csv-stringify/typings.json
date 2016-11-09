@@ -1,0 +1,8 @@
+{
+  "resolution": "main",
+  "tree": {
+    "src": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/7605b76d91192f9b4e9c57a973d216d3d8392fcf/csv-stringify/csv-stringify.d.ts",
+    "raw": "registry:dt/csv-stringify#0.0.0+20160801211411",
+    "typings": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/7605b76d91192f9b4e9c57a973d216d3d8392fcf/csv-stringify/csv-stringify.d.ts"
+  }
+}

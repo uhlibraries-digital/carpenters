@@ -4,7 +4,9 @@
     "mime": "registry:npm/mime#1.3.0+20160723033700"
   },
   "globalDependencies": {
+    "csv-stringify": "registry:dt/csv-stringify#0.0.0+20160801211411",
     "github-electron": "registry:dt/github-electron#1.4.1+20160928142324",
-    "node": "registry:dt/node#6.0.0+20160928143418"
+    "node": "registry:dt/node#6.0.0+20160928143418",
+    "xlsx": "registry:dt/xlsx#0.0.0+20160811195152"
   }
 }
