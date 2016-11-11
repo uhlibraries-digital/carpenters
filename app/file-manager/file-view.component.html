@@ -1,6 +1,8 @@
 <div *ngFor="let c of children" class="file-container">
   <div *ngIf="c.selected" class="file">
-    <div class="title"><span class="parent-title" *ngIf="c.artificial">{{ c.parent.title }}</span>{{ c.title }}</div>
+    <div class="title">
+      <span class="parent-title" *ngIf="c.artificial">{{ c.parent.title }}</span>{{ c.title }}
+    </div>
     <div class="level">
       <span *ngFor="let p of getParents(c)" [ngClass]="containerClass(p)">{{ p.title }}</span>
       <span [ngClass]="containerClass(c)">{{ displayContainer(c) }}</span>

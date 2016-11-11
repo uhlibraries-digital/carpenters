@@ -110,7 +110,6 @@ export class FilesService {
     }
 
     this.unselectArchivalObjectsWithoutFiles();
-
   }
 
   private containerByFileName(file: string): any[] {
@@ -173,8 +172,12 @@ export class FilesService {
     }
     let c = value.containers[0];
     for (let i = 0; i < container.length; i++) {
-      if (c['type_' + (i + 1)] !== container[i].type ||
-          c['indicator_' + (i + 1)] !== container[i].indicator) {
+      let typeString = 'type_' + (i + 1);
+      let indicatorString = 'indicator_' + (i + 1);
+
+      c[typeString] = c[typeString].replace(/OVS[\s_]/i, '');
+      if (c[typeString] !== container[i].type ||
+          c[indicatorString] !== container[i].indicator) {
         return false;
       }
     }
