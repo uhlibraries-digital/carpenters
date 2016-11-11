@@ -94,6 +94,8 @@ export class SaveService {
       if (ao.artificial) {
         object.title = ao.title;
         object.parent_uri = ao.parent.record_uri;
+        object.level = ao.level;
+        object.containers = ao.containers;
       }
       objects.push(object);
     }
@@ -122,7 +124,7 @@ export class SaveService {
 
   private markSelections(selections: any, children: any): void {
     for (let c of children) {
-      let found = selections.find(function(e){
+      let found = selections.find((e) => {
         return e.uri === c.record_uri && !e.artificial;
       });
       if (found) {
@@ -134,14 +136,12 @@ export class SaveService {
         return e.artificial && e.parent_uri === c.record_uri;
       });
       if (artificial.length > 0) {
-        artificial = artificial.map(function(value) {
+        artificial = artificial.map((value) => {
           value.files = this.convertToFileObjects(value.files);
           value.selected = true;
-          value.containers = c.containers;
           value.record_uri = undefined;
           value.children = [];
           value.parent = c;
-          value.level = c.level;
           return value;
         });
         c.children = c.children.concat(artificial);

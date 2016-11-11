@@ -14,10 +14,14 @@ export class File {
     this.name = this.basename(path);
     this.path = path;
 
-    let stats = statSync(this.path);
-    this.size = stats.size;
-    this.lastModified = stats.mtime.getTime();
-    this.lastModifiedDate = stats.mtime;
+    try {
+      let stats = statSync(this.path);
+      this.size = stats.size;
+      this.lastModified = stats.mtime.getTime();
+      this.lastModifiedDate = stats.mtime;
+    } catch(e) {
+      console.error(e.message);
+    }
     this.type = lookup(this.path);
     this.purpose = this.setPurpose();
   }

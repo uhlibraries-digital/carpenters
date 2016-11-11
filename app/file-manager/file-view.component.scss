@@ -7,6 +7,12 @@
     font-size: 1.25em;
   }
 
+  .parent-title::after {
+    content: '>';
+    padding: 0 5px;
+    color: $container-item-level;
+  }
+
   .object-container {
     font-size: 1em;
     color: $series-level;
