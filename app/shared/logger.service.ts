@@ -8,26 +8,29 @@ export class LoggerService {
   entries: Entry[] = [];
 
   @Output() log:EventEmitter<any> = new EventEmitter();
+  @Output() changed:EventEmitter<Entry> = new EventEmitter();
 
-  info(message: string): void {
-    this.addEntry('info', message);
+  info(message: string, notify?: boolean): void {
+    this.addEntry('info', message, notify);
   }
 
-  success(message: string): void {
-    this.addEntry('success', message);
+  success(message: string, notify?: boolean): void {
+    this.addEntry('success', message, notify);
   }
 
-  error(message: string): void {
-    this.addEntry('error', message);
+  error(message: string, notify?: boolean): void {
+    this.addEntry('error', message, notify);
   }
 
-  warn(message: string): void {
-    this.addEntry('warning', message);
+  warn(message: string, notify?: boolean): void {
+    this.addEntry('warning', message, notify);
   }
 
-  addEntry(type: string, message: string): void {
-    this.entries.push(new Entry(type, message));
+  addEntry(type: string, message: string, notify?: boolean): void {
+    let entry = new Entry(type, message, notify);
+    this.entries.push(entry);
     this.log.emit(this.entries);
+    this.changed.emit(entry);
   }
 
   clear(): void {

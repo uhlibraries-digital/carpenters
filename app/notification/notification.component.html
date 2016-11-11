@@ -1,0 +1,17 @@
+<div class="notifications">
+  <div
+    *ngFor="let entry of entries; let i = index"
+    [ngClass]="notifyClass(entry)">
+    <div class="notification-content">
+      <div class="message">{{ entry.message }}</div>
+      <div class="button">
+        <button
+          *ngIf="entries.length > 1"
+          class="btn btn-primary"
+          type="button"
+          (click)="closeAll()">Close All</button>
+        </div>
+    </div>
+    <div class="notification-close" (click)="close(i)"></div>
+  </div>
+</div>

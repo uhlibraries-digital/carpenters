@@ -13,6 +13,7 @@ let { dialog } = remote;
 export class FilesService {
 
   selectedObjects: any;
+  unselectObjects: any;
 
   constructor(
     private asService: ArchivesSpaceService,
@@ -78,6 +79,7 @@ export class FilesService {
   }
 
   private processFiles(location: string, files: string[]): void {
+    this.unselectObjects = [];
     let selectedObjects = this.selectedObjects = this.asService.selectedArchivalObjects();
     if (selectedObjects.length === 0) {
       this.log.error('Please select some archival objects before loading files');
@@ -97,14 +99,14 @@ export class FilesService {
       if (found) {
         let newFile = new File(location + '/' + file);
         found.files.push(newFile);
-        this.log.success(file + ' added to archival object "' + found.title + '"');
+        this.log.success(file + ' added to archival object "' + found.title + '"', false);
       }
       else {
         if (this.createArtificialChild(container, location, file)) {
           selectedObjects = this.selectedObjects = this.asService.selectedArchivalObjects();
         }
         else {
-          this.log.warn("Couldn't find selected archival object for filename: " + file);
+          this.log.error("Couldn't find selected archival object for filename: " + file);
         }
       }
     }
@@ -175,7 +177,9 @@ export class FilesService {
       let typeString = 'type_' + (i + 1);
       let indicatorString = 'indicator_' + (i + 1);
 
-      c[typeString] = c[typeString].replace(/OVS[\s_]/i, '');
+      if (c[typeString]) {
+        c[typeString] = c[typeString].replace(/OVS[\s_]/i, '');
+      }
       if (c[typeString] !== container[i].type ||
           c[indicatorString] !== container[i].indicator) {
         return false;
@@ -226,12 +230,13 @@ export class FilesService {
       level: 'item',
       files: [newFile]
     });
-    this.log.warn('Created "' + title + '" for file ' + file);
+    this.log.warn('Created "' + title + '" for file ' + file, false);
+    this.unselectObjects.push(found);
     return true;
   }
 
   private unselectArchivalObjectsWithoutFiles(): void {
-    this.selectedObjects.map((value) => {
+    this.unselectObjects.map((value) => {
       if (value.files.length === 0) {
         value.selected = false;
       }

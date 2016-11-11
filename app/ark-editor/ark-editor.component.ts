@@ -53,7 +53,7 @@ export class ArkEditorComponent implements OnInit {
       .then(erc => {
         this.erc = <Erc> erc;
         this.fetched = true;
-        this.log.success('Fetched ark: ' + this.ark);
+        this.log.success('Fetched ark: ' + this.ark, false);
       })
       .catch(error => {
         this.log.error('Error getting ark: ' + this.ark);
@@ -76,7 +76,7 @@ export class ArkEditorComponent implements OnInit {
     this.minter.mint(this.erc)
       .then(id => {
         this.fetched = true;
-        this.log.success('Minted ark: ' + id);
+        this.log.success('Minted ark: ' + id, false);
         this.ark = id;
         if (this.erc.where.indexOf('$ark$') > -1) {
           this.erc.where = this.erc.where.replace('$ark$', id);

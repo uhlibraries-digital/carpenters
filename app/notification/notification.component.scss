@@ -1,0 +1,119 @@
+@import '../scss/mixins/_buttons';
+
+@-webkit-keyframes notification-show {
+  0% {
+    opacity: 0;
+    transform: perspective(450px) translate(0, -30px) rotateX(90deg);
+  }
+  100% {
+    opacity: 1;
+    transform: perspective(450px) translate(0, 0) rotateX(0deg);
+  }
+}
+@mixin background($icon, $icon-color, $icon-background, $color, $background) {
+  &::before {
+    content: $icon;
+    color: $icon-color;
+    background-color: $icon-background;
+  }
+  .notification-content {
+    color: $color;
+    background-color: $background;
+
+    .btn-primary {
+      @include button($icon-color, $icon-background, $icon-background);
+    }
+  }
+}
+
+.notifications {
+  display: block;
+  z-index: 1000;
+  position: absolute;
+  padding: 10px;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  pointer-events: none;
+}
+
+.notification {
+  float: right;
+  clear: right;
+  position: relative;
+  width: 450px;
+  padding-left: 30px;
+  margin-bottom: 2px;
+  max-height: 800px;
+  word-wrap: break-word;
+  -webkit-animation: notification-show 0.16s cubic-bezier(0.175, 0.885, 0.32, 1.27499);
+  pointer-events: auto;
+
+  &::before {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 30px;
+    height: 100%;
+    padding-top: 10px;
+    text-align: center;
+    border-radius: 3px 0 0 3px;
+    margin-right: 5px;
+    display: inline-block;
+    line-height: 1;
+    font-size: 16px;
+    content: '';
+    font-family: 'FontAwesome';
+  }
+
+  &.hide {
+    display: none;
+  }
+
+  .notification-content {
+    border-radius: 0 3px 3px 0;
+    padding: 0.75em;
+    padding-right: 40px;
+    max-height: 200px;
+    overflow-y: auto;
+
+    .button {
+      margin-top: 5px;
+    }
+  }
+
+  .notification-close {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 38px;
+    height: 38px;
+    line-height: 38px;
+    text-align: center;
+    font-size: 16px;
+    color: #000;
+    opacity: 0.4;
+    font-weight: bold;
+    cursor: pointer;
+
+    &::before {
+      font-family: 'FontAwesome';
+      content: '\f00d';
+    }
+  }
+
+  &.info {
+    @include background('\f05a', #b2d9fa, #0f82e6, #0e3377, #7ebef7);
+  }
+  &.success {
+    @include background('\f0a3', #9ee5ad, #2ba143, #1f5130, #72da87);
+  }
+  &.warning {
+    @include background('\f071', #f6d179, #ad7c0b, #835b21, #f3bf44);
+  }
+  &.error {
+    @include background('\f05e', #f2c8c4, #d13b2e, #7a1200, #e89d96);
+  }
+}

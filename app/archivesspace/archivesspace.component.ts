@@ -46,7 +46,7 @@ export class ArchivesSpaceComponent implements OnInit {
 
       this.selectedResource = resource;
       this.selectedResourceUri = resource.uri;
-      this.log.info('Resource "' + resource.title + '" loaded');
+      this.log.info('Resource "' + resource.title + '" loaded', false);
     });
 
     this.storage.changed.subscribe(key => {

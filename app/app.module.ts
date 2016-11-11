@@ -10,6 +10,7 @@ import { TreeViewComponent } from './archivesspace/tree-view.component';
 import { FileViewComponent } from './file-manager/file-view.component';
 import { LoggerComponent } from './logger/logger.component';
 import { ArkEditorComponent } from './ark-editor/ark-editor.component';
+import { NotificationComponent } from './notification/notification.component';
 
 import { LocalStorageService } from './shared/local-storage.service';
 import { SessionStorageService } from './shared/session-storage.service';
@@ -35,7 +36,8 @@ import { FilesService } from './shared/files.service';
     TreeViewComponent,
     FileViewComponent,
     LoggerComponent,
-    ArkEditorComponent
+    ArkEditorComponent,
+    NotificationComponent
   ],
   providers: [
     LocalStorageService,
