@@ -4,9 +4,8 @@
     [ngClass]="notifyClass(entry)">
     <div class="notification-content">
       <div class="message">{{ entry.message }}</div>
-      <div class="button">
+      <div *ngIf="entries.length > 1" class="button">
         <button
-          *ngIf="entries.length > 1"
           class="btn btn-primary"
           type="button"
           (click)="closeAll()">Close All</button>

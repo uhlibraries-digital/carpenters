@@ -20,8 +20,16 @@
     color: $color;
     background-color: $background;
 
-    .btn-primary {
-      @include button($icon-color, $icon-background, $icon-background);
+    .button {
+      padding: 10px;
+      padding-bottom: 0;
+      margin-left: -0.75em;
+      margin-right: -40px;
+      border-top: 1px solid rgba(0, 0, 0, 0.1);
+
+      .btn-primary {
+        @include button(#fff, $icon-background, darker($icon-background, 12%));
+      }
     }
   }
 }
@@ -98,6 +106,10 @@
     font-weight: bold;
     cursor: pointer;
 
+    &:hover {
+      opacity: 1;
+    }
+
     &::before {
       font-family: 'FontAwesome';
       content: '\f00d';
@@ -108,7 +120,7 @@
     @include container('\f05a', #b2d9fa, #0f82e6, #0e3377, #7ebef7);
   }
   &.success {
-    @include container('\f0a3', #9ee5ad, #2ba143, #1f5130, #72da87);
+    @include container('\f00c', #9ee5ad, #2ba143, #1f5130, #72da87);
   }
   &.warning {
     @include container('\f071', #f6d179, #ad7c0b, #835b21, #f3bf44);

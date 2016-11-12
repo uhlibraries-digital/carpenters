@@ -76,7 +76,7 @@ export class ArkEditorComponent implements OnInit {
     this.minter.mint(this.erc)
       .then(id => {
         this.fetched = true;
-        this.log.success('Minted ark: ' + id, false);
+        this.log.success('Minted: ' + id);
         this.ark = id;
         if (this.erc.where.indexOf('$ark$') > -1) {
           this.erc.where = this.erc.where.replace('$ark$', id);
@@ -84,17 +84,17 @@ export class ArkEditorComponent implements OnInit {
         }
       })
       .catch(error => {
-        this.log.error('An error occured while minting a new ark');
+        this.log.error('An error occured while minting a new ark: ' + error);
       });
   }
 
   save(): void {
     this.minter.update(this.ark, this.erc)
       .then(erc => {
-        this.log.success('Ark ' + this.ark + ' updated successfully');
+        this.log.success(this.ark + ' updated successfully');
       })
       .catch(error => {
-        this.log.error('Unable to save changes to ark ' + this.ark);
+        this.log.error('Unable to save changes to ' + this.ark + ': ' + error);
       });
   }
 
