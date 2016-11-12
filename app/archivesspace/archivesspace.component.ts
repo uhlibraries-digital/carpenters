@@ -75,13 +75,16 @@ export class ArchivesSpaceComponent implements OnInit {
   }
 
   loadRepositories(): void {
-    this.asService.getRepositories().then((list) => {
-      this.repositories = list;
-      if (list.length >= 1) {
-        this.selectedRepository = list[0].uri;
-        this.loadResources(this.selectedRepository);
-      }
-    });
+    this.asService.getRepositories()
+      .then((list) => {
+        this.repositories = list;
+        if (list.length >= 1) {
+          this.selectedRepository = list[0].uri;
+          this.loadResources(this.selectedRepository);
+        }
+      }).catch((error) => {
+        this.log.error('Unable to load repositories: ' + error);
+      });
   }
 
   loadResources(repository: string): void {
@@ -93,6 +96,9 @@ export class ArchivesSpaceComponent implements OnInit {
     this.asService.getResource(uri)
       .then(() => {
         this.loading = false;
+      }).catch(error => {
+        this.loading = false;
+        this.log.error('Unable to load resource: ' + error);
       });
   }
 

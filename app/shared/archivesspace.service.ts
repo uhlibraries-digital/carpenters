@@ -164,7 +164,7 @@ export class ArchivesSpaceService {
       .toPromise()
       .then(response => response.json())
       .catch((error) => {
-        this.handleError(error);
+        return this.handleError(error);
       });
   }
 
@@ -186,7 +186,6 @@ export class ArchivesSpaceService {
       .then((response) => {
         let data = response.json();
         let date = new Date();
-        console.log(data);
         let session = {
           'id': data.session,
           'expires': date.getTime() + (3600 * 1000)
@@ -195,13 +194,17 @@ export class ArchivesSpaceService {
         return session;
       })
       .catch((error) => {
-        this.handleError(error);
+        return this.handleError(error);
       });
   }
 
   private handleError(error: any): Promise<any> {
-    console.error('An error occured with ArchivesSpace', error);
-    return Promise.reject(error.message || error);
+    try {
+      let response = JSON.parse(error._body);
+      error = response.error;
+    }
+    catch(e) { }
+    return Promise.reject(error);
   }
 
   private createParentChild(children: any[], parent?: any): void {

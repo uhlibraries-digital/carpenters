@@ -10,7 +10,7 @@
     transform: perspective(450px) translate(0, 0) rotateX(0deg);
   }
 }
-@mixin background($icon, $icon-color, $icon-background, $color, $background) {
+@mixin container($icon, $icon-color, $icon-background, $color, $background) {
   &::before {
     content: $icon;
     color: $icon-color;
@@ -105,15 +105,15 @@
   }
 
   &.info {
-    @include background('\f05a', #b2d9fa, #0f82e6, #0e3377, #7ebef7);
+    @include container('\f05a', #b2d9fa, #0f82e6, #0e3377, #7ebef7);
   }
   &.success {
-    @include background('\f0a3', #9ee5ad, #2ba143, #1f5130, #72da87);
+    @include container('\f0a3', #9ee5ad, #2ba143, #1f5130, #72da87);
   }
   &.warning {
-    @include background('\f071', #f6d179, #ad7c0b, #835b21, #f3bf44);
+    @include container('\f071', #f6d179, #ad7c0b, #835b21, #f3bf44);
   }
   &.error {
-    @include background('\f05e', #f2c8c4, #d13b2e, #7a1200, #e89d96);
+    @include container('\f05e', #f2c8c4, #d13b2e, #7a1200, #e89d96);
   }
 }
