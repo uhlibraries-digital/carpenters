@@ -9,7 +9,7 @@
     </div>
     <div class="file-list">
       <div class="row">
-        <div class="col-xs-4">
+        <div class="col-xs-4 file-col">
           <div
             class="drop preservation"
             (dragenter)="handleDragEnter($event.target)"
@@ -29,8 +29,10 @@
               <div
                 *ngIf="file.purpose === 'preservation'"
                 class="{{file.purpose}}">
-                <i class="fa fa-file-text-o" aria-hidden="true"></i>
-                <span class="filename" (click)="openFile(file.path)">{{ file.name }}</span>
+                <span
+                  class="filename"
+                  title="{{ file.name }}"
+                  (click)="openFile(file.path)">{{ file.name }}</span>
                 <i
                   class="fa fa-trash remove"
                   aria-hidden="true"
@@ -39,7 +41,7 @@
             </li>
           </ul>
         </div>
-        <div class="col-xs-4">
+        <div class="col-xs-4 file-col">
           <div
             class="drop modified-master"
             (dragenter)="handleDragEnter($event.target)"
@@ -59,8 +61,10 @@
               <div
                 *ngIf="file.purpose === 'modified-master'"
                 class="{{file.purpose}}">
-                <i class="fa fa-file-text-o" aria-hidden="true"></i>
-                <span class="filename" (click)="openFile(file.path)">{{ file.name }}</span>
+                <span
+                  class="filename"
+                  title="{{ file.name }}"
+                  (click)="openFile(file.path)">{{ file.name }}</span>
                 <i
                   class="fa fa-trash remove"
                   aria-hidden="true"
@@ -69,7 +73,7 @@
             </li>
           </ul>
         </div>
-        <div class="col-xs-4">
+        <div class="col-xs-4 file-col">
           <div
             class="drop access-copy"
             (dragenter)="handleDragEnter($event.target)"
@@ -89,10 +93,10 @@
               <div
                 *ngIf="file.purpose === 'access-copy'"
                 class="{{file.purpose}}">
-                <i
-                  class="fa fa-file-text-o"
-                  aria-hidden="true"></i>
-                <span class="filename" (click)="openFile(file.path)">{{ file.name }}</span>
+                <span
+                  class="filename"
+                  title="{{ file.name }}"
+                  (click)="openFile(file.path)">{{ file.name }}</span>
                 <i
                   class="fa fa-trash remove"
                   aria-hidden="true"

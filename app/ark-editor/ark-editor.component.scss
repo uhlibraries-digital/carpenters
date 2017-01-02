@@ -3,7 +3,7 @@
 .ark-editor-container {
   overflow-y: auto;
   position: absolute;
-  top: 119px;
+  top: $top-tab-container;
   bottom: 0;
   width: 100%;
   background-color: $light-background-color;

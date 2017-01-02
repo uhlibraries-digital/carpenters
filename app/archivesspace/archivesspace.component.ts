@@ -5,7 +5,6 @@ import { ipcRenderer } from 'electron';
 import { ArchivesSpaceService } from '../shared/archivesspace.service';
 import { SaveService } from '../shared/save.service';
 import { LocalStorageService } from '../shared/local-storage.service';
-import { FilesService } from '../shared/files.service';
 import { LoggerService } from '../shared/logger.service';
 
 @Component({
@@ -31,7 +30,6 @@ export class ArchivesSpaceComponent implements OnInit {
     private saveService: SaveService,
     private storage: LocalStorageService,
     private titleService: Title,
-    private files: FilesService,
     private log: LoggerService) {
   }
 
@@ -100,9 +98,5 @@ export class ArchivesSpaceComponent implements OnInit {
         this.loading = false;
         this.log.error('Unable to load resource: ' + error);
       });
-  }
-
-  loadFiles(): void {
-    this.files.loadFiles();
   }
 }

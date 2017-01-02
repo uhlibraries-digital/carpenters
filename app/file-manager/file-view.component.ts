@@ -32,6 +32,8 @@ export class FileViewComponent {
   }
 
   removeFile(c: any, index: number): void {
+    let file = c.files[index];
+    this.files.addAvailableFiles(file);
     c.files.splice(index, 1);
   }
 

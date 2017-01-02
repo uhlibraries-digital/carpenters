@@ -10,7 +10,7 @@
 .resource-file-container {
   overflow-y: auto;
   position: absolute;
-  top: 119px;
+  top: $top-tab-container;
   bottom: 0;
   width: 100%;
   background-color: $light-background-color;
@@ -18,11 +18,21 @@
   .resource-tree {
     padding: 20px;
   }
+}
 
-  .file-buttons {
-    margin-bottom: 10px;
-    text-align: right;
-  }
+.resource-file-container {
+  width: 75%;
+  border-right: 1px solid $darker-background-color;
+}
+
+.resource-file-browser {
+  overflow-y: auto;
+  position: absolute;
+  top: $top-tab-container;
+  bottom: 0;
+  right: 0;
+  width: 25%;
+  background-color: $background-color;
 }
 
 .resource-file-container {

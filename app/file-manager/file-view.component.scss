@@ -39,6 +39,11 @@
 
   .file-list {
 
+    .file-col {
+      padding-left: 5px;
+      padding-right: 5px;
+    }
+
     .drop {
       background-image: repeating-linear-gradient(
         -45deg,
@@ -112,7 +117,11 @@
       .file {
         .filename {
           cursor: pointer;
-          padding-left: 5px;
+          font-size: 0.9em;
+          overflow: hidden;
+          display: inline-block;
+          width: 250px;
+          text-overflow: ellipsis;
         }
         .preservation {
           color: $purple;
@@ -127,6 +136,7 @@
           color: $red;
           cursor: pointer;
           padding-left: 5px;
+          position: absolute;
         }
       }
     }

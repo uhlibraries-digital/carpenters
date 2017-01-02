@@ -28,10 +28,10 @@
     <ngb-tab title="Files" id="files">
       <template ngbTabContent>
         <div *ngIf="selectedResource" class="resource-file-container scrollbars">
-          <div class="file-buttons">
-            <button type="button" class="btn btn-primary" (click)="loadFiles()">Load Files</button>
-          </div>
           <file-view [children]="selectedResource.tree.children"></file-view>
+        </div>
+        <div *ngIf="selectedResource" class="resource-file-browser">
+          <file-browser></file-browser>
         </div>
       </template>
     </ngb-tab>

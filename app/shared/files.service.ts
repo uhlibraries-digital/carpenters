@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, EventEmitter, Output } from '@angular/core';
 import { remote } from 'electron';
 import { readdir } from 'fs';
 
@@ -14,10 +14,14 @@ export class FilesService {
 
   selectedObjects: any;
   unselectObjects: any;
+  availableFiles: File[];
+
+  @Output() filesChanged: EventEmitter<any> = new EventEmitter();
 
   constructor(
     private asService: ArchivesSpaceService,
     private log: LoggerService) {
+      this.availableFiles = [];
   }
 
   loadFiles(): void {
@@ -28,9 +32,14 @@ export class FilesService {
     readdir(location, (err, files) => {
       if (err) {
         this.log.error(err.message);
-        throw err;
+        return;
       }
-      this.processFiles(location, files);
+      // this.processFiles(location, files);
+      this.availableFiles = [];
+      for (let file of files) {
+        this.availableFiles.push(new File(location + '/' + file));
+      }
+      this.filesChanged.emit(this.availableFiles);
     });
   }
 
@@ -45,11 +54,133 @@ export class FilesService {
     if (!obj.files) {
       obj.files = [];
     }
+    let usedFiles: string[] = [];
     for (let file of files) {
       let newFile = new File(file);
       newFile.setPurpose(type);
       obj.files.push(newFile);
+      usedFiles.push(newFile.name);
     }
+    this.removeAvailableFiles(usedFiles);
+  }
+
+  processFiles(filesPerObject?: number): void {
+    if (!this.availableFiles || this.availableFiles.length === 0) {
+      this.log.error('There are no available files to process.');
+      return;
+    }
+
+    this.unselectObjects = [];
+    this.selectedObjects = this.asService.selectedArchivalObjects();
+    if (this.selectedObjects.length === 0) {
+      this.log.error('Please select some archival objects before loading files');
+      return;
+    }
+    //this.clearFiles(selectedObjects);
+
+
+    let usedFiles: string[] = [];
+    if (filesPerObject) {
+      usedFiles = this.processFilesForGrouping(filesPerObject);
+    }
+    else {
+      usedFiles = this.processFilesForContainer();
+    }
+
+    this.removeAvailableFiles(usedFiles);
+    this.unselectArchivalObjectsWithoutFiles();
+  }
+
+  removeAvailableFiles(filenames: string[]): void {
+    this.availableFiles = this.availableFiles.filter(file => {
+      return filenames.indexOf(file.name) === -1;
+    });
+    this.filesChanged.emit(this.availableFiles);
+  }
+
+  addAvailableFiles(file: File): void {
+    this.availableFiles.push(file);
+    this.filesChanged.emit(this.availableFiles);
+  }
+
+  private processFilesForContainer(): string[] {
+    let usedFiles: string[] = [];
+    for (let file of this.availableFiles) {
+      let container = this.containerByFileName(file.name);
+      if (!container) {
+        this.log.warn('No container information found in filename: ' + file.name);
+        continue;
+      }
+      let found = this.findSelectionByContainer(container);
+      if (found) {
+        if (!found.files) {
+          found.files = [];
+        }
+        found.files.push(file);
+        this.log.success(file.name + ' added to archival object "' + found.title + '"', false);
+        usedFiles.push(file.name);
+      }
+      else {
+        if (this.createArtificialChild(container, [file])) {
+          this.selectedObjects = this.asService.selectedArchivalObjects();
+          usedFiles.push(file.name);
+        }
+        else {
+          this.log.error("Couldn't find selected archival object for filename: " + file.name);
+        }
+      }
+    }
+    return usedFiles;
+  }
+
+  private processFilesForGrouping(filesPerObject: number): string[] {
+    let usedFiles: string[] = [];
+    let files: File[] = this.availableFiles;
+    files = this.splitFilesByContainer(files);
+
+    for (let key in files) {
+      let filesByPerpose = files[key];
+      let container = this.containerByFileName(key);
+      let found = this.findSelectionByContainer(container);
+
+      if (this.containerHasItem(container)) {
+        console.log('handle item container');
+      }
+      else {
+        let itemObjectsNeeded = Math.floor(filesByPerpose['access-copy'].length / filesPerObject);
+        for (let i = 1; i <= itemObjectsNeeded; i++) {
+          let acFiles = filesByPerpose['access-copy'].splice(0, filesPerObject);
+          let mmFiles = filesByPerpose['modified-master'].splice(0, filesPerObject);
+          let pmFiles = filesByPerpose['preservation'].splice(0, filesPerObject);
+          let childFiles = acFiles.concat(mmFiles, pmFiles);
+
+          let title = 'Item ' + this.padLeft(i, 3, '0');
+          let itemContainer = this.addContainer(container, 'Item', String(i));
+          found.children.push({
+            title: title,
+            parent: found,
+            index: i,
+            selected: true,
+            children: [],
+            containers: [this.convertToASContainer(itemContainer)],
+            record_uri: undefined,
+            node_type: undefined,
+            artificial: true,
+            level: 'item',
+            files: childFiles
+          });
+          this.log.warn('Created "' + title + '"', false);
+          this.unselectObjects.push(found);
+          for (let f of childFiles) {
+            usedFiles.push(f.name);
+          }
+        }
+      }
+
+    }
+
+
+    return usedFiles;
   }
 
   private selectFiles(): string[] {
@@ -76,42 +207,6 @@ export class FilesService {
       ]
     });
     return (filenames) ? filenames[0] : '';
-  }
-
-  private processFiles(location: string, files: string[]): void {
-    this.unselectObjects = [];
-    let selectedObjects = this.selectedObjects = this.asService.selectedArchivalObjects();
-    if (selectedObjects.length === 0) {
-      this.log.error('Please select some archival objects before loading files');
-      return;
-    }
-    this.clearFiles(selectedObjects);
-
-    for (let file of files) {
-      let container = this.containerByFileName(file);
-      if (!container) {
-        this.log.warn('No container information found in filename: ' + file);
-        continue;
-      }
-      let found = selectedObjects.find((value) => {
-        return this.isContainer(value, container);
-      });
-      if (found) {
-        let newFile = new File(location + '/' + file);
-        found.files.push(newFile);
-        this.log.success(file + ' added to archival object "' + found.title + '"', false);
-      }
-      else {
-        if (this.createArtificialChild(container, location, file)) {
-          selectedObjects = this.selectedObjects = this.asService.selectedArchivalObjects();
-        }
-        else {
-          this.log.error("Couldn't find selected archival object for filename: " + file);
-        }
-      }
-    }
-
-    this.unselectArchivalObjectsWithoutFiles();
   }
 
   private containerByFileName(file: string): any[] {
@@ -203,7 +298,7 @@ export class FilesService {
     return Array(length - value.length + 1).join(character || " ") + value;
   }
 
-  private createArtificialChild(container: any, location: string, file: string): boolean {
+  private createArtificialChild(container: any, files: File[]): boolean {
     let item = this.containerHasItem(container);
     if (!item) {
       return false;
@@ -215,8 +310,8 @@ export class FilesService {
     if (!found) {
       return false;
     }
-    let newFile = new File(location + '/' + file);
     let title = 'Item ' + this.padLeft(item.indicator, 3, '0');
+
     found.children.push({
       title: title,
       parent: found,
@@ -228,21 +323,66 @@ export class FilesService {
       node_type: undefined,
       artificial: true,
       level: 'item',
-      files: [newFile]
+      files: files
     });
-    this.log.warn('Created "' + title + '" for file ' + file, false);
+    this.log.warn('Created "' + title + '"', false);
     this.unselectObjects.push(found);
     return true;
   }
 
   private unselectArchivalObjectsWithoutFiles(): void {
     this.unselectObjects.map((value) => {
-      if (value.files.length === 0) {
+      if (!value.files || value.files.length === 0) {
         value.selected = false;
       }
       return value;
     });
     this.selectedObjects = this.asService.selectedArchivalObjects();
+  }
+
+  private splitFilesByContainer(files: File[]): any {
+    let splitFiles: any = {};
+
+    files.sort((a, b) => {
+      return a.name.localeCompare(b.name);
+    });
+    for (let file of files) {
+      let match = file.name.match(/_([a-z]\d{3})/gi);
+      if (match) {
+        let key = match.join('');
+        if (!splitFiles[key]) {
+          splitFiles[key] = {
+            'preservation': [],
+            'access-copy': [],
+            'modified-master': []
+          };
+        }
+        splitFiles[key][file.purpose].push(file);
+      }
+      else {
+        this.log.warn('No container information found in filename: ' + file.name);
+      }
+    }
+    return splitFiles;
+  }
+
+  private findSelectionByContainer(container: any): any {
+    return this.selectedObjects.find((value) => {
+      return this.isContainer(value, container);
+    });
+  }
+
+  private addContainer(container: any, type: string, indicator: string): any {
+    let rContainer = container.slice(0);
+    for (let i = 0; i < rContainer.length; i++) {
+      let c = Object.assign({}, rContainer[i]);
+      if (c.type === null) {
+        c.type = type;
+        c.indicator = indicator
+        rContainer[i] = c;
+      }
+    }
+    return rContainer;
   }
 
 

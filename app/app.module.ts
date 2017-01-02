@@ -8,6 +8,7 @@ import { AppComponent } from './app.component';
 import { ArchivesSpaceComponent } from './archivesspace/archivesspace.component';
 import { TreeViewComponent } from './archivesspace/tree-view.component';
 import { FileViewComponent } from './file-manager/file-view.component';
+import { FileBrowserComponent } from './file-manager/file-browser.component';
 import { LoggerComponent } from './logger/logger.component';
 import { ArkEditorComponent } from './ark-editor/ark-editor.component';
 import { NotificationComponent } from './notification/notification.component';
@@ -35,6 +36,7 @@ import { FilesService } from './shared/files.service';
     ArchivesSpaceComponent,
     TreeViewComponent,
     FileViewComponent,
+    FileBrowserComponent,
     LoggerComponent,
     ArkEditorComponent,
     NotificationComponent

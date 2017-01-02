@@ -63,7 +63,7 @@ export class ArchivesSpaceService {
   getResourceTree(uri: string): Promise<any> {
     return this.request(uri + '/tree')
       .then((tree) => {
-        this.createParentChild(tree.children);
+        this.populateChildAttributes(tree.children);
         return tree;
       });
   }
@@ -207,10 +207,14 @@ export class ArchivesSpaceService {
     return Promise.reject(error);
   }
 
-  private createParentChild(children: any[], parent?: any): void {
+  private populateChildAttributes(children: any[], parent?: any): void {
+    let series_index = 1;
     for (let c of children) {
       c.parent = parent;
-      this.createParentChild(c.children, c);
+      if (c.level === 'series' || c.level === 'subseries') {
+        c.series_index = series_index++;
+      }
+      this.populateChildAttributes(c.children, c);
     }
   }
 

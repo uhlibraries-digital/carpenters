@@ -15,7 +15,9 @@ export class MapService {
     return this.http.get(url)
       .toPromise()
       .then(response => this.mapFields = response.json() as MapField[])
-      .catch(this.handleError);
+      .catch((error) => {
+        return this.handleError(error);
+      });
   }
 
   getMapFieldByFullName(name: string): MapField {
@@ -27,7 +29,6 @@ export class MapService {
   }
 
   private handleError(error: any): Promise<any> {
-    console.error('An error occured with MAP', error);
     return Promise.reject(error.message || error);
   }
 
