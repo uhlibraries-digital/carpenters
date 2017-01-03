@@ -77,7 +77,7 @@ export class FilesService {
       this.log.error('Please select some archival objects before loading files');
       return;
     }
-    //this.clearFiles(selectedObjects);
+    //this.clearFiles(this.selectedObjects);
 
 
     let usedFiles: string[] = [];
@@ -144,42 +144,18 @@ export class FilesService {
       let container = this.containerByFileName(key);
       let found = this.findSelectionByContainer(container);
 
-      if (this.containerHasItem(container)) {
-        console.log('handle item container');
+      if (!found) {
+        // Selection might be for an item and not a folder
+        usedFiles = usedFiles.concat(
+          this.processFilesForItemSelection(filesByPerpose, filesPerObject, container)
+        );
       }
       else {
-        let itemObjectsNeeded = Math.floor(filesByPerpose['access-copy'].length / filesPerObject);
-        for (let i = 1; i <= itemObjectsNeeded; i++) {
-          let acFiles = filesByPerpose['access-copy'].splice(0, filesPerObject);
-          let mmFiles = filesByPerpose['modified-master'].splice(0, filesPerObject);
-          let pmFiles = filesByPerpose['preservation'].splice(0, filesPerObject);
-          let childFiles = acFiles.concat(mmFiles, pmFiles);
-
-          let title = 'Item ' + this.padLeft(i, 3, '0');
-          let itemContainer = this.addContainer(container, 'Item', String(i));
-          found.children.push({
-            title: title,
-            parent: found,
-            index: i,
-            selected: true,
-            children: [],
-            containers: [this.convertToASContainer(itemContainer)],
-            record_uri: undefined,
-            node_type: undefined,
-            artificial: true,
-            level: 'item',
-            files: childFiles
-          });
-          this.log.warn('Created "' + title + '"', false);
-          this.unselectObjects.push(found);
-          for (let f of childFiles) {
-            usedFiles.push(f.name);
-          }
-        }
+        usedFiles = usedFiles.concat(
+          this.processFilesWithoutItemSelection(found, filesByPerpose, filesPerObject, container)
+        );
       }
-
     }
-
 
     return usedFiles;
   }
@@ -285,6 +261,32 @@ export class FilesService {
     return true;
   }
 
+  private hasContainer(value: any, container: any): boolean {
+    if (value.containers.length === 0) {
+      return false;
+    }
+    let goodCount = 0;
+    let c = value.containers[0];
+    for (let i = 0; i < container.length; i++) {
+      let typeString = 'type_' + (i + 1);
+      let indicatorString = 'indicator_' + (i + 1);
+
+      if (c[typeString]) {
+        c[typeString] = c[typeString].replace(/OVS[\s_]/i, '');
+      }
+      if (c[typeString] === container[i].type &&
+          c[indicatorString] === container[i].indicator) {
+        goodCount++;
+      }
+    }
+    // Get rid of all the null values to see the correct container count
+    let count = container.filter((value) => {
+      return value.indicator !== null;
+    }).length;
+    
+    return goodCount === count;
+  }
+
   private convertToASContainer(container: any): any {
     let c = {};
     for (let i = 0; i < container.length; i++) {
@@ -373,6 +375,12 @@ export class FilesService {
     });
   }
 
+  private findSelectionsContainingContainer(container: any): any {
+    return this.selectedObjects.filter((value) => {
+      return this.hasContainer(value, container);
+    });
+  }
+
   private addContainer(container: any, type: string, indicator: string): any {
     let rContainer = container.slice(0);
     for (let i = 0; i < rContainer.length; i++) {
@@ -397,5 +405,69 @@ export class FilesService {
     }
   }
 
+  private processFilesWithoutItemSelection(
+    found: any,
+    filesByPerpose: any,
+    filesPerObject: number,
+    container: any): string[] {
+      let usedFiles: string[] = [];
+      let itemObjectsNeeded = Math.floor(filesByPerpose['access-copy'].length / filesPerObject);
+      for (let i = 1; i <= itemObjectsNeeded; i++) {
+        let acFiles = filesByPerpose['access-copy'].splice(0, filesPerObject);
+        let mmFiles = filesByPerpose['modified-master'].splice(0, filesPerObject);
+        let pmFiles = filesByPerpose['preservation'].splice(0, filesPerObject);
+        let childFiles = acFiles.concat(mmFiles, pmFiles);
+
+        if (this.containerHasItem(container)) {
+          found.files = found.files.concat(childFiles);
+        }
+        else {
+          let title = 'Item ' + this.padLeft(i, 3, '0');
+          let itemContainer = this.addContainer(container, 'Item', String(i));
+          found.children.push({
+            title: title,
+            parent: found,
+            index: i,
+            selected: true,
+            children: [],
+            containers: [this.convertToASContainer(itemContainer)],
+            record_uri: undefined,
+            node_type: undefined,
+            artificial: true,
+            level: 'item',
+            files: childFiles
+          });
+          this.log.warn('Created "' + title + '"', false);
+          this.unselectObjects.push(found);
+        }
+
+        for (let f of childFiles) {
+          usedFiles.push(f.name);
+        }
+      }
+      return usedFiles;
+  }
+
+  private processFilesForItemSelection(
+    filesByPerpose: any,
+    filesPerObject: number,
+    container: any): string[] {
+      let usedFiles: string[] = [];
+
+      let objects = this.findSelectionsContainingContainer(container);
+      for (let object of objects) {
+        let acFiles = filesByPerpose['access-copy'].splice(0, filesPerObject);
+        let mmFiles = filesByPerpose['modified-master'].splice(0, filesPerObject);
+        let pmFiles = filesByPerpose['preservation'].splice(0, filesPerObject);
+        let childFiles = acFiles.concat(mmFiles, pmFiles);
+        object.files = childFiles;
+
+        for (let f of childFiles) {
+          usedFiles.push(f.name);
+        }
+      }
+
+      return usedFiles;
+  }
 
 }
