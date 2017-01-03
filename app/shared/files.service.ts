@@ -104,6 +104,39 @@ export class FilesService {
     this.filesChanged.emit(this.availableFiles);
   }
 
+  addContainer(container: any, type: string, indicator: string): any {
+    let rContainer = container.slice(0);
+    for (let i = 0; i < rContainer.length; i++) {
+      let c = Object.assign({}, rContainer[i]);
+      if (c.type === null) {
+        c.type = type;
+        c.indicator = indicator
+        rContainer[i] = c;
+      }
+    }
+    return rContainer;
+  }
+
+  convertToASContainer(container: any): any {
+    let c = {};
+    for (let i = 0; i < container.length; i++) {
+      c['type_' + (i + 1)] = container[i].type;
+      c['indicator_' + (i + 1)] = container[i].indicator;
+    }
+    return c;
+  }
+
+  convertFromASContainer(container: any): any {
+    let rContainer = [];
+    for (let i = 1; i <= 3; i++) {
+      rContainer.push({
+        type: container['type_' + i],
+        indicator: container['indicator_' + i]
+      });
+    }
+    return rContainer;
+  }
+
   private processFilesForContainer(): string[] {
     let usedFiles: string[] = [];
     for (let file of this.availableFiles) {
@@ -283,17 +316,8 @@ export class FilesService {
     let count = container.filter((value) => {
       return value.indicator !== null;
     }).length;
-    
-    return goodCount === count;
-  }
 
-  private convertToASContainer(container: any): any {
-    let c = {};
-    for (let i = 0; i < container.length; i++) {
-      c['type_' + (i + 1)] = container[i].type;
-      c['indicator_' + (i + 1)] = container[i].indicator;
-    }
-    return c;
+    return goodCount === count;
   }
 
   private padLeft(value: any, length: number, character: string): string {
@@ -381,19 +405,6 @@ export class FilesService {
     });
   }
 
-  private addContainer(container: any, type: string, indicator: string): any {
-    let rContainer = container.slice(0);
-    for (let i = 0; i < rContainer.length; i++) {
-      let c = Object.assign({}, rContainer[i]);
-      if (c.type === null) {
-        c.type = type;
-        c.indicator = indicator
-        rContainer[i] = c;
-      }
-    }
-    return rContainer;
-  }
-
   private removeFileFromObjects(file: File): void {
     for (let object of this.selectedObjects) {
       let i = object.files.findIndex((value) => {
@@ -460,7 +471,7 @@ export class FilesService {
         let mmFiles = filesByPerpose['modified-master'].splice(0, filesPerObject);
         let pmFiles = filesByPerpose['preservation'].splice(0, filesPerObject);
         let childFiles = acFiles.concat(mmFiles, pmFiles);
-        object.files = childFiles;
+        object.files = object.files.concat(childFiles);
 
         for (let f of childFiles) {
           usedFiles.push(f.name);

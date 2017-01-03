@@ -4,6 +4,7 @@ import { remote } from 'electron';
 let { Menu, MenuItem } = remote;
 
 import { ArchivesSpaceService } from '../shared/archivesspace.service';
+import { FilesService } from '../shared/files.service';
 
 @Component({
   selector: 'tree-view',
@@ -15,7 +16,8 @@ export class TreeViewComponent {
 
   constructor(
     private asService: ArchivesSpaceService,
-    private changeRef: ChangeDetectorRef) {
+    private changeRef: ChangeDetectorRef,
+    private file: FilesService) {
   }
 
   toggle(c: any, e): void {
@@ -32,7 +34,7 @@ export class TreeViewComponent {
     let contextMenu = new Menu();
     if (c.artificial) {
       contextMenu.append(new MenuItem({
-        label: 'Remove Object',
+        label: 'Remove Item',
         click: () => {
           this.removeChild(c);
         }
@@ -40,7 +42,7 @@ export class TreeViewComponent {
     }
     else {
       contextMenu.append(new MenuItem({
-        label: 'Add Object',
+        label: 'Add Item',
         click: () => {
           this.addChild(c);
         }
@@ -79,17 +81,20 @@ export class TreeViewComponent {
 
   addChild(c: any): void {
     let index = c.children.length;
+    let container = this.file.convertFromASContainer(c.containers[0]);
+    container = this.file.addContainer(container, 'Item', index + 1);
     c.children.push({
-      title: 'Object ' + this.padLeft(index + 1, 3, '0'),
+      title: 'Item ' + this.padLeft(index + 1, 3, '0'),
       parent: c,
       index: index,
       selected: true,
       children: [],
-      containers: c.containers,
+      containers: [this.file.convertToASContainer(container)],
       record_uri: undefined,
       node_type: undefined,
       artificial: true,
-      level: c.level
+      level: 'item',
+      files: []
     });
     c.expanded = true;
     this.changeRef.detectChanges();
@@ -100,6 +105,8 @@ export class TreeViewComponent {
     let index = parent.children.findIndex(function(e) {
       return e.index === c.index;
     });
+    let files = parent.children[index].files;
+    this.file.availableFiles = this.file.availableFiles.concat(files);
     parent.children.splice(index, 1);
     parent.expanded = parent.children.length > 0;
     this.changeRef.detectChanges();
