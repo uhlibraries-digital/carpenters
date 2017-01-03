@@ -25,7 +25,7 @@
   </div>
   <div class="files-container scrollbars">
     <ul class="files">
-      <li *ngFor="let file of files" [class]="file.purpose">{{ file.name }}</li>
+      <li *ngFor="let file of files" [file-draggable]="file" [class]="file.purpose">{{ file.name }}</li>
     </ul>
   </div>
 </div>

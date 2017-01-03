@@ -41,8 +41,16 @@ export class FileViewComponent {
     e.stopPropagation();
     e.preventDefault();
     this.renderer.setElementClass(e.target, 'hover', false);
-
-    let dropFiles:File[] = e.dataTransfer.files;
+    let dropFiles:File[];
+    try {
+      dropFiles = JSON.parse(e.dataTransfer.getData('text'));
+      if (!Array.isArray(dropFiles)) {
+        dropFiles = [dropFiles];
+      }
+    }
+    catch(execption) {
+      dropFiles = e.dataTransfer.files;
+    }
     let files = [];
     for( let file of dropFiles ) {
       files.push(file.path);

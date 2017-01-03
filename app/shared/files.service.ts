@@ -58,6 +58,7 @@ export class FilesService {
     for (let file of files) {
       let newFile = new File(file);
       newFile.setPurpose(type);
+      this.removeFileFromObjects(newFile);
       obj.files.push(newFile);
       usedFiles.push(newFile.name);
     }
@@ -383,6 +384,17 @@ export class FilesService {
       }
     }
     return rContainer;
+  }
+
+  private removeFileFromObjects(file: File): void {
+    for (let object of this.selectedObjects) {
+      let i = object.files.findIndex((value) => {
+        return value.path === file.path;
+      });
+      if (i > -1) {
+        object.files.splice(i, 1);
+      }
+    }
   }
 
 

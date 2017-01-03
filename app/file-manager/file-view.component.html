@@ -25,7 +25,7 @@
             </span>
           </div>
           <ul class="files">
-            <li class="file" *ngFor="let file of c.files; let i = index">
+            <li class="file" *ngFor="let file of c.files; let i = index" [file-draggable]="file">
               <div
                 *ngIf="file.purpose === 'preservation'"
                 class="{{file.purpose}}">
@@ -57,7 +57,7 @@
             </span>
           </div>
           <ul class="files">
-            <li class="file" *ngFor="let file of c.files; let i = index">
+            <li class="file" *ngFor="let file of c.files; let i = index" [file-draggable]="file">
               <div
                 *ngIf="file.purpose === 'modified-master'"
                 class="{{file.purpose}}">
@@ -89,7 +89,7 @@
             </span>
           </div>
           <ul class="files">
-            <li class="file" *ngFor="let file of c.files; let i = index">
+            <li class="file" *ngFor="let file of c.files; let i = index" [file-draggable]="file">
               <div
                 *ngIf="file.purpose === 'access-copy'"
                 class="{{file.purpose}}">

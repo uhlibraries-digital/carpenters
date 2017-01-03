@@ -24,6 +24,8 @@ import { PreservationService } from './shared/preservation.service';
 import { LoggerService } from './shared/logger.service';
 import { FilesService } from './shared/files.service';
 
+import { FileDraggable } from './file-manager/file-draggable.directive';
+
 @NgModule({
   imports: [
     BrowserModule,
@@ -39,7 +41,8 @@ import { FilesService } from './shared/files.service';
     FileBrowserComponent,
     LoggerComponent,
     ArkEditorComponent,
-    NotificationComponent
+    NotificationComponent,
+    FileDraggable
   ],
   providers: [
     LocalStorageService,
