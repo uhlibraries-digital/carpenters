@@ -34,12 +34,11 @@ export class FilesService {
         this.log.error(err.message);
         return;
       }
-      // this.processFiles(location, files);
-      this.availableFiles = [];
+
+      this.selectedObjects = this.asService.selectedArchivalObjects();
       for (let file of files) {
-        this.availableFiles.push(new File(location + '/' + file));
+        this.addAvailableFiles(new File(location + '/' + file));
       }
-      this.filesChanged.emit(this.availableFiles);
     });
   }
 
@@ -100,8 +99,30 @@ export class FilesService {
   }
 
   addAvailableFiles(file: File): void {
-    this.availableFiles.push(file);
+    if (!this.fileAssigned(file) && !this.fileLoaded(file)) {
+      this.availableFiles.push(file);
+    }
     this.filesChanged.emit(this.availableFiles);
+  }
+
+  fileAssigned(file: File): boolean {
+    let test = this.selectedObjects.findIndex((value) => {
+      if (!Array.isArray(value.files)) {
+        return false;
+      }
+      let fileIndex = value.files.findIndex((fileValue) => {
+        return fileValue.path === file.path;
+      });
+      return fileIndex > -1;
+    });
+    return test > -1;
+  }
+
+  fileLoaded(file: File): boolean {
+    let test = this.availableFiles.findIndex((value) => {
+      return value.path === file.path;
+    });
+    return test > -1;
   }
 
   addContainer(container: any, type: string, indicator: string): any {
@@ -466,6 +487,12 @@ export class FilesService {
       let usedFiles: string[] = [];
 
       let objects = this.findSelectionsContainingContainer(container);
+      if (objects.length === 0) {
+        this.log.warn("Couldn't find selected Archival Object for files with container: " +
+          this.containerToString(container)
+        );
+        return [];
+      }
       for (let object of objects) {
         let acFiles = filesByPerpose['access-copy'].splice(0, filesPerObject);
         let mmFiles = filesByPerpose['modified-master'].splice(0, filesPerObject);
@@ -479,6 +506,17 @@ export class FilesService {
       }
 
       return usedFiles;
+  }
+
+  private containerToString(container: any): string {
+    let returnString = '';
+    let newContainer = container.filter((value) => {
+      return value.type !== null;
+    })
+    for (let c of newContainer) {
+      returnString += c.type + ' ' + c.indicator + ', ';
+    }
+    return returnString.slice(0, -2);
   }
 
 }
