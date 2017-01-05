@@ -98,8 +98,8 @@ export class FilesService {
     this.filesChanged.emit(this.availableFiles);
   }
 
-  addAvailableFiles(file: File): void {
-    if (!this.fileAssigned(file) && !this.fileLoaded(file)) {
+  addAvailableFiles(file: File, force?: boolean): void {
+    if ((!this.fileAssigned(file) && !this.fileLoaded(file)) || force) {
       this.availableFiles.push(file);
     }
     this.filesChanged.emit(this.availableFiles);
@@ -469,7 +469,7 @@ export class FilesService {
             level: 'item',
             files: childFiles
           });
-          this.log.warn('Created "' + title + '"', false);
+          this.log.warn('Created "' + title + '" for "' + found.title + '"', false);
           this.unselectObjects.push(found);
         }
 
