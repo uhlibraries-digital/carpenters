@@ -54,7 +54,6 @@ export class ArchivesSpaceService {
       .then((resource) => {
         return this.getResourceTree(uri).then((tree) => {
           this.selectedResource.tree = tree;
-          console.log(this.selectedResource);
           this.selectedResourceChanged.emit(this.selectedResource);
         });
       });
@@ -139,6 +138,11 @@ export class ArchivesSpaceService {
     }
 
     return this.selectedArchivalObject(this.selectedResource.tree.children);
+  }
+
+  padLeft(value: any, length: number, character: string): string {
+    value = String(value);
+    return Array(length - value.length + 1).join(character || " ") + value;
   }
 
   private _request(uri: string, params?: any, session?: any): Promise<any> {

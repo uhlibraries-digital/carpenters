@@ -60,7 +60,7 @@ export class ExportService {
   }
 
   private packagePreservation(location: string): void {
-
+    this.sip.package(location);
   }
 
   private packageAccess(location: string): void {
@@ -68,9 +68,15 @@ export class ExportService {
   }
 
   private saveDialog(): string {
+    let path = '~/';
+    if (this.saveService.saveLocation !== undefined) {
+      path = this.saveService.saveLocation + '/';
+    }
+    path += this.selectedResource.id_0;
     return dialog.showSaveDialog({
       title: 'Export...',
-      buttonLabel: 'Export'
+      buttonLabel: 'Export',
+      defaultPath: path
     });
   }
 

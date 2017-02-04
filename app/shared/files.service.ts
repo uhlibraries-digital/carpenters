@@ -427,6 +427,7 @@ export class FilesService {
   }
 
   private removeFileFromObjects(file: File): void {
+    if (this.selectedObjects === undefined) return;
     for (let object of this.selectedObjects) {
       let i = object.files.findIndex((value) => {
         return value.path === file.path;

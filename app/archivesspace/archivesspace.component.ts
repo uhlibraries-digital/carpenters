@@ -86,7 +86,11 @@ export class ArchivesSpaceComponent implements OnInit {
   }
 
   loadResources(repository: string): void {
-    this.asService.getResources(repository).then(resources => this.resources = resources.results);
+    this.asService.getResources(repository).then((resources) => {
+      this.resources = resources.results.sort(function(a, b) {
+        return a.title.localeCompare(b.title);
+      });
+    });
   }
 
   loadResource(uri: string): void {

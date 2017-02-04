@@ -58,13 +58,7 @@ var menuTemplate = [
           },
           {
             label: 'Both...'
-          },
-          {
-            type: 'separator'
-          },
-          {
-            label: 'Spreedsheet'
-          },
+          }
         ]
       },
       {
