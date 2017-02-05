@@ -60,7 +60,7 @@ export class ExportService {
   }
 
   private packagePreservation(location: string): void {
-    this.sip.package(location);
+    this.sip.package(location, this.selectedResource);
   }
 
   private packageAccess(location: string): void {

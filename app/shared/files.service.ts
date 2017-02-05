@@ -1,6 +1,7 @@
 import { Injectable, EventEmitter, Output } from '@angular/core';
 import { remote } from 'electron';
 import { readdir } from 'fs';
+import { statSync } from 'fs';
 
 import { ArchivesSpaceService } from './archivesspace.service';
 import { LoggerService } from './logger.service';
@@ -37,7 +38,10 @@ export class FilesService {
 
       this.selectedObjects = this.asService.selectedArchivalObjects();
       for (let file of files) {
-        this.addAvailableFiles(new File(location + '/' + file));
+        let stat = statSync(location + '/' + file);
+        if (!stat.isDirectory()) {
+          this.addAvailableFiles(new File(location + '/' + file));
+        }
       }
     });
   }

@@ -1,11 +1,13 @@
 import { Injectable } from '@angular/core';
 import { renameSync } from 'fs';
+import { writeFile } from 'fs';
 import * as mkdirp from 'mkdirp';
 
 import { ArchivesSpaceService } from './archivesspace.service';
 import { LocalStorageService } from './local-storage.service';
 import { MapService } from './map.service';
 import { LoggerService } from './logger.service';
+import { CsvService } from './csv.service';
 
 import { MapField } from './map-field';
 import { File } from './file';
@@ -14,6 +16,7 @@ import { File } from './file';
 export class PreservationService {
 
   private selectedObjects: any;
+  private selectedResource: any;
   private mapFields: MapField[];
   private location: string;
   private hierarchySquances: any;
@@ -22,7 +25,8 @@ export class PreservationService {
     private asService: ArchivesSpaceService,
     private storage: LocalStorageService,
     private map: MapService,
-    private log: LoggerService) {
+    private log: LoggerService,
+    private csv: CsvService) {
 
     this.storage.changed.subscribe((key) => {
       if (key === 'preferences') {
@@ -32,14 +36,29 @@ export class PreservationService {
     this.loadMap();
   }
 
-  package(location: string): void {
+  package(location: string, resource: any): void {
+    this.selectedResource = resource;
     this.location = location;
     this.selectedObjects = this.asService.selectedArchivalObjects();
 
+    this.log.info('Creating SIP...', false);
     this.addFilePaths(this.selectedObjects);
-    this.createDirectories();
+
+    this.log.info('Creating directories', false);
+    if (!this.createDirectories()) {
+      this.log.error('Failed packaging SIP');
+      return;
+    }
     let partsPaths = this.processFiles(this.selectedObjects);
+
+    this.log.info('Creating SIP metadata.csv', false);
     this.createCsv(partsPaths);
+
+    this.log.info('Done packaging SIP');
+
+    let logFilename = this.location + '/metadata/submissionDocumentation/' +
+      'carpenters-' + this.log.toTodayISOString() + '.log';
+    writeFile(logFilename, this.log.toString());
   }
 
   private processFiles(objects: any): string[] {
@@ -92,10 +111,16 @@ export class PreservationService {
     return true;
   }
 
-  private createDirectories() {
-    mkdirp.sync(this.location + '/logs');
-    mkdirp.sync(this.location + '/metadata/submissionDocumentation');
-    mkdirp.sync(this.location + '/objects');
+  private createDirectories(): boolean {
+    try {
+      mkdirp.sync(this.location + '/logs');
+      mkdirp.sync(this.location + '/metadata/submissionDocumentation');
+      mkdirp.sync(this.location + '/objects');
+    } catch(e) {
+      this.log.error('Failed to create directories: ' + e.message);
+      return false;
+    }
+    return true;
   }
 
   private addFilePaths(objects: any) {
@@ -153,8 +178,30 @@ export class PreservationService {
   }
 
   private createCsv(partsPaths: string[]) {
-    console.log(partsPaths);
-    console.log(this.mapFields);
+    let fields = this.map.getMapFieldsAsList();
+
+    /** Creating a array of empty strings for map fields */
+    let fieldsTemplateArray = [];
+    for ( let i = 0; i < fields.length; i++) {
+      fieldsTemplateArray.push('');
+    }
+
+    let csvData = [['parts'].concat(fields)];
+
+    /**
+     Add collection metadata
+     STILL NEEDS WORK TO CROSSWALK ASPACE TERMS TO THE MAP FIELDS
+    */
+    let titleIndex = fields.indexOf('dcterms.title');
+    let collection = ['objects'].concat(fieldsTemplateArray);
+    collection[titleIndex + 1] = this.selectedResource.title;
+    csvData.push(collection);
+
+    for (let parts of partsPaths) {
+      csvData.push([parts].concat(fieldsTemplateArray));
+    }
+
+    this.csv.write(this.location + '/metadata/metadata.csv', csvData);
   }
 
   loadMap(): void {

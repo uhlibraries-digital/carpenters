@@ -46,4 +46,16 @@ export class LoggerService {
     return output;
   }
 
+  toTodayISOString(): string {
+    let date = new Date();
+    return date.getFullYear() +
+      '-' + this.padLeft(date.getMonth() + 1, 2, "0") +
+      '-' + this.padLeft(date.getDate(), 2, "0");
+  }
+
+  private padLeft(value: any, length: number, character: string): string {
+    value = String(value);
+    return Array(length - value.length + 1).join(character || " ") + value;
+  }
+
 }

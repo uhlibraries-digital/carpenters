@@ -23,6 +23,7 @@ import { GreensService } from './shared/greens.service';
 import { PreservationService } from './shared/preservation.service';
 import { LoggerService } from './shared/logger.service';
 import { FilesService } from './shared/files.service';
+import { CsvService } from './shared/csv.service';
 
 import { FileDraggable } from './file-manager/file-draggable.directive';
 
@@ -54,7 +55,8 @@ import { FileDraggable } from './file-manager/file-draggable.directive';
     GreensService,
     PreservationService,
     LoggerService,
-    FilesService
+    FilesService,
+    CsvService
   ],
   bootstrap: [ AppComponent ]
 })
