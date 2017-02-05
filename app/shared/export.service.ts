@@ -61,6 +61,9 @@ export class ExportService {
 
   private packagePreservation(location: string): void {
     this.sip.package(location, this.selectedResource);
+    if (this.saveService.saveLocation !== undefined) {
+      this.saveService.save();
+    }
   }
 
   private packageAccess(location: string): void {
@@ -70,7 +73,7 @@ export class ExportService {
   private saveDialog(): string {
     let path = '~/';
     if (this.saveService.saveLocation !== undefined) {
-      path = this.saveService.saveLocation + '/';
+      path = this.saveService.saveLocationBasePath() + '/';
     }
     path += this.selectedResource.id_0;
     return dialog.showSaveDialog({

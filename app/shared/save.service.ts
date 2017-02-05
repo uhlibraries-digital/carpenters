@@ -56,6 +56,10 @@ export class SaveService {
     this.saveStatus.emit(false);
   }
 
+  saveLocationBasePath(): string {
+    return this.saveLocation.match(/.*[/\\]/).toString();
+  }
+
   private openDialog(): string {
     let filenames = dialog.showOpenDialog({
       title: 'Open Project...',
