@@ -36,6 +36,7 @@ export class SaveService {
     let saveObject = this.createSaveObject();
     this.saveToFile(saveObject, this.saveLocation);
     this.saveStatus.emit(true);
+    this.log.success('Saved file: ' + this.saveLocation, false);
   }
 
   open(): void {
@@ -109,6 +110,7 @@ export class SaveService {
 
     return ({
       resource: resource,
+      sip_ark: this.selectedResource.sip_ark || '',
       objects: objects
     });
   }
@@ -125,7 +127,12 @@ export class SaveService {
   private loadObjects(obj: any): void {
     this.asService.getResource(obj.resource)
       .then((resource) => {
+        this.selectedResource.sip_ark = obj.sip_ark || '';
         this.markSelections(obj.objects, this.selectedResource.tree.children);
+        if (this.selectedResource.sip_ark !== '') {
+          this.log.success('SIP Ark: ' + this.selectedResource.sip_ark, false);
+        }
+        this.log.success('Loaded file: ' + this.saveLocation, false);
       });
   }
 

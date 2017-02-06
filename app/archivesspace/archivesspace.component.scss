@@ -4,6 +4,14 @@
   padding: 20px;
   background-color: $light-background-color;
   border-bottom: 1px solid $darker-background-color;
+
+  .mint-ark-option {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 20px;
+    line-height: 38px;
+  }
 }
 
 .resource-tree-container,

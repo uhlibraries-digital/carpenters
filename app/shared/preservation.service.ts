@@ -171,7 +171,12 @@ export class PreservationService {
           this.hierarchySquances[path] = 0;
         }
         this.hierarchySquances[path] += 1;
-        path += this.asService.padLeft(this.hierarchySquances[path], 3, '0') + '/';
+        let ark = this.selectedResource.sip_ark || '';
+        let dirName = this.asService.padLeft(this.hierarchySquances[path], 3, '0');
+        if (ark !== '') {
+          dirName += '_' + String(ark.split('/').slice(-1));
+        }
+        path += dirName + '/';
       }
     }
     return path;
@@ -193,8 +198,14 @@ export class PreservationService {
      STILL NEEDS WORK TO CROSSWALK ASPACE TERMS TO THE MAP FIELDS
     */
     let titleIndex = fields.indexOf('dcterms.title');
+    let identifierIndex = fields.indexOf('dcterms.identifier');
     let collection = ['objects'].concat(fieldsTemplateArray);
-    collection[titleIndex + 1] = this.selectedResource.title;
+    if (titleIndex > -1) {
+      collection[titleIndex + 1] = this.selectedResource.title || '';
+    }
+    if (identifierIndex > -1) {
+      collection[identifierIndex + 1] = this.selectedResource.sip_ark || '';
+    }
     csvData.push(collection);
 
     for (let parts of partsPaths) {

@@ -16,6 +16,7 @@ export class ArchivesSpaceComponent implements OnInit {
 
   repositories: any;
   selectedRepository: string;
+  mintSip: boolean;
 
   resources: any;
   selectedResource: any;
@@ -53,6 +54,8 @@ export class ArchivesSpaceComponent implements OnInit {
       }
     });
     this.loadRepositories();
+
+    this.mintSip = this.storage.get('mint_sip');
 
     ipcRenderer.on('save-project', (event, arg) => {
       this.saveService.save();
@@ -102,5 +105,9 @@ export class ArchivesSpaceComponent implements OnInit {
         this.loading = false;
         this.log.error('Unable to load resource: ' + error);
       });
+  }
+
+  toggleMintSip(mint: boolean): void {
+    this.storage.set('mint_sip', ((mint) ? 'true' : 'false'));
   }
 }

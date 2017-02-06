@@ -3,10 +3,12 @@ import { remote } from 'electron';
 
 import { ArchivesSpaceService } from './archivesspace.service';
 import { LocalStorageService } from './local-storage.service';
-import { MapService } from './map.service';
 import { SaveService } from './save.service';
 import { GreensService } from './greens.service';
 import { PreservationService } from './preservation.service';
+import { LoggerService } from './logger.service';
+
+import { Erc } from './erc';
 
 let { dialog } = remote;
 
@@ -19,15 +21,13 @@ export class ExportService {
   constructor(
     private asService: ArchivesSpaceService,
     private storage: LocalStorageService,
-    private archivalMap: MapService,
-    private fullMap: MapService,
     private saveService: SaveService,
     private minter: GreensService,
+    private log: LoggerService,
     private sip: PreservationService) {
     this.asService.selectedResourceChanged.subscribe(resource => this.selectedResource = resource);
     this.storage.changed.subscribe(key => {
       if (key === 'preferences') {
-        this.preferences = this.storage.get(key);
         this.loadSettings();
       }
     });
@@ -60,10 +60,50 @@ export class ExportService {
   }
 
   private packagePreservation(location: string): void {
-    this.sip.package(location, this.selectedResource);
-    if (this.saveService.saveLocation) {
-      this.saveService.save();
+    let mint = this.storage.get('mint_sip');
+    if (
+      mint &&
+      (this.selectedResource.sip_ark === '' ||
+        this.selectedResource.sip_ark === undefined)) {
+      this.packagePreservationWithMint(location);
     }
+    else {
+      if (this.selectedResource.sip_ark !== '') {
+        this.log.warn('Using previously minted SIP Ark: ' + this.selectedResource.sip_ark);
+      }
+      this.sip.package(location, this.selectedResource);
+      if (this.saveService.saveLocation) {
+        this.saveService.save();
+      }
+    }
+  }
+
+  private packagePreservationWithMint(location: string): void {
+    this.log.info('Minting Preservation SIP Ark...', false);
+    let erc = new Erc(
+      this.preferences.minter.ercWho,
+      this.selectedResource.title || '',
+      '',
+      this.preferences.minter.ercWhere
+    );
+    erc.when = erc.toTodayISOString();
+    this.minter.mint(erc)
+      .then(id => {
+        if (erc.where.indexOf('$ark$') > -1) {
+          erc.where = erc.where.replace('$ark$', id);
+          this.minter.update(id, erc);
+        }
+        this.log.success('Minted SIP Ark: ' + id);
+        this.selectedResource.sip_ark = id;
+        this.sip.package(location, this.selectedResource);
+        if (this.saveService.saveLocation) {
+          this.saveService.save();
+        }
+      })
+      .catch(error => {
+        this.log.error('An error occured while minting a new ark: ' + error);
+        this.log.error('Failed to export preservation SIP');
+      });
   }
 
   private packageAccess(location: string): void {
@@ -84,18 +124,10 @@ export class ExportService {
   }
 
   private loadSettings(): void {
-    if (!this.preferences) {
-      return;
-    }
+    this.preferences = this.storage.get('preferences');
     if (this.preferences.minter.endpoint !== '') {
       this.minter.setEndpoint(this.preferences.minter.endpoint, this.preferences.minter.prefix);
       this.minter.setApiKey(this.preferences.minter.key);
-    }
-    if (this.preferences.map.archival !== '') {
-      this.archivalMap.getMapFields(this.preferences.map.archival);
-    }
-    if (this.preferences.map.full !== '') {
-      this.fullMap.getMapFields(this.preferences.map.full);
     }
   }
 
