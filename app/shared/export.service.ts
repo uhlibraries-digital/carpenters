@@ -61,7 +61,7 @@ export class ExportService {
 
   private packagePreservation(location: string): void {
     this.sip.package(location, this.selectedResource);
-    if (this.saveService.saveLocation !== undefined) {
+    if (this.saveService.saveLocation) {
       this.saveService.save();
     }
   }

@@ -2,8 +2,10 @@ import { Injectable, Output, EventEmitter }    from '@angular/core';
 import { remote } from 'electron';
 import { writeFile } from 'fs';
 import { readFile } from 'fs';
+import { existsSync } from 'fs';
 
 import { ArchivesSpaceService } from './archivesspace.service';
+import { LoggerService } from './logger.service';
 
 import { File } from './file';
 
@@ -18,7 +20,8 @@ export class SaveService {
   @Output() saveStatus: EventEmitter<boolean> = new EventEmitter();
 
   constructor(
-    private asService: ArchivesSpaceService) {
+    private asService: ArchivesSpaceService,
+    private log: LoggerService) {
     this.asService.selectedResourceChanged.subscribe(resource => this.selectedResource = resource);
   }
 
@@ -43,7 +46,7 @@ export class SaveService {
 
     readFile(this.saveLocation, 'utf8', (err, data) => {
       if (err) {
-        dialog.showErrorBox('Error opening file', err.message);
+        this.log.error('Error opening file: ' + err.message);
         throw err;
       }
       let saveObject = JSON.parse(data);
@@ -156,10 +159,18 @@ export class SaveService {
   }
 
   private convertToFileObjects(files: any[]): File[] {
-    return files.map((value) => {
+    let mapFiles =  files.map((value) => {
+      if (!existsSync(value.path)) {
+        this.log.error('File does not exist: ' + value.path);
+        return null;
+      }
       let file = new File(value.path);
       file.setPurpose(value.purpose);
       return file;
+    });
+
+    return mapFiles.filter((value) => {
+      return value !== null;
     });
   }
 
