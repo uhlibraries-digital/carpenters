@@ -21,6 +21,7 @@ import { SaveService } from './shared/save.service';
 import { ExportService } from './shared/export.service';
 import { GreensService } from './shared/greens.service';
 import { PreservationService } from './shared/preservation.service';
+import { AccessService } from './shared/access.service';
 import { LoggerService } from './shared/logger.service';
 import { FilesService } from './shared/files.service';
 import { CsvService } from './shared/csv.service';
@@ -54,6 +55,7 @@ import { FileDraggable } from './file-manager/file-draggable.directive';
     ExportService,
     GreensService,
     PreservationService,
+    AccessService,
     LoggerService,
     FilesService,
     CsvService

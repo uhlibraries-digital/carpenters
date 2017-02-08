@@ -14,8 +14,16 @@ var menuTemplate = [
         label: 'Open Project...',
         accelerator: 'CmdOrCtrl+O',
         click(item, focusedWindow) {
-          if (!focusedWindow) return;
-          focusedWindow.webContents.send('open-project');
+          if (!focusedWindow) {
+            const createWindow = require('./main.js');
+            var win = createWindow();
+            win.webContents.on('did-finish-load', () => {
+              win.webContents.send('open-project');
+            });
+          }
+          else {
+            focusedWindow.webContents.send('open-project');
+          }
         }
       },
       {
@@ -51,13 +59,21 @@ var menuTemplate = [
             }
           },
           {
-            label: 'Access DIP...'
+            label: 'Access DIP...',
+            click(item, focusedWindow) {
+              if (!focusedWindow) return;
+              focusedWindow.webContents.send('export-access');
+            }
           },
           {
             type: 'separator'
           },
           {
-            label: 'Both...'
+            label: 'Both...',
+            click(item, focusedWindow) {
+              if (!focusedWindow) return;
+              focusedWindow.webContents.send('export-both');
+            }
           }
         ]
       },

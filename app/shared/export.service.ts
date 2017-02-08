@@ -6,6 +6,7 @@ import { LocalStorageService } from './local-storage.service';
 import { SaveService } from './save.service';
 import { GreensService } from './greens.service';
 import { PreservationService } from './preservation.service';
+import { AccessService } from './access.service';
 import { LoggerService } from './logger.service';
 
 import { Erc } from './erc';
@@ -24,7 +25,8 @@ export class ExportService {
     private saveService: SaveService,
     private minter: GreensService,
     private log: LoggerService,
-    private sip: PreservationService) {
+    private sip: PreservationService,
+    private dip: AccessService) {
     this.asService.selectedResourceChanged.subscribe(resource => this.selectedResource = resource);
     this.storage.changed.subscribe(key => {
       if (key === 'preferences') {
@@ -56,19 +58,16 @@ export class ExportService {
       return;
     }
     this.packagePreservation(location);
-    this.packageAccess(location);
+    this.packageAccess(location + '_DIP');
   }
 
   private packagePreservation(location: string): void {
     let mint = this.storage.get('mint_sip');
-    if (
-      mint &&
-      (this.selectedResource.sip_ark === '' ||
-        this.selectedResource.sip_ark === undefined)) {
+    if (mint && !this.hasArk()) {
       this.packagePreservationWithMint(location);
     }
     else {
-      if (this.selectedResource.sip_ark !== '') {
+      if (this.hasArk()) {
         this.log.warn('Using previously minted SIP Ark: ' + this.selectedResource.sip_ark);
       }
       this.sip.package(location, this.selectedResource);
@@ -107,7 +106,15 @@ export class ExportService {
   }
 
   private packageAccess(location: string): void {
+    this.dip.package(location, this.selectedResource);
+    if (this.saveService.saveLocation) {
+      this.saveService.save();
+    }
+  }
 
+  private hasArk(): boolean {
+    return this.selectedResource.sip_ark !== '' &&
+      this.selectedResource.sip_ark !== undefined;
   }
 
   private saveDialog(): string {

@@ -35,6 +35,12 @@ export class AppComponent implements OnInit {
     ipcRenderer.on('export-preservation', (event, arg) => {
       this.exportService.exportPreservation();
     });
+    ipcRenderer.on('export-access', (event, arg) => {
+      this.exportService.exportAccess();
+    });
+    ipcRenderer.on('export-both', (event, arg) => {
+      this.exportService.exportBoth();
+    });
   }
 
   showPreferences(): void {
