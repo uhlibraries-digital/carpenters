@@ -145,6 +145,13 @@ export class ArchivesSpaceService {
     return Array(length - value.length + 1).join(character || " ") + value;
   }
 
+  isSeriesType(level: string) {
+    if (!level) { return false; }
+    level = level.toLowerCase()
+    return level === 'series' ||
+      level === 'subseries' || level.indexOf('sub-series') > -1;
+  }
+
   private _request(uri: string, params?: any, session?: any): Promise<any> {
     if (!session) {
       session = this.sessionStorage.get(this.storageKey);
@@ -215,7 +222,7 @@ export class ArchivesSpaceService {
     let series_index = 1;
     for (let c of children) {
       c.parent = parent;
-      if (c.level === 'series' || c.level === 'subseries') {
+      if (this.isSeriesType(c.level)) {
         c.series_index = series_index++;
       }
       this.populateChildAttributes(c.children, c);

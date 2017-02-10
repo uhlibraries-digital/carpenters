@@ -110,6 +110,7 @@ export class FilesService {
   }
 
   fileAssigned(file: File): boolean {
+    if (!this.selectedObjects) { return false; }
     let test = this.selectedObjects.findIndex((value) => {
       if (!Array.isArray(value.files)) {
         return false;

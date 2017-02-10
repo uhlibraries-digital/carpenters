@@ -75,7 +75,7 @@ export class GreensService {
 
   private handleError(error: any): Promise<any> {
     console.error('An error occured', error);
-    return Promise.reject(error.message || error);
+    return Promise.reject(error._body || error);
   }
 
 }

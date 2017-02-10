@@ -141,8 +141,7 @@ export class PreservationService {
     if (o.parent) {
       this.buildFlatStructure(o.parent, flatstruct);
     }
-    let levelCheck = ['series', 'subseries', 'other'];
-    if (o.files || levelCheck.indexOf(o.level) > -1) {
+    if (o.files || this.asService.isSeriesType(o.level)) {
       flatstruct.push(node);
     }
     return node;
@@ -151,19 +150,16 @@ export class PreservationService {
   private getPathFromFlatStructure(struct: any[]): string {
     let path: string = '';
     for (let s of struct) {
-      if (s.object.level === 'series') {
+      let level = s.object.level.toLowerCase();
+      if (level === 'series') {
         path += 's' + this.asService.padLeft(s.object.series_index, 3, '0') + '/';
       }
-      else if (s.object.level === 'subseries') {
+      else if (level === 'subseries') {
         path += 'ss' + this.asService.padLeft(s.object.series_index, 3, '0') + '/';
       }
-      else if (s.object.level === 'other') {
-        let checkObject = s.object;
-        let sssPrefix = 'ss';
-        while (checkObject && checkObject.level === 'other') {
-          sssPrefix += 's';
-          checkObject = checkObject.parent;
-        }
+      else if (level.indexOf('sub-series') > -1) {
+        let subCount = level.split('sub-').length;
+        let sssPrefix = Array(subCount + 1).join('s');
         path += sssPrefix + this.asService.padLeft(s.object.series_index, 3, '0') + '/';
       }
       else {
