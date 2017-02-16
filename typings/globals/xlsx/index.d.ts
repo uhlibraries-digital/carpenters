@@ -141,7 +141,6 @@ declare module 'xlsx' {
         sheet_to_formulae(worksheet: IWorkSheet):any;
         encode_cell(cell: ICell): any;
         encode_range(s: ICell, e: ICell): any;
-        decode_range(range: any): any;
     }
 
 }

@@ -2,11 +2,13 @@ export class Entry {
   timestamp: string;
   type: string;
   message: string;
+  notify: boolean;
 
-  constructor(type:string, message: string) {
+  constructor(type:string, message: string, notify: boolean = true) {
     this.type = type;
     this.message = message;
     this.timestamp = this.getTimestamp();
+    this.notify = notify;
   }
 
   getTimestamp(): string {

@@ -7,9 +7,8 @@ import { LoggerService } from './logger.service';
 @Injectable()
 export class CsvService {
 
-
   constructor(
-    private logger: LoggerService) {
+    private log: LoggerService) {
   }
 
   write(filename: string, data: any[]): void {
@@ -17,11 +16,10 @@ export class CsvService {
       if (err) throw err;
       writeFile(filename, output), (err) => {
         if (err) {
-          this.logger.error('Error saving CSV ' + filename + ': ' + err.message);
+          this.log.error('Error saving CSV ' + filename + ': ' + err.message);
         }
       }
     });
   }
-
 
 }

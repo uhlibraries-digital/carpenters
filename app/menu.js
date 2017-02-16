@@ -1,5 +1,91 @@
 var menuTemplate = [
   {
+    label: 'File',
+    submenu: [
+      {
+        label: 'New Project',
+        accelerator: 'CmdOrCtrl+N',
+        click (item, focusedWindow) {
+          const createWindow = require('./main.js');
+          createWindow();
+        }
+      },
+      {
+        label: 'Open Project...',
+        accelerator: 'CmdOrCtrl+O',
+        click(item, focusedWindow) {
+          if (!focusedWindow) {
+            const createWindow = require('./main.js');
+            var win = createWindow();
+            win.webContents.on('did-finish-load', () => {
+              win.webContents.send('open-project');
+            });
+          }
+          else {
+            focusedWindow.webContents.send('open-project');
+          }
+        }
+      },
+      {
+        type: 'separator'
+      },
+      {
+        label: 'Save',
+        accelerator: 'CmdOrCtrl+S',
+        click(item, focusedWindow) {
+          if (!focusedWindow) return;
+          focusedWindow.webContents.send('save-project');
+        }
+      },
+      {
+        label: 'Save As...',
+        accelerator: 'CmdOrCtrl+Shift+S',
+        click(item, focusedWindow) {
+          if (!focusedWindow) return;
+          focusedWindow.webContents.send('save-as-project');
+        }
+      },
+      {
+        type: 'separator'
+      },
+      {
+        label: 'Export To',
+        submenu: [
+          {
+            label: 'Preservation SIP...',
+            click(item, focusedWindow) {
+              if (!focusedWindow) return;
+              focusedWindow.webContents.send('export-preservation');
+            }
+          },
+          {
+            label: 'Access DIP...',
+            click(item, focusedWindow) {
+              if (!focusedWindow) return;
+              focusedWindow.webContents.send('export-access');
+            }
+          },
+          {
+            type: 'separator'
+          },
+          {
+            label: 'Both...',
+            click(item, focusedWindow) {
+              if (!focusedWindow) return;
+              focusedWindow.webContents.send('export-both');
+            }
+          }
+        ]
+      },
+      {
+        type: 'separator'
+      },
+      {
+        role: 'quit'
+      }
+    ]
+  },
+  {
     label: 'Edit',
     submenu: [
       {
@@ -25,6 +111,17 @@ var menuTemplate = [
       },
       {
         role: 'selectall'
+      },
+      {
+        type: 'separator'
+      },
+      {
+        label: 'Preferences...',
+        accelerator: 'CmdOrCtrl+,',
+        click(item, focusedWindow) {
+          if (!focusedWindow) return;
+          focusedWindow.webContents.send('show-preferences');
+        }
       }
     ]
   },
@@ -80,6 +177,16 @@ if (process.platform === 'darwin') {
         type: 'separator'
       },
       {
+        label: 'Preferences...',
+        click(item, focusedWindow) {
+          if (!focusedWindow) return;
+          focusedWindow.webContents.send('show-preferences');
+        }
+      },
+      {
+        type: 'separator'
+      },
+      {
         role: 'services',
         submenu: []
       },
@@ -103,8 +210,13 @@ if (process.platform === 'darwin') {
       }
     ]
   })
+
+  // File menu
+  menuTemplate[1].submenu = menuTemplate[1].submenu.slice(0, -2);
+
   // Edit menu.
-  menuTemplate[1].submenu.push(
+  menuTemplate[2].submenu = menuTemplate[2].submenu.slice(0, -2);
+  menuTemplate[2].submenu.push(
     {
       type: 'separator'
     },
@@ -121,7 +233,7 @@ if (process.platform === 'darwin') {
     }
   )
   // Window menu.
-  menuTemplate[3].submenu = [
+  menuTemplate[4].submenu = [
     {
       label: 'Close',
       accelerator: 'CmdOrCtrl+W',

@@ -14,19 +14,17 @@ export class GreensService {
 
   constructor(private http: Http) { }
 
-  setMintUrl(url: string) {
-    this.mintUrl = url;
-  }
-
-  setUpdateUrl(url: string) {
-    if (url.slice(-1) !== '/') {
-      url += '/';
-    }
-    this.updateUrl = url;
-  }
-
   setApiKey(key: string) {
     this.apiKey = key;
+  }
+
+  setEndpoint(endpoint: string, prefix?: string) {
+    if (endpoint.slice(-1) !== '/') {
+      endpoint += '/';
+    }
+
+    this.mintUrl = endpoint + 'arks/mint/' + prefix;
+    this.updateUrl = endpoint + 'id/';
   }
 
   mint(erc: Erc = null): Promise<string> {
@@ -48,7 +46,8 @@ export class GreensService {
       .toPromise()
       .then((response) => {
         let data = response.json();
-        return data.ark;
+        let erc = new Erc(data.ark.who, data.ark.what, data.ark.when, data.ark.where);
+        return erc;
       })
       .catch(this.handleError);
   }
@@ -58,12 +57,13 @@ export class GreensService {
       .toPromise();
   }
 
-  get(id: string): Promise<any> {
+  get(id: string): Promise<Erc> {
     return this.http.get(this.updateUrl + id, this.getOptions())
       .toPromise()
       .then((response) => {
         let data = response.json();
-        return data.ark;
+        let erc = new Erc(data.ark.who, data.ark.what, data.ark.when, data.ark.where);
+        return erc;
       });
   }
 
@@ -75,7 +75,7 @@ export class GreensService {
 
   private handleError(error: any): Promise<any> {
     console.error('An error occured', error);
-    return Promise.reject(error.message || error);
+    return Promise.reject(error._body || error);
   }
 
 }

@@ -1,0 +1,15 @@
+.btn {
+  padding: 0 0.8em;
+  font-size: 1em;
+  line-height: 2em;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+.btn-primary {
+  @include button(#fff, #528bff, #181a1f);
+}
+
+.btn-secondary {
+  @include button(#9da5b4, #353b45, #181a1f);
+}

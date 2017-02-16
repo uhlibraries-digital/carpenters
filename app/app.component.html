@@ -1,3 +1,80 @@
-<ingest></ingest>
-<logger></logger>
+<archivesspace></archivesspace>
+<notification></notification>
+
 <template ngbModalContainer></template>
+
+<template #preferencesDisplay let-c="close" let-d="dismiss">
+  <div class="modal-header">
+    <h4 class="modal-title"><i class="fa fa-cogs" aria-hidden="true"></i> Preferences</h4>
+  </div>
+  <div class="modal-body modal-body-with-panes modal-body-scroll">
+    <div class="modal-nav-pane">
+      <ul class="list modal-nav-list">
+        <li [class.selected]="preferenceIndex === 0" (click)="preferenceIndex = 0">
+          <span class="item"><i class="fa fa-archive" aria-hidden="true"></i> ArchivesSpace</span>
+        </li>
+        <li [class.selected]="preferenceIndex === 1" (click)="preferenceIndex = 1">
+          <span class="item"><i class="fa fa-map" aria-hidden="true"></i> MAP</span>
+        </li>
+        <li [class.selected]="preferenceIndex === 2" (click)="preferenceIndex = 2">
+          <span class="item"><i class="fa fa-pied-piper" aria-hidden="true"></i> Minter</span>
+        </li>
+      </ul>
+    </div>
+    <div class="modal-body-pane">
+      <div class="archivesspace-preference" *ngIf="preferenceIndex === 0">
+        <div class="input-group form-group">
+          <label class="input-group-addon">Endpoint</label>
+          <input class="form-control" type="text" [(ngModel)]="preferences.archivesspace.endpoint" />
+        </div>
+        <div class="input-group form-group">
+          <label class="input-group-addon">Username</label>
+          <input class="form-control" type="text" [(ngModel)]="preferences.archivesspace.username" />
+        </div>
+        <div class="input-group form-group">
+          <label class="input-group-addon">Password</label>
+          <input class="form-control" type="password" [(ngModel)]="preferences.archivesspace.password" />
+        </div>
+      </div>
+      <div class="map-preference" *ngIf="preferenceIndex === 1">
+        <div class="input-group form-group">
+          <label class="input-group-addon">Preservation MAP Url</label>
+          <input class="form-control" type="text" [(ngModel)]="preferences.map.archival" />
+        </div>
+        <div class="input-group form-group">
+          <label class="input-group-addon">Access MAP Url</label>
+          <input class="form-control" type="text" [(ngModel)]="preferences.map.full" />
+        </div>
+      </div>
+      <div class="minter-preference" *ngIf="preferenceIndex === 2">
+        <div class="input-group form-group">
+          <label class="input-group-addon">Endpoint</label>
+          <input class="form-control" type="text" [(ngModel)]="preferences.minter.endpoint" />
+        </div>
+        <div class="input-group form-group">
+          <label class="input-group-addon">Prefix</label>
+          <input class="form-control" type="text" [(ngModel)]="preferences.minter.prefix" />
+        </div>
+        <div class="input-group form-group">
+          <label class="input-group-addon">API Key</label>
+          <input class="form-control" type="text" [(ngModel)]="preferences.minter.key" />
+        </div>
+        <div class="input-group form-group">
+          <label class="input-group-addon">ERC Who</label>
+          <input class="form-control" type="text" [(ngModel)]="preferences.minter.ercWho" />
+        </div>
+        <div class="form-group">
+          <div class="input-group">
+            <label class="input-group-addon">ERC Where</label>
+            <input class="form-control" type="text" [(ngModel)]="preferences.minter.ercWhere" />
+          </div>
+          <p class="form-text text-muted">Use $ark$ in place of a ARK identifier</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="d()">Close</button>
+    <button type="button" class="btn btn-primary" (click)="c()">Save</button>
+  </div>
+</template>

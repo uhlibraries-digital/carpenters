@@ -1,0 +1,60 @@
+<div class="ark-editor-container scrollbars">
+  <div class="ark">
+    <div class="input-group">
+      <label class="input-group-addon">ARK Identifier</label>
+      <input type="text" class="form-control" [(ngModel)]="ark" placeholder="Leave blank to generate a new identifier" />
+      <span class="input-group-btn">
+        <button
+          *ngIf="!fetched"
+          (click)="fetchArk()"
+          class="btn btn-primary"
+          type="button">Fetch</button>
+        <button
+          *ngIf="fetched"
+          (click)="copy()"
+          class="btn btn-primary"
+          type="button"><i class="fa fa-clipboard" aria-hidden="true"></i></button>
+      </span>
+    </div>
+  </div>
+  <div class="erc">
+    <h2>ERC</h2>
+    <div class="erc-content">
+      <div class="input-group form-group">
+        <label class="input-group-addon">ERC Who</label>
+        <input class="form-control" type="text" [(ngModel)]="erc.who" />
+      </div>
+      <div class="input-group form-group">
+        <label class="input-group-addon">ERC What</label>
+        <input class="form-control" type="text" [(ngModel)]="erc.what" />
+      </div>
+      <div class="input-group form-group">
+        <label class="input-group-addon">ERC When</label>
+        <input class="form-control" type="text" [(ngModel)]="erc.when" />
+      </div>
+      <div class="form-group">
+        <div class="input-group">
+          <label class="input-group-addon">ERC Where</label>
+          <input class="form-control" type="text" [(ngModel)]="erc.where" />
+        </div>
+        <p class="form-text text-muted">Use $ark$ in place of a ARK identifier</p>
+      </div>
+    </div>
+  </div>
+  <div class="ark-buttons">
+    <button
+      (click)="reset()"
+      class="btn btn-secondary"
+      type="button">Reset</button>
+    <button
+      *ngIf="ark === ''"
+      (click)="generate()"
+      class="btn btn-primary"
+      type="button">Generate</button>
+    <button
+      *ngIf="ark !== ''"
+      (click)="save()"
+      class="btn btn-primary"
+      type="button">Save</button>
+  </div>
+</div>

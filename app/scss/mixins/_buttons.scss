@@ -1,0 +1,28 @@
+@mixin button($color, $background, $border) {
+  $gradient-start: lighten($background, 2%);
+  $darker-background: darker($background, 12%);
+
+  &,
+  &:focus,
+  &.focus {
+    outline: none;
+    color: $color;
+    background-color: $background;
+    border-color: $border;
+    background-image: linear-gradient($gradient-start, $background);
+  }
+
+  &:hover,
+  &:active,
+  &.active {
+    &:hover,
+    &:focus,
+    &.focus {
+      outline: none;
+      color: $color;
+      background-color: $darker-background;
+      border-color: $background;
+    }
+  }
+
+}

@@ -1,0 +1,111 @@
+<div *ngFor="let c of children" class="file-container">
+  <div *ngIf="c.selected" class="file">
+    <div class="title">
+      <span [ngClass]="containerClass(c)">{{ displayContainer(c) }}</span>
+    </div>
+    <div class="level">
+      <span class="parent-title" *ngIf="c.artificial">{{ c.parent.title }}</span>{{ c.title }}
+    </div>
+    <div class="file-list">
+      <div class="row">
+        <div class="col-xs-4 file-col">
+          <div
+            class="drop preservation"
+            (dragenter)="handleDragEnter($event.target)"
+            (dragleave)="handleDragLeave($event.target)"
+            (dragover)="false"
+            (dragend)="false"
+            (drop)="handleDrop(c, 'preservation', $event)">
+            <span class="label">Preservation Files</span>
+            <span
+              class="btn-add"
+              (click)="addFile(c, 'preservation')">
+              <i class="fa fa-plus" aria-hidden="true"></i>
+            </span>
+          </div>
+          <ul class="files">
+            <li class="file" *ngFor="let file of c.files; let i = index" [file-draggable]="file">
+              <div
+                *ngIf="file.purpose === 'preservation'"
+                class="{{file.purpose}}">
+                <span
+                  class="filename"
+                  title="{{ file.name }}"
+                  (click)="openFile(file.path)">{{ file.name }}</span>
+                <i
+                  class="fa fa-trash remove"
+                  aria-hidden="true"
+                  (click)="removeFile(c, i)"></i>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <div class="col-xs-4 file-col">
+          <div
+            class="drop modified-master"
+            (dragenter)="handleDragEnter($event.target)"
+            (dragleave)="handleDragLeave($event.target)"
+            (dragover)="false"
+            (dragend)="false"
+            (drop)="handleDrop(c, 'modified-master', $event)">
+            <span class="label">Modified Master Files</span>
+            <span
+              class="btn-add"
+              (click)="addFile(c, 'modified-master')">
+              <i class="fa fa-plus" aria-hidden="true"></i>
+            </span>
+          </div>
+          <ul class="files">
+            <li class="file" *ngFor="let file of c.files; let i = index" [file-draggable]="file">
+              <div
+                *ngIf="file.purpose === 'modified-master'"
+                class="{{file.purpose}}">
+                <span
+                  class="filename"
+                  title="{{ file.name }}"
+                  (click)="openFile(file.path)">{{ file.name }}</span>
+                <i
+                  class="fa fa-trash remove"
+                  aria-hidden="true"
+                  (click)="removeFile(c, i)"></i>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <div class="col-xs-4 file-col">
+          <div
+            class="drop access-copy"
+            (dragenter)="handleDragEnter($event.target)"
+            (dragleave)="handleDragLeave($event.target)"
+            (dragover)="false"
+            (dragend)="false"
+            (drop)="handleDrop(c, 'access-copy', $event)">
+            <span class="label">Access Copy Files</span>
+            <span
+              class="btn-add"
+              (click)="addFile(c, 'access-copy')">
+              <i class="fa fa-plus" aria-hidden="true"></i>
+            </span>
+          </div>
+          <ul class="files">
+            <li class="file" *ngFor="let file of c.files; let i = index" [file-draggable]="file">
+              <div
+                *ngIf="file.purpose === 'access-copy'"
+                class="{{file.purpose}}">
+                <span
+                  class="filename"
+                  title="{{ file.name }}"
+                  (click)="openFile(file.path)">{{ file.name }}</span>
+                <i
+                  class="fa fa-trash remove"
+                  aria-hidden="true"
+                  (click)="removeFile(c, i)"></i>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <file-view [children]="c.children"></file-view>
+</div>

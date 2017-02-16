@@ -1,0 +1,67 @@
+@import '../scss/_variables';
+
+.resource-selection {
+  padding: 20px;
+  background-color: $light-background-color;
+  border-bottom: 1px solid $darker-background-color;
+
+  .mint-ark-option {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 20px;
+    line-height: 38px;
+  }
+}
+
+.resource-tree-container,
+.resource-file-container {
+  overflow-y: auto;
+  position: absolute;
+  top: $top-tab-container;
+  bottom: 0;
+  width: 100%;
+  background-color: $light-background-color;
+
+  .resource-tree {
+    padding: 20px;
+  }
+}
+
+.resource-file-container {
+  width: 75%;
+  border-right: 1px solid $darker-background-color;
+}
+
+.resource-file-browser {
+  overflow-y: auto;
+  position: absolute;
+  top: $top-tab-container;
+  bottom: 0;
+  right: 0;
+  width: 25%;
+  background-color: $background-color;
+}
+
+.resource-file-container {
+  padding: 20px;
+}
+
+.loading-container {
+  text-align: center;
+  position: absolute;
+  top: 85px;
+  left: 0;
+  right:0;
+  z-index: 100;
+
+  .loading {
+    padding: 5px 20px;
+    font-size: 1em;
+    display: inline-block;
+    background-color: #528bff;
+    color: #fff;
+    border-color: #181a1f;
+    border-radius: 3px;
+  }
+}

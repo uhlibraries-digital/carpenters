@@ -7,10 +7,11 @@ const pkg = require('../package.json');
 
 function createWindow() {
   var win = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1200,
+    height: 900,
     title: pkg.productName,
-    icon: 'resources/app-icon.png'
+    icon: 'resources/app-icon.png',
+    backgroundColor: '#21252b'
   });
 
   win.loadURL(`file://${__dirname}/index.html`);
@@ -23,6 +24,8 @@ function createWindow() {
 
   const menu = Menu.buildFromTemplate(menuTemplate);
   Menu.setApplicationMenu(menu);
+
+  return win;
 }
 
 app.setName(pkg.productName);

@@ -1,0 +1,30 @@
+@import '../scss/_variables';
+
+.ark-editor-container {
+  overflow-y: auto;
+  position: absolute;
+  top: $top-tab-container;
+  bottom: 0;
+  width: 100%;
+  background-color: $light-background-color;
+  padding: 20px;
+
+  .ark {
+    width: 60%;
+    margin: 20px auto;
+  }
+
+  .erc {
+    margin: 20px auto;
+    width: 60%;
+  }
+
+  .fa-clipboard {
+    line-height: 2.5em;
+  }
+
+  .ark-buttons {
+    text-align: right;
+    margin: 0 30px;
+  }
+}

@@ -1,8 +1,11 @@
-import { Component, ViewChild, AfterViewChecked, OnInit, ElementRef } from '@angular/core';
+import { Component, ViewChild, AfterViewChecked, OnInit } from '@angular/core';
+import { ElementRef } from '@angular/core';
 import { remote } from 'electron';
 import { writeFile } from 'fs';
 
 import { LoggerService } from '../shared/logger.service';
+
+import { Entry } from '../shared/entry';
 
 @Component({
   selector: 'logger',
@@ -11,17 +14,18 @@ import { LoggerService } from '../shared/logger.service';
 })
 export class LoggerComponent implements OnInit, AfterViewChecked {
 
-  entries: any;
+  entries: Entry[];
 
   @ViewChild('loggerscroll')
   private scrollContainer: ElementRef;
 
   constructor(
     private logger: LoggerService){
-    this.logger.log.subscribe(entries => this.entries = entries);
   }
 
   ngOnInit(): void {
+    this.entries = this.logger.entries;
+    this.logger.log.subscribe(entries => this.entries = entries);
     this.scrollToBottom();
   }
 
