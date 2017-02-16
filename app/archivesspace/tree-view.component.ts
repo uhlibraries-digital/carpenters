@@ -109,6 +109,27 @@ export class TreeViewComponent {
     this.file.availableFiles = this.file.availableFiles.concat(files);
     parent.children.splice(index, 1);
     parent.expanded = parent.children.length > 0;
+
+    /**
+      Reorders the item numbers. Not sure how usful this is, seems like
+      it could cause confusion in the interface.
+    **/
+    let newIndex = 0;
+    for (let c of parent.children) {
+      if (c.artificial) {
+        c.title = 'Item ' + this.padLeft(newIndex + 1, 3, '0');
+        c.index = newIndex;
+        let container = this.file.convertFromASContainer(c.containers[0]);
+        for (let con of container) {
+          if (con.type === 'Item') {
+            con.indicator = newIndex + 1;
+          }
+        }
+        c.containers = [this.file.convertToASContainer(container)];
+      }
+      newIndex++;
+    }
+
     this.changeRef.detectChanges();
   }
 
