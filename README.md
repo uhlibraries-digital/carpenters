@@ -1,6 +1,14 @@
 # Carpenters
 
-Digital preservation ingest utility
+###Description
+Carpenters is an ingest tool that allows preservation administrators to organize digitized content into
+hierarchies that preserve the contextual linkages and provenance of the original archival collection.  The
+tool allows for easy batch ingest preparation--creating nested directory structures and automatically
+organizing files in such a way that the resultant Archivematica-compatible SIP seamlessly replicates the
+physical arrangement of the original collection.  The tool eliminates the need for manually creating
+directories or moving files, making it ideal for larger-scale workflows.  The tool also has the capacity
+to mint package-specific ARKs, allowing the preservation package to have a persistent identifier that
+connects the preservation master files to the access objects produced in Armand.
 
 ### Packaging
 
