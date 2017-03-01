@@ -49,7 +49,11 @@ export class AccessService {
   }
 
   loadMap(): void {
-    let accessMap = this.storage.get('preferences').map.full;
+    let accessMap: string;
+    try {
+      accessMap = this.storage.get('preferences').map.full;
+    }
+    catch(e) { return; }
     if (accessMap) {
       this.map.getMapFields(accessMap)
         .then(fields => this.mapFields = fields)

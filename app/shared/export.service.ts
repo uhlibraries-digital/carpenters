@@ -131,11 +131,13 @@ export class ExportService {
   }
 
   private loadSettings(): void {
-    this.preferences = this.storage.get('preferences');
-    if (this.preferences.minter.endpoint !== '') {
-      this.minter.setEndpoint(this.preferences.minter.endpoint, this.preferences.minter.prefix);
-      this.minter.setApiKey(this.preferences.minter.key);
+    try {
+      if (this.preferences.minter.endpoint !== '') {
+        this.minter.setEndpoint(this.preferences.minter.endpoint, this.preferences.minter.prefix);
+        this.minter.setApiKey(this.preferences.minter.key);
+      }
     }
+    catch(e) { return; }
   }
 
 }

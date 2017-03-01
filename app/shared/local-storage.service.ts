@@ -1,5 +1,9 @@
 import { Injectable, Output, EventEmitter }    from '@angular/core';
 import { createCipher, createDecipher } from 'crypto';
+import { existsSync, readFileSync, writeFile } from 'fs';
+import { create } from 'random-seed';
+import { remote } from 'electron';
+let { app } = remote;
 
 @Injectable()
 export class LocalStorageService {
@@ -49,19 +53,24 @@ export class LocalStorageService {
   }
 
   private setupCrypto(): void {
-    /* Need to find a better place for this */
-    this.cw = this.localStorage['cw'] || null;
-    if (!this.cw) {
+    let filename = app.getPath('userData') + '/cw';
+    if (existsSync(filename)) {
+      this.cw = String(readFileSync(filename));
+    }
+    else {
       this.cw = this.createCipherPassword();
-      this.localStorage['cw'] = this.cw;
+      writeFile(filename, this.cw);
     }
   }
 
   private createCipherPassword(): string {
+    let gen = create();
+    let cwLength = Math.floor(gen.random() * 128) + 40;
     let securityString = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+;:?/><,.';
     let cw = '';
-    for ( let i = 0; i < 40; i++ ) {
-      cw += securityString.charAt(Math.floor(Math.random() * securityString.length));
+    
+    for ( let i = 0; i < cwLength; i++ ) {
+      cw += securityString.charAt(Math.floor(gen.random() * securityString.length));
     }
     return cw;
   }

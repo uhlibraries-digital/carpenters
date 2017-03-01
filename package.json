@@ -1,7 +1,7 @@
 {
   "name": "carpenters",
   "description": "Digital preservation ingest utility",
-  "version": "2.0.0-alpha.1",
+  "version": "2.0.0-alpha.2",
   "author": {
     "name": "Sean Watkins",
     "email": "slwatkins@uh.edu"
@@ -49,6 +49,7 @@
     "mime": "^1.3.4",
     "mkdirp": "^0.5.1",
     "node-sass": "^3.8.0",
+    "random-seed": "^0.3.0",
     "raw-loader": "^0.5.1",
     "reflect-metadata": "^0.1.3",
     "rimraf": "^2.5.2",

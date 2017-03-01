@@ -212,7 +212,11 @@ export class PreservationService {
   }
 
   loadMap(): void {
-    let archivalMap = this.storage.get('preferences').map.archival;
+    let archivalMap: string;
+    try {
+      archivalMap = this.storage.get('preferences').map.archival;
+    }
+    catch (e) { return; }
     if (archivalMap) {
       this.map.getMapFields(archivalMap)
         .then(fields => this.mapFields = fields)
