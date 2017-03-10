@@ -1,0 +1,41 @@
+<div class="row standard-container">
+  <div class="form-inline">
+    <div class="form-group mint-ark-option">
+      <div class="form-check">
+        <label class="form-check-label">
+          <input
+            class="form-check-input"
+            type="checkbox" [ngModel]="mintSip" (ngModelChange)="toggleMintSip($event)" />
+          Mint Ark on SIP Export
+        </label>
+      </div>
+    </div>
+  </div>
+  <ngb-tabset #appTabs>
+    <ngb-tab title="Items" id="items">
+      <template ngbTabContent>
+        <item-view></item-view>
+      </template>
+    </ngb-tab>
+    <ngb-tab title="Files" id="files">
+      <template ngbTabContent>
+        <div class="resource-file-container scrollbars">
+          <file-view [children]="items"></file-view>
+        </div>
+        <div class="resource-file-browser">
+          <file-browser></file-browser>
+        </div>
+      </template>
+    </ngb-tab>
+    <ngb-tab title="ARK Editor" id="editor">
+      <template ngbTabContent>
+        <ark-editor></ark-editor>
+      </template>
+    </ngb-tab>
+    <ngb-tab title="Log" id="logger">
+      <template ngbTabContent>
+        <logger></logger>
+      </template>
+    </ngb-tab>
+  </ngb-tabset>
+</div>

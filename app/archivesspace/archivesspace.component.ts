@@ -5,6 +5,7 @@ import { ipcRenderer } from 'electron';
 import { ArchivesSpaceService } from '../shared/archivesspace.service';
 import { SaveService } from '../shared/save.service';
 import { LocalStorageService } from '../shared/local-storage.service';
+import { SessionStorageService } from '../shared/session-storage.service';
 import { LoggerService } from '../shared/logger.service';
 
 @Component({
@@ -30,11 +31,32 @@ export class ArchivesSpaceComponent implements OnInit {
     private asService: ArchivesSpaceService,
     private saveService: SaveService,
     private storage: LocalStorageService,
+    private session: SessionStorageService,
     private titleService: Title,
     private log: LoggerService) {
   }
 
   ngOnInit(): void {
+    this.mintSip = this.storage.get('mint_sip');
+    this.session.set('findingaid', 'true');
+
+    ipcRenderer.on('save-project', (event, arg) => {
+      this.saveService.save();
+      this.resourceList.nativeElement.disabled = true;
+      this.repositoryList.nativeElement.disabled = true;
+    });
+    ipcRenderer.on('save-as-project', (event, arg) => {
+      this.saveService.saveLocation = null;
+      this.saveService.save();
+      this.resourceList.nativeElement.disabled = true;
+      this.repositoryList.nativeElement.disabled = true;
+    });
+    ipcRenderer.on('open-project', (event, arg) => {
+      this.saveService.open();
+      this.resourceList.nativeElement.disabled = true;
+      this.repositoryList.nativeElement.disabled = true;
+    });
+
     this.asService.selectedResourceChanged.subscribe((resource) => {
       this.titleService.setTitle(resource.title);
       this.selectedRepository = resource.repository.ref;
@@ -55,24 +77,6 @@ export class ArchivesSpaceComponent implements OnInit {
     });
     this.loadRepositories();
 
-    this.mintSip = this.storage.get('mint_sip');
-
-    ipcRenderer.on('save-project', (event, arg) => {
-      this.saveService.save();
-      this.resourceList.nativeElement.disabled = true;
-      this.repositoryList.nativeElement.disabled = true;
-    });
-    ipcRenderer.on('save-as-project', (event, arg) => {
-      this.saveService.saveLocation = null;
-      this.saveService.save();
-      this.resourceList.nativeElement.disabled = true;
-      this.repositoryList.nativeElement.disabled = true;
-    });
-    ipcRenderer.on('open-project', (event, arg) => {
-      this.saveService.open();
-      this.resourceList.nativeElement.disabled = true;
-      this.repositoryList.nativeElement.disabled = true;
-    });
   }
 
   loadRepositories(): void {

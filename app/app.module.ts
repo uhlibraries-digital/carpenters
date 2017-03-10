@@ -3,9 +3,12 @@ import { BrowserModule, Title } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { RouterModule } from '@angular/router';
 
 import { AppComponent } from './app.component';
 import { ArchivesSpaceComponent } from './archivesspace/archivesspace.component';
+import { StandardComponent } from './standard/standard.component';
+import { ItemViewComponent } from './standard/item-view.component';
 import { TreeViewComponent } from './archivesspace/tree-view.component';
 import { FileViewComponent } from './file-manager/file-view.component';
 import { FileBrowserComponent } from './file-manager/file-browser.component';
@@ -25,19 +28,24 @@ import { AccessService } from './shared/access.service';
 import { LoggerService } from './shared/logger.service';
 import { FilesService } from './shared/files.service';
 import { CsvService } from './shared/csv.service';
+import { StandardItemService } from './shared/standard-item.service';
 
 import { FileDraggable } from './file-manager/file-draggable.directive';
+import { AppRoutes } from './app.routes';
 
 @NgModule({
   imports: [
     BrowserModule,
     FormsModule,
     HttpModule,
-    NgbModule.forRoot()
+    NgbModule.forRoot(),
+    RouterModule.forRoot(AppRoutes, { useHash: true})
   ],
   declarations: [
     AppComponent,
     ArchivesSpaceComponent,
+    StandardComponent,
+    ItemViewComponent,
     TreeViewComponent,
     FileViewComponent,
     FileBrowserComponent,
@@ -58,7 +66,8 @@ import { FileDraggable } from './file-manager/file-draggable.directive';
     AccessService,
     LoggerService,
     FilesService,
-    CsvService
+    CsvService,
+    StandardItemService
   ],
   bootstrap: [ AppComponent ]
 })

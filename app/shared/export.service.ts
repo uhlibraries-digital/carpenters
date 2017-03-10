@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { remote } from 'electron';
 
 import { ArchivesSpaceService } from './archivesspace.service';
+import { StandardItemService } from './standard-item.service';
 import { LocalStorageService } from './local-storage.service';
 import { SaveService } from './save.service';
 import { GreensService } from './greens.service';
@@ -21,6 +22,7 @@ export class ExportService {
 
   constructor(
     private asService: ArchivesSpaceService,
+    private standardItem: StandardItemService,
     private storage: LocalStorageService,
     private saveService: SaveService,
     private minter: GreensService,
@@ -28,6 +30,7 @@ export class ExportService {
     private sip: PreservationService,
     private dip: AccessService) {
     this.asService.selectedResourceChanged.subscribe(resource => this.selectedResource = resource);
+    this.standardItem.resourceChanged.subscribe(resource => this.selectedResource = resource);
     this.storage.changed.subscribe(key => {
       if (key === 'preferences') {
         this.loadSettings();
@@ -113,7 +116,8 @@ export class ExportService {
   }
 
   private hasArk(): boolean {
-    return this.selectedResource.sip_ark !== '' &&
+    return this.selectedResource !== undefined &&
+      this.selectedResource.sip_ark !== '' &&
       this.selectedResource.sip_ark !== undefined;
   }
 
@@ -122,7 +126,7 @@ export class ExportService {
     if (this.saveService.saveLocation !== undefined) {
       path = this.saveService.saveLocationBasePath() + '/';
     }
-    path += this.selectedResource.id_0;
+    path += this.selectedResource.id_0 || 'Untitled';
     return dialog.showSaveDialog({
       title: 'Export...',
       buttonLabel: 'Export',

@@ -1,0 +1,53 @@
+@import '../scss/_variables';
+
+.item-view-container {
+  position: absolute;
+  top: 38px;
+  bottom: 0;
+  width: 100%;
+
+  .items-input {
+    width: auto;
+  }
+  .add-item {
+    padding: 20px;
+
+    .collection-title-input {
+      width: 60%;
+      padding-right: 10px;
+    }
+
+    .items-input-group {
+      padding: 0;
+      float: right;
+
+      .items-input {
+        margin-right: 5px;
+      }
+
+      button {
+        margin-top: -2px;
+      }
+    }
+  }
+}
+
+.items-container {
+  position: absolute;
+  top: 68px;
+  bottom: 0;
+  width: 100%;
+  overflow-y: auto;
+  background-color: $light-background-color;
+  border-top: 1px solid $darker-background-color;
+
+  .items-list {
+    padding: 20px;
+
+    .items {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+  }
+}

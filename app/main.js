@@ -5,7 +5,7 @@ const {BrowserWindow} = electron;
 const {menuTemplate} = require('./menu.js');
 const pkg = require('../package.json');
 
-function createWindow() {
+function createWindow(route) {
   var win = new BrowserWindow({
     width: 1200,
     height: 900,
@@ -14,7 +14,8 @@ function createWindow() {
     backgroundColor: '#21252b'
   });
 
-  win.loadURL(`file://${__dirname}/index.html`);
+  win.loadURL(`file://${__dirname}/index.html` +
+    ((typeof route === 'string') ? `#` + route :  ``));
 
   //win.webContents.openDevTools();
 

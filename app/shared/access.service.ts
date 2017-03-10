@@ -4,6 +4,7 @@ import { writeFile } from 'fs';
 import * as mkdirp from 'mkdirp';
 
 import { ArchivesSpaceService } from './archivesspace.service';
+import { StandardItemService } from './standard-item.service';
 import { LocalStorageService } from './local-storage.service';
 import { MapService } from './map.service';
 import { LoggerService } from './logger.service';
@@ -24,6 +25,7 @@ export class AccessService {
 
   constructor(
     private asService: ArchivesSpaceService,
+    private standardItem: StandardItemService,
     private storage: LocalStorageService,
     private map: MapService,
     private log: LoggerService,
@@ -41,6 +43,14 @@ export class AccessService {
     this.selectedResource = resource;
     this.location = location;
     this.selectedObjects = this.asService.selectedArchivalObjects();
+    if (this.selectedObjects.length === 0) {
+      this.selectedObjects = this.standardItem.getAll();
+    }
+
+    if (this.selectedObjects.length === 0) {
+      this.log.error('No Archival Objects selected to export DIP');
+      return;
+    }
 
     this.log.info('Creating DIP...', false);
     mkdirp.sync(this.location + '/objects');

@@ -3,11 +3,19 @@ var menuTemplate = [
     label: 'File',
     submenu: [
       {
-        label: 'New Project',
+        label: 'New Finding Aid Project',
         accelerator: 'CmdOrCtrl+N',
         click (item, focusedWindow) {
           const createWindow = require('./main.js');
           createWindow();
+        }
+      },
+      {
+        label: 'New Standard Project',
+        accelerator: 'CmdOrCtrl+Shift+N',
+        click(item, focusedWindow) {
+          const createWindow = require('./main.js');
+          createWindow('standard');
         }
       },
       {

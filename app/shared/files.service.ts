@@ -4,6 +4,7 @@ import { readdir } from 'fs';
 import { statSync } from 'fs';
 
 import { ArchivesSpaceService } from './archivesspace.service';
+import { StandardItemService } from './standard-item.service';
 import { LoggerService } from './logger.service';
 
 import { File } from './file';
@@ -17,10 +18,13 @@ export class FilesService {
   unselectObjects: any;
   availableFiles: File[];
 
+  standardProject: boolean = false;
+
   @Output() filesChanged: EventEmitter<any> = new EventEmitter();
 
   constructor(
     private asService: ArchivesSpaceService,
+    private standardItem: StandardItemService,
     private log: LoggerService) {
       this.availableFiles = [];
   }
@@ -36,7 +40,7 @@ export class FilesService {
         return;
       }
 
-      this.selectedObjects = this.asService.selectedArchivalObjects();
+      this.setSelectedObjects();
       for (let file of files) {
         let stat = statSync(location + '/' + file);
         if (!stat.isDirectory()) {
@@ -75,7 +79,7 @@ export class FilesService {
     }
 
     this.unselectObjects = [];
-    this.selectedObjects = this.asService.selectedArchivalObjects();
+    this.setSelectedObjects();
     if (this.selectedObjects.length === 0) {
       this.log.error('Please select some archival objects before loading files');
       return;
@@ -161,6 +165,15 @@ export class FilesService {
       });
     }
     return rContainer;
+  }
+
+  private setSelectedObjects(): void {
+    this.selectedObjects = this.asService.selectedArchivalObjects();
+    this.standardProject = false;
+    if (this.selectedObjects.length === 0) {
+      this.selectedObjects = this.standardItem.getAll();
+      this.standardProject = true;
+    }
   }
 
   private processFilesForContainer(): string[] {
@@ -493,7 +506,16 @@ export class FilesService {
     container: any): string[] {
       let usedFiles: string[] = [];
 
-      let objects = this.findSelectionsContainingContainer(container);
+      let objects = [];
+      if (this.standardProject) {
+        objects = this.standardItem.getAll().filter((item) => {
+          return item.files.length === 0;
+        });
+      }
+      else {
+        objects = this.findSelectionsContainingContainer(container);
+      }
+
       if (objects.length === 0) {
         this.log.warn("Couldn't find selected Archival Object for files with container: " +
           this.containerToString(container)
