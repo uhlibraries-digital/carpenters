@@ -59,7 +59,11 @@ export class LocalStorageService {
     }
     else {
       this.cw = this.createCipherPassword();
-      writeFile(filename, this.cw);
+      writeFile(filename, this.cw, (err) => {
+        if (err) {
+          console.error(err);
+        }
+      });
     }
   }
 
@@ -68,7 +72,7 @@ export class LocalStorageService {
     let cwLength = Math.floor(gen.random() * 128) + 40;
     let securityString = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+;:?/><,.';
     let cw = '';
-    
+
     for ( let i = 0; i < cwLength; i++ ) {
       cw += securityString.charAt(Math.floor(gen.random() * securityString.length));
     }
