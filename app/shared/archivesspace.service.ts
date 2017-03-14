@@ -28,6 +28,11 @@ export class ArchivesSpaceService {
     this.loadPreferences();
   }
 
+  clear(): void {
+    this.selectedResource = undefined;
+    this.selectedResourceChanged.emit(this.selectedResource);
+  }
+
   getRepositories(): Promise<any> {
     return this.request('/repositories');
   }

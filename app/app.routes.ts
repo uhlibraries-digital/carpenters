@@ -9,11 +9,11 @@ export const AppRoutes: Routes = [
     component: ArchivesSpaceComponent
   },
   {
-    path: 'standard',
-    component: StandardComponent
+    path: 'findingaid',
+    component: ArchivesSpaceComponent
   },
   {
-    path: 'standard/:file',
+    path: 'standard',
     component: StandardComponent
   }
 ];

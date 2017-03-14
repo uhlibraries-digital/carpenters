@@ -1,13 +1,17 @@
 import { Injectable, Output, EventEmitter }    from '@angular/core';
+import { Router } from '@angular/router';
+
 import { remote } from 'electron';
 import { writeFile } from 'fs';
 import { readFile } from 'fs';
 import { existsSync } from 'fs';
 
 import { ArchivesSpaceService } from './archivesspace.service';
+import { StandardItemService } from './standard-item.service';
 import { LoggerService } from './logger.service';
 
 import { File } from './file';
+import { Item } from './item';
 
 let { dialog } = remote;
 
@@ -20,7 +24,9 @@ export class SaveService {
   @Output() saveStatus: EventEmitter<boolean> = new EventEmitter();
 
   constructor(
+    private router: Router,
     private asService: ArchivesSpaceService,
+    private standardItem: StandardItemService,
     private log: LoggerService) {
     this.asService.selectedResourceChanged.subscribe(resource => this.selectedResource = resource);
   }
@@ -44,7 +50,8 @@ export class SaveService {
     if (!this.saveLocation) {
       return;
     }
-
+    this.asService.clear();
+    this.standardItem.clear();
     readFile(this.saveLocation, 'utf8', (err, data) => {
       if (err) {
         this.log.error('Error opening file: ' + err.message);
@@ -52,6 +59,7 @@ export class SaveService {
       }
       let saveObject = JSON.parse(data);
       this.loadObjects(saveObject);
+      this.router.navigate([saveObject.type]);
     });
     this.saveStatus.emit(true);
   }
@@ -68,7 +76,7 @@ export class SaveService {
     let filenames = dialog.showOpenDialog({
       title: 'Open Project...',
       filters: [
-        { name: 'Carpetners File', extensions: ['json'] }
+        { name: 'Carpetners File', extensions: ['carp'] }
       ],
       properties: [
         'openFile'
@@ -81,12 +89,41 @@ export class SaveService {
     return dialog.showSaveDialog({
       title: 'Save...',
       filters: [
-        { name: 'Carpenters File', extensions: ['json'] }
+        { name: 'Carpenters File', extensions: ['carp'] }
       ]
     });
   }
 
+  private createSaveStandardObject(): any {
+    let resource = this.standardItem.getResource();
+    let standardObjects = this.standardItem.getAll();
+
+    let objects = [];
+    for (let so of standardObjects) {
+      let files: any[] = so.files.map((file) => {
+        return { path: file.path, purpose: file.purpose }
+      });
+      objects.push({
+        title: so.title,
+        containers: so.containers,
+        level: so.level,
+        files: files
+      });
+    }
+
+    return ({
+      type: 'standard',
+      resource: resource,
+      sip_ark: resource.sip_ark || '',
+      objects: objects
+    });
+  }
+
   private createSaveObject(): any {
+    if(this.selectedResource === undefined) {
+      return this.createSaveStandardObject();
+    }
+
     let resource = this.selectedResource.uri;
     let archivalObjects = this.asService.selectedArchivalObjects();
     let objects = [];
@@ -109,6 +146,7 @@ export class SaveService {
     }
 
     return ({
+      type: 'findingaid',
       resource: resource,
       sip_ark: this.selectedResource.sip_ark || '',
       objects: objects
@@ -125,15 +163,35 @@ export class SaveService {
   }
 
   private loadObjects(obj: any): void {
-    this.asService.getResource(obj.resource)
-      .then((resource) => {
-        this.selectedResource.sip_ark = obj.sip_ark || '';
-        this.markSelections(obj.objects, this.selectedResource.tree.children);
-        if (this.selectedResource.sip_ark !== '') {
-          this.log.success('SIP Ark: ' + this.selectedResource.sip_ark, false);
-        }
-        this.log.success('Loaded file: ' + this.saveLocation, false);
-      });
+    if (obj.type === 'findingaid') {
+      this.asService.getResource(obj.resource)
+        .then((resource) => {
+          this.selectedResource.sip_ark = obj.sip_ark || '';
+          this.markSelections(obj.objects, this.selectedResource.tree.children);
+          if (this.selectedResource.sip_ark !== '') {
+            this.log.success('SIP Ark: ' + this.selectedResource.sip_ark, false);
+          }
+          this.log.success('Loaded file: ' + this.saveLocation, false);
+        });
+    }
+    else {
+      this.loadStandardObjects(obj);
+    }
+  }
+
+  private loadStandardObjects(obj: any): void {
+    this.standardItem.setResourceTitle(obj.resource.title);
+    this.standardItem.setResourceSipArk(obj.sip_ark);
+    for (let o of obj.objects) {
+      let item: Item = o;
+      item.files = this.convertToFileObjects(o.files);
+      item.selected = true;
+      this.standardItem.push(item);
+    }
+    if (obj.sip_ark !== '') {
+      this.log.success('SIP Ark: ' + obj.sip_ark, false);
+    }
+    this.log.success('Loaded file: ' + this.saveLocation, false);
   }
 
   private markSelections(selections: any, children: any): void {

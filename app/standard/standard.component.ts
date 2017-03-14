@@ -34,6 +34,10 @@ export class StandardComponent implements OnInit {
     this.items = this.standardItems.getAll();
     this.standardItems.itemChanged.subscribe(items => this.items = items);
 
+    ipcRenderer.removeAllListeners('save-project');
+    ipcRenderer.removeAllListeners('save-as-project');
+    ipcRenderer.removeAllListeners('open-project');
+
     ipcRenderer.on('save-project', (event, arg) => {
       this.saveService.save();
     });

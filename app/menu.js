@@ -25,7 +25,7 @@ var menuTemplate = [
           if (!focusedWindow) {
             const createWindow = require('./main.js');
             var win = createWindow();
-            win.webContents.on('did-finish-load', () => {
+            win.webContents.once('did-finish-load', () => {
               win.webContents.send('open-project');
             });
           }

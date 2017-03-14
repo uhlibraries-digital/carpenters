@@ -17,6 +17,13 @@ export class StandardItemService {
     this.resourceChanged.emit(this.resource);
   }
 
+  clear(): any {
+    this.resource = {title: '', sip_ark: ''};
+    this.items = [];
+    this.resourceChanged.emit(this.resource);
+    this.itemChanged.emit(this.items);
+  }
+
   getResource(): any {
     return this.resource;
   }

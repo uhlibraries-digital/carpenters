@@ -40,6 +40,10 @@ export class ArchivesSpaceComponent implements OnInit {
     this.mintSip = this.storage.get('mint_sip');
     this.session.set('findingaid', 'true');
 
+    ipcRenderer.removeAllListeners('save-project');
+    ipcRenderer.removeAllListeners('save-as-project');
+    ipcRenderer.removeAllListeners('open-project');
+
     ipcRenderer.on('save-project', (event, arg) => {
       this.saveService.save();
       this.resourceList.nativeElement.disabled = true;
@@ -58,6 +62,8 @@ export class ArchivesSpaceComponent implements OnInit {
     });
 
     this.asService.selectedResourceChanged.subscribe((resource) => {
+      if (resource === undefined) { return; }
+
       this.titleService.setTitle(resource.title);
       this.selectedRepository = resource.repository.ref;
 

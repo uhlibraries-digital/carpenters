@@ -14,9 +14,9 @@ import { Item } from '../shared/item';
 })
 export class ItemViewComponent implements OnInit {
 
-  items: Item[];
-  addNumberOfItems: number = 1;
-  title: string;
+  private items: Item[];
+  private addNumberOfItems: number = 1;
+  private resource: any;
 
   private contextMenu: any;
 
@@ -28,7 +28,10 @@ export class ItemViewComponent implements OnInit {
 
   ngOnInit(): void {
     this.items = this.standardItem.getAll();
+    this.resource = this.standardItem.getResource();
+    
     this.standardItem.itemChanged.subscribe(items => this.items = items);
+    this.standardItem.resourceChanged.subscribe(resource => this.resource = resource);
   }
 
   onContextMenu(index: number, e: MouseEvent) {
@@ -70,7 +73,7 @@ export class ItemViewComponent implements OnInit {
   }
 
   setTitle(): void {
-    this.standardItem.setResourceTitle(this.title);
+    this.standardItem.setResourceTitle(this.resource.title);
   }
 
 }
