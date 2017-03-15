@@ -3,6 +3,7 @@ import { remote } from 'electron';
 import { readdir } from 'fs';
 import { statSync } from 'fs';
 
+import { ActivityService } from './activity.service';
 import { ArchivesSpaceService } from './archivesspace.service';
 import { StandardItemService } from './standard-item.service';
 import { LoggerService } from './logger.service';
@@ -23,6 +24,7 @@ export class FilesService {
   @Output() filesChanged: EventEmitter<any> = new EventEmitter();
 
   constructor(
+    private activity: ActivityService,
     private asService: ArchivesSpaceService,
     private standardItem: StandardItemService,
     private log: LoggerService) {
@@ -34,6 +36,7 @@ export class FilesService {
     if (location === '') {
       return;
     }
+    this.activity.start();
     readdir(location, (err, files) => {
       if (err) {
         this.log.error(err.message);
@@ -47,6 +50,7 @@ export class FilesService {
           this.addAvailableFiles(new File(location + '/' + file));
         }
       }
+      this.activity.stop();
     });
   }
 
@@ -77,15 +81,15 @@ export class FilesService {
       this.log.error('There are no available files to process.');
       return;
     }
+    this.activity.start();
 
     this.unselectObjects = [];
     this.setSelectedObjects();
     if (this.selectedObjects.length === 0) {
+      this.activity.stop();
       this.log.error('Please select some archival objects before loading files');
       return;
     }
-    //this.clearFiles(this.selectedObjects);
-
 
     let usedFiles: string[] = [];
     if (filesPerObject) {
@@ -97,6 +101,7 @@ export class FilesService {
 
     this.removeAvailableFiles(usedFiles);
     this.unselectArchivalObjectsWithoutFiles();
+    this.activity.stop();
   }
 
   removeAvailableFiles(filenames: string[]): void {

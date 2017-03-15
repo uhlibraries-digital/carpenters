@@ -3,6 +3,7 @@ import { renameSync } from 'fs';
 import { writeFile } from 'fs';
 import * as mkdirp from 'mkdirp';
 
+import { ActivityService } from './activity.service';
 import { ArchivesSpaceService } from './archivesspace.service';
 import { StandardItemService } from './standard-item.service';
 import { LocalStorageService } from './local-storage.service';
@@ -23,6 +24,7 @@ export class PreservationService {
   private hierarchySquances: any;
 
   constructor(
+    private activity: ActivityService,
     private asService: ArchivesSpaceService,
     private standardItem: StandardItemService,
     private storage: LocalStorageService,
@@ -39,6 +41,7 @@ export class PreservationService {
   }
 
   package(location: string, resource: any): void {
+    this.activity.start();
     this.selectedResource = resource;
     this.location = location;
     this.selectedObjects = this.asService.selectedArchivalObjects();
@@ -47,6 +50,7 @@ export class PreservationService {
     }
 
     if (this.selectedObjects.length === 0) {
+      this.activity.stop();
       this.log.error('No Archival Objects selected to export SIP');
       return;
     }
@@ -62,13 +66,18 @@ export class PreservationService {
     let partsPaths = this.processFiles(this.selectedObjects);
 
     this.log.info('Creating SIP metadata.csv', false);
-    this.createCsv(partsPaths);
+    this.createCsv(partsPaths)
+      .then(() => {
+        this.log.info('Done packaging SIP');
 
-    this.log.info('Done packaging SIP');
-
-    let logFilename = this.location + '/metadata/submissionDocumentation/' +
-      'carpenters-' + this.log.toTodayISOString() + '.log';
-    writeFile(logFilename, this.log.toString());
+        let logFilename = this.location + '/metadata/submissionDocumentation/' +
+          'carpenters-' + this.log.toTodayISOString() + '.log';
+        writeFile(logFilename, this.log.toString());
+        this.activity.stop();
+      })
+      .catch((err) => {
+        this.activity.stop();
+      });
   }
 
   private processFiles(objects: any): string[] {
@@ -188,37 +197,45 @@ export class PreservationService {
     return path;
   }
 
-  private createCsv(partsPaths: string[]) {
-    let fields = this.map.getMapFieldsAsList();
+  private createCsv(partsPaths: string[]): Promise<any> {
+    return new Promise((resolved, rejected) => {
+      let fields = this.map.getMapFieldsAsList();
 
-    /** Creating a array of empty strings for map fields */
-    let fieldsTemplateArray = [];
-    for ( let i = 0; i < fields.length; i++) {
-      fieldsTemplateArray.push('');
-    }
+      /** Creating a array of empty strings for map fields */
+      let fieldsTemplateArray = [];
+      for ( let i = 0; i < fields.length; i++) {
+        fieldsTemplateArray.push('');
+      }
 
-    let csvData = [['parts'].concat(fields)];
+      let csvData = [['parts'].concat(fields)];
 
-    /**
-     Add collection metadata
-     STILL NEEDS WORK TO CROSSWALK ASPACE TERMS TO THE MAP FIELDS
-    */
-    let titleIndex = fields.indexOf('dcterms.title');
-    let identifierIndex = fields.indexOf('dcterms.identifier');
-    let collection = ['objects'].concat(fieldsTemplateArray);
-    if (titleIndex > -1) {
-      collection[titleIndex + 1] = this.selectedResource.title || '';
-    }
-    if (identifierIndex > -1) {
-      collection[identifierIndex + 1] = this.selectedResource.sip_ark || '';
-    }
-    csvData.push(collection);
+      /**
+       Add collection metadata
+       STILL NEEDS WORK TO CROSSWALK ASPACE TERMS TO THE MAP FIELDS
+      */
+      let titleIndex = fields.indexOf('dcterms.title');
+      let identifierIndex = fields.indexOf('dcterms.identifier');
+      let collection = ['objects'].concat(fieldsTemplateArray);
+      if (titleIndex > -1) {
+        collection[titleIndex + 1] = this.selectedResource.title || '';
+      }
+      if (identifierIndex > -1) {
+        collection[identifierIndex + 1] = this.selectedResource.sip_ark || '';
+      }
+      csvData.push(collection);
 
-    for (let parts of partsPaths) {
-      csvData.push([parts].concat(fieldsTemplateArray));
-    }
+      for (let parts of partsPaths) {
+        csvData.push([parts].concat(fieldsTemplateArray));
+      }
 
-    this.csv.write(this.location + '/metadata/metadata.csv', csvData);
+      this.csv.write(this.location + '/metadata/metadata.csv', csvData)
+        .then(() => {
+          resolved();
+        })
+        .catch((err) => {
+          rejected(err);
+        });
+    });
   }
 
   loadMap(): void {

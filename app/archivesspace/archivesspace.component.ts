@@ -2,6 +2,7 @@ import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ipcRenderer } from 'electron';
 
+import { ActivityService } from '../shared/activity.service';
 import { ArchivesSpaceService } from '../shared/archivesspace.service';
 import { SaveService } from '../shared/save.service';
 import { LocalStorageService } from '../shared/local-storage.service';
@@ -22,13 +23,13 @@ export class ArchivesSpaceComponent implements OnInit {
   resources: any;
   selectedResource: any;
   selectedResourceUri: string;
-  loading: boolean = false;
 
   @ViewChild('resourceList') resourceList: ElementRef;
   @ViewChild('repositoryList') repositoryList: ElementRef;
 
   constructor(
     private asService: ArchivesSpaceService,
+    private activity: ActivityService,
     private saveService: SaveService,
     private storage: LocalStorageService,
     private session: SessionStorageService,
@@ -86,33 +87,38 @@ export class ArchivesSpaceComponent implements OnInit {
   }
 
   loadRepositories(): void {
+    this.activity.start();
     this.asService.getRepositories()
       .then((list) => {
+        this.activity.stop();
         this.repositories = list;
         if (list.length >= 1) {
           this.selectedRepository = list[0].uri;
           this.loadResources(this.selectedRepository);
         }
       }).catch((error) => {
+        this.activity.stop();
         this.log.error('Unable to load repositories: ' + error);
       });
   }
 
   loadResources(repository: string): void {
+    this.activity.start();
     this.asService.getResources(repository).then((resources) => {
       this.resources = resources.results.sort(function(a, b) {
         return a.title.localeCompare(b.title);
       });
+      this.activity.stop();
     });
   }
 
   loadResource(uri: string): void {
-    this.loading = true;
+    this.activity.start();
     this.asService.getResource(uri)
       .then(() => {
-        this.loading = false;
+        this.activity.stop();
       }).catch(error => {
-        this.loading = false;
+        this.activity.stop();
         this.log.error('Unable to load resource: ' + error);
       });
   }

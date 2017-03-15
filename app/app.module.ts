@@ -6,6 +6,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { RouterModule } from '@angular/router';
 
 import { AppComponent } from './app.component';
+import { ActivityComponent } from './activity/activity.component';
 import { ArchivesSpaceComponent } from './archivesspace/archivesspace.component';
 import { StandardComponent } from './standard/standard.component';
 import { ItemViewComponent } from './standard/item-view.component';
@@ -16,6 +17,7 @@ import { LoggerComponent } from './logger/logger.component';
 import { ArkEditorComponent } from './ark-editor/ark-editor.component';
 import { NotificationComponent } from './notification/notification.component';
 
+import { ActivityService } from './shared/activity.service';
 import { LocalStorageService } from './shared/local-storage.service';
 import { SessionStorageService } from './shared/session-storage.service';
 import { ArchivesSpaceService } from './shared/archivesspace.service';
@@ -43,6 +45,7 @@ import { AppRoutes } from './app.routes';
   ],
   declarations: [
     AppComponent,
+    ActivityComponent,
     ArchivesSpaceComponent,
     StandardComponent,
     ItemViewComponent,
@@ -55,6 +58,7 @@ import { AppRoutes } from './app.routes';
     FileDraggable
   ],
   providers: [
+    ActivityService,
     LocalStorageService,
     SessionStorageService,
     ArchivesSpaceService,

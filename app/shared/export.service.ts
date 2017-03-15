@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { remote } from 'electron';
 
+import { ActivityService } from './activity.service';
 import { ArchivesSpaceService } from './archivesspace.service';
 import { StandardItemService } from './standard-item.service';
 import { LocalStorageService } from './local-storage.service';
@@ -21,6 +22,7 @@ export class ExportService {
   selectedResource: any;
 
   constructor(
+    private active: ActivityService,
     private asService: ArchivesSpaceService,
     private standardItem: StandardItemService,
     private storage: LocalStorageService,
@@ -89,8 +91,10 @@ export class ExportService {
       this.preferences.minter.ercWhere
     );
     erc.when = erc.toTodayISOString();
+    this.active.start();
     this.minter.mint(erc)
       .then(id => {
+        this.active.stop();
         if (erc.where.indexOf('$ark$') > -1) {
           erc.where = erc.where.replace('$ark$', id);
           this.minter.update(id, erc);
@@ -103,6 +107,7 @@ export class ExportService {
         }
       })
       .catch(error => {
+        this.active.stop();
         this.log.error('An error occured while minting a new ark: ' + error);
         this.log.error('Failed to export preservation SIP');
       });

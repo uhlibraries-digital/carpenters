@@ -3,6 +3,7 @@ import { renameSync } from 'fs';
 import { writeFile } from 'fs';
 import * as mkdirp from 'mkdirp';
 
+import { ActivityService } from './activity.service';
 import { ArchivesSpaceService } from './archivesspace.service';
 import { StandardItemService } from './standard-item.service';
 import { LocalStorageService } from './local-storage.service';
@@ -24,6 +25,7 @@ export class AccessService {
   private csvHeader: any[];
 
   constructor(
+    private activity: ActivityService,
     private asService: ArchivesSpaceService,
     private standardItem: StandardItemService,
     private storage: LocalStorageService,
@@ -74,6 +76,7 @@ export class AccessService {
   }
 
   private process(objects: any[]): void {
+    this.activity.start();
     let csv = [];
     this.csvHeader = this.getCsvHeader();
 
@@ -82,8 +85,11 @@ export class AccessService {
     csv = csv.concat(this.processObjects(objects));
 
     this.log.info('Writting DIP metadata.csv', false);
-    this.csv.write(this.location + '/metadata.csv', csv);
-    this.log.info('Done packaging DIP');
+    this.csv.write(this.location + '/metadata.csv', csv)
+      .then(() => {
+        this.activity.stop();
+        this.log.info('Done packaging DIP');
+      });
   }
 
   private getCsvHeader(): string[] {
