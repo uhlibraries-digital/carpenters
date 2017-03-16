@@ -12,7 +12,9 @@ export class GreensService {
   private updateUrl: string;
   private apiKey: string;
 
-  constructor(private http: Http) { }
+  constructor(
+    private http: Http) {
+  }
 
   setApiKey(key: string) {
     this.apiKey = key;
@@ -64,7 +66,8 @@ export class GreensService {
         let data = response.json();
         let erc = new Erc(data.ark.who, data.ark.what, data.ark.when, data.ark.where);
         return erc;
-      });
+      })
+      .catch(this.handleError);
   }
 
   private getOptions(): RequestOptions {

@@ -10,6 +10,7 @@ import { LocalStorageService } from './local-storage.service';
 import { MapService } from './map.service';
 import { LoggerService } from './logger.service';
 import { CsvService } from './csv.service';
+import { SaveService } from './save.service';
 
 import { MapField } from './map-field';
 import { File } from './file';
@@ -28,6 +29,7 @@ export class PreservationService {
     private asService: ArchivesSpaceService,
     private standardItem: StandardItemService,
     private storage: LocalStorageService,
+    private saveService: SaveService,
     private map: MapService,
     private log: LoggerService,
     private csv: CsvService) {
@@ -68,6 +70,15 @@ export class PreservationService {
     this.log.info('Creating SIP metadata.csv', false);
     this.createCsv(partsPaths)
       .then(() => {
+        this.log.info('Packaging project file', false);
+
+        let saveTmp = this.saveService.saveLocation;
+        this.saveService.saveLocation = this.location
+          + '/metadata/submissionDocumentation/'
+          + 'carpenters-project-' + this.log.toTodayISOString() + '.carp';
+        this.saveService.save();
+        this.saveService.saveLocation = saveTmp;
+
         this.log.info('Done packaging SIP');
 
         let logFilename = this.location + '/metadata/submissionDocumentation/' +

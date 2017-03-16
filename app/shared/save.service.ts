@@ -6,6 +6,7 @@ import { writeFile } from 'fs';
 import { readFile } from 'fs';
 import { existsSync } from 'fs';
 
+import { ActivityService } from './activity.service';
 import { ArchivesSpaceService } from './archivesspace.service';
 import { StandardItemService } from './standard-item.service';
 import { LoggerService } from './logger.service';
@@ -24,6 +25,7 @@ export class SaveService {
   @Output() saveStatus: EventEmitter<boolean> = new EventEmitter();
 
   constructor(
+    private activity: ActivityService,
     private router: Router,
     private asService: ArchivesSpaceService,
     private standardItem: StandardItemService,
@@ -39,10 +41,12 @@ export class SaveService {
       }
     }
 
+    this.activity.start();
     let saveObject = this.createSaveObject();
     this.saveToFile(saveObject, this.saveLocation);
     this.saveStatus.emit(true);
     this.log.success('Saved file: ' + this.saveLocation, false);
+    this.activity.stop();
   }
 
   open(): void {

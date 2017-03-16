@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { remote } from 'electron';
 
+import { ActivityService } from '../shared/activity.service';
 import { GreensService } from '../shared/greens.service';
 import { LocalStorageService } from '../shared/local-storage.service';
 import { LoggerService } from '../shared/logger.service';
@@ -19,6 +20,7 @@ export class ArkEditorComponent implements OnInit {
   fetched: boolean = false;
 
   constructor(
+    private activity: ActivityService,
     private minter: GreensService,
     private storage: LocalStorageService,
     private log: LoggerService) {
@@ -48,15 +50,18 @@ export class ArkEditorComponent implements OnInit {
       this.log.warn('Please include a Ark to fetch');
       return;
     }
+    this.activity.start();
     this.erc = new Erc();
     this.minter.get(this.ark)
       .then(erc => {
         this.erc = <Erc> erc;
         this.fetched = true;
         this.log.success('Fetched ark: ' + this.ark, false);
+        this.activity.stop();
       })
       .catch(error => {
         this.log.error('Error getting ark: ' + this.ark);
+        this.activity.stop();
       });
   }
 
@@ -73,8 +78,10 @@ export class ArkEditorComponent implements OnInit {
   }
 
   generate(): void {
+    this.activity.start()
     this.minter.mint(this.erc)
       .then(id => {
+        this.activity.stop();
         this.fetched = true;
         this.log.success('Minted: ' + id);
         this.ark = id;
@@ -84,16 +91,20 @@ export class ArkEditorComponent implements OnInit {
         }
       })
       .catch(error => {
+        this.activity.stop();
         this.log.error('An error occured while minting a new ark: ' + error);
       });
   }
 
   save(): void {
+    this.activity.start();
     this.minter.update(this.ark, this.erc)
       .then(erc => {
+        this.activity.stop();
         this.log.success(this.ark + ' updated successfully');
       })
       .catch(error => {
+        this.activity.stop();
         this.log.error('Unable to save changes to ' + this.ark + ': ' + error);
       });
   }
