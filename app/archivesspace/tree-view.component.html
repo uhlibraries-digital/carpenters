@@ -14,6 +14,7 @@
           [class.subselection]="hasSelectedChildren(c)" />
         <span
           class="title"
+          [class.production-note]="c.productionNotes"
           (click)="toggle(c, $event)">{{ displayTitle(c) }}</span>
       </div>
       <div

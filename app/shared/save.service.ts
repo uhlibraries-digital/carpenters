@@ -111,6 +111,7 @@ export class SaveService {
         title: so.title,
         containers: so.containers,
         level: so.level,
+        productionNotes: so.productionNotes || '',
         files: files
       });
     }
@@ -132,13 +133,16 @@ export class SaveService {
     let archivalObjects = this.asService.selectedArchivalObjects();
     let objects = [];
     for (let ao of archivalObjects) {
+      if (ao.files === undefined) { ao.files = []; }
+
       let files = ao.files.map((value) => {
         return { path: value.path, purpose: value.purpose };
       });
       let object: any = {
         uri: ao.record_uri,
         files: files,
-        artificial: ao.artificial
+        artificial: ao.artificial,
+        productionNotes: this.getObjectProductionNotes(ao)
       };
       if (ao.artificial) {
         object.title = ao.title;
@@ -155,6 +159,16 @@ export class SaveService {
       sip_ark: this.selectedResource.sip_ark || '',
       objects: objects
     });
+  }
+
+  private getObjectProductionNotes(o: any): string {
+    if (o.productionNotes) {
+      return o.productionNotes;
+    }
+    if (o.parent) {
+      return this.getObjectProductionNotes(o.parent);
+    }
+    return '';
   }
 
   private saveToFile(object: any, filename: string): void {
@@ -190,6 +204,7 @@ export class SaveService {
       let item: Item = o;
       item.files = this.convertToFileObjects(o.files);
       item.selected = true;
+      item.productionNotes = o.productionNotes;
       this.standardItem.push(item);
     }
     if (obj.sip_ark !== '') {
@@ -205,6 +220,7 @@ export class SaveService {
       });
       if (found) {
         c.selected = true;
+        c.productionNotes = found.productionNotes || '';
         c.files = this.convertToFileObjects(found.files);
       }
 

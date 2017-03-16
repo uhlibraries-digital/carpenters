@@ -1,9 +1,12 @@
 import { Component, ViewEncapsulation, OnInit, ViewChild } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ipcRenderer } from 'electron';
+import { ipcRenderer, remote } from 'electron';
+
+let { webContents } = remote;
 
 import { LocalStorageService } from './shared/local-storage.service';
 import { ExportService } from './shared/export.service';
+import { ProductionNotesService } from './shared/production-notes.service';
 
 @Component({
   selector: 'app',
@@ -14,14 +17,19 @@ import { ExportService } from './shared/export.service';
 export class AppComponent implements OnInit {
 
   @ViewChild('preferencesDisplay') preferencesDisplay: any;
+  @ViewChild('notesDisplay') notesDisplay: any;
 
   private preferences: any;
   private preferenceIndex: number = 0;
 
+  private productionNotes: string = '';
+  private productionNotesChild: any;
+
   constructor(
     private storage: LocalStorageService,
     private exportService: ExportService,
-    private modalService: NgbModal) {
+    private modalService: NgbModal,
+    private notes: ProductionNotesService) {
   }
 
   ngOnInit(): void {
@@ -40,6 +48,14 @@ export class AppComponent implements OnInit {
     });
     ipcRenderer.on('export-both', (event, arg) => {
       this.exportService.exportBoth();
+    });
+    ipcRenderer.on('show-notes', (event, arg) => {
+      this.showNotes();
+    });
+
+    this.notes.displayNote.subscribe((child) => {
+      this.productionNotesChild = child;
+      webContents.getFocusedWebContents().send('show-notes');
     });
   }
 
@@ -77,6 +93,20 @@ export class AppComponent implements OnInit {
       }
     }
     this.showPreferences();
+  }
+
+  showNotes(): void {
+    this.productionNotes = this.productionNotesChild.productionNotes || '';
+    this.modalService.open(this.notesDisplay, {
+      backdrop: 'static',
+      keyboard: true,
+      size: 'lg'
+    }).result.then((result) => {
+      this.productionNotesChild.productionNotes = this.productionNotes;
+    },
+    (rejected) => {
+
+    });
   }
 
 }

@@ -5,6 +5,7 @@ export class Item {
   level: string;
   selected: boolean = true;
   containers: any[];
+  productionNotes: string;
   files: File[] = [];
 
   constructor(index?: number) {
@@ -13,6 +14,7 @@ export class Item {
     }
     this.level = 'item';
     this.selected = true;
+    this.productionNotes = '';
     this.files = [];
   }
 

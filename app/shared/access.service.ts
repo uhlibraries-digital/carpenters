@@ -94,7 +94,7 @@ export class AccessService {
 
   private getCsvHeader(): string[] {
     let fields = this.map.getMapFieldsAsList();
-    return ['file_path'].concat(fields);
+    return ['file_path'].concat(fields.concat(['productionNotes']));
   }
 
   private processObjects(objects: any[]): any[] {
@@ -107,6 +107,7 @@ export class AccessService {
       row[0] = dirName;
 
       this.setCsvRowColumn(row, 'uhlib.aSpaceUri', this.getObjectUri(object));
+      this.setCsvRowColumn(row, 'productionNotes', this.getObjectProductionNotes(object));
 
       csv.push(row);
       this.processFiles(csv, object, dirName);
@@ -146,6 +147,16 @@ export class AccessService {
     }
     if (o.parent) {
       return this.getObjectUri(o.parent);
+    }
+    return '';
+  }
+
+  private getObjectProductionNotes(o: any): string {
+    if (o.productionNotes) {
+      return o.productionNotes;
+    }
+    if (o.parent) {
+      return this.getObjectProductionNotes(o.parent);
     }
     return '';
   }

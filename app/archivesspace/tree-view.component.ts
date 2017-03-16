@@ -5,6 +5,7 @@ let { Menu, MenuItem } = remote;
 
 import { ArchivesSpaceService } from '../shared/archivesspace.service';
 import { FilesService } from '../shared/files.service';
+import { ProductionNotesService } from '../shared/production-notes.service';
 
 @Component({
   selector: 'tree-view',
@@ -12,12 +13,14 @@ import { FilesService } from '../shared/files.service';
   styles: [ require('./tree-view.component.scss') ]
 })
 export class TreeViewComponent {
+
   @Input() children: any;
 
   constructor(
     private asService: ArchivesSpaceService,
     private changeRef: ChangeDetectorRef,
-    private file: FilesService) {
+    private file: FilesService,
+    private note: ProductionNotesService) {
   }
 
   toggle(c: any, e): void {
@@ -32,6 +35,26 @@ export class TreeViewComponent {
     e.stopPropagation();
 
     let contextMenu = new Menu();
+
+    contextMenu.append(new MenuItem({
+      label: (c.productionNotes ? 'Edit' : 'Add') + ' Note',
+      click: () => {
+        this.note.display(c);
+      }
+    }));
+    if (c.productionNotes) {
+      contextMenu.append(new MenuItem({
+        label: 'Clear Note',
+        click: () => {
+          c.productionNotes = '';
+          this.changeRef.detectChanges();
+        }
+      }));
+    }
+    contextMenu.append(new MenuItem({
+      type: 'separator'
+    }));
+
     if (c.artificial) {
       contextMenu.append(new MenuItem({
         label: 'Remove Item',

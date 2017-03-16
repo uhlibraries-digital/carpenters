@@ -5,6 +5,7 @@ let { Menu, MenuItem } = remote;
 
 import { StandardItemService } from '../shared/standard-item.service';
 import { LoggerService } from '../shared/logger.service';
+import { ProductionNotesService } from '../shared/production-notes.service';
 import { Item } from '../shared/item';
 
 @Component({
@@ -23,22 +24,41 @@ export class ItemViewComponent implements OnInit {
   constructor(
     private log: LoggerService,
     private standardItem: StandardItemService,
+    private note: ProductionNotesService,
     private changeRef: ChangeDetectorRef) {
   }
 
   ngOnInit(): void {
     this.items = this.standardItem.getAll();
     this.resource = this.standardItem.getResource();
-    
+
     this.standardItem.itemChanged.subscribe(items => this.items = items);
     this.standardItem.resourceChanged.subscribe(resource => this.resource = resource);
   }
 
-  onContextMenu(index: number, e: MouseEvent) {
+  onContextMenu(index: number, c: any, e: MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
 
     let contextMenu = new Menu();
+    contextMenu.append(new MenuItem({
+      label: (c.productionNotes ? 'Edit' : 'Add') + ' Note',
+      click: () => {
+        this.note.display(c);
+      }
+    }));
+    if (c.productionNotes) {
+      contextMenu.append(new MenuItem({
+        label: 'Clear Note',
+        click: () => {
+          c.productionNotes = '';
+          this.changeRef.detectChanges();
+        }
+      }));
+    }
+    contextMenu.append(new MenuItem({
+      type: 'separator'
+    }));
     contextMenu.append(new MenuItem({
       label: 'Insert Item',
       click: () => {

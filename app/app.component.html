@@ -1,6 +1,5 @@
 <notification></notification>
 <activity></activity>
-
 <template ngbModalContainer></template>
 
 <template #preferencesDisplay let-c="close" let-d="dismiss">
@@ -78,4 +77,20 @@
     <button type="button" class="btn btn-primary" (click)="c()">Save</button>
   </div>
 </template>
+
+<template #notesDisplay let-c="close" let-d="dismiss">
+  <div class="modal-header">
+    <h4 class="modal-title"><i class="fa fa-flag" aria-hidden="true"></i> Note</h4>
+  </div>
+  <div class="modal-body">
+    <div class="form-group">
+      <textarea class="form-control production-notes" [(ngModel)]="productionNotes"></textarea>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="d()">Close</button>
+    <button type="button" class="btn btn-primary" (click)="c()">Save</button>
+  </div>
+</template>
+
 <router-outlet></router-outlet>

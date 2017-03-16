@@ -24,7 +24,8 @@
       <ul class="items">
         <li
           *ngFor="let c of items; let i = index"
-          (contextmenu)="onContextMenu(i, $event)">{{ c.title }}</li>
+          [class.production-note]="c.productionNotes"
+          (contextmenu)="onContextMenu(i, c, $event)">{{ c.title }}</li>
       </ul>
     </div>
   </div>

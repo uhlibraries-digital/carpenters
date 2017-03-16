@@ -48,6 +48,13 @@
       .title {
         display: table-cell;
         width: 100%;
+
+        &.production-note::after{
+          font-family: 'FontAwesome';
+          content: "\f024";
+          padding-left: 10px;
+          color: $notes-flag;
+        }
       }
 
       .form-check-input {

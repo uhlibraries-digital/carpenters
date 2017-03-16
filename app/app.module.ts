@@ -31,6 +31,7 @@ import { LoggerService } from './shared/logger.service';
 import { FilesService } from './shared/files.service';
 import { CsvService } from './shared/csv.service';
 import { StandardItemService } from './shared/standard-item.service';
+import { ProductionNotesService } from './shared/production-notes.service';
 
 import { FileDraggable } from './file-manager/file-draggable.directive';
 import { AppRoutes } from './app.routes';
@@ -71,7 +72,8 @@ import { AppRoutes } from './app.routes';
     LoggerService,
     FilesService,
     CsvService,
-    StandardItemService
+    StandardItemService,
+    ProductionNotesService
   ],
   bootstrap: [ AppComponent ]
 })
