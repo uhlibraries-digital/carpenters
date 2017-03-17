@@ -1,6 +1,7 @@
 # Carpenters
 
-###Description
+### Description
+
 Carpenters is an ingest tool that allows preservation administrators to organize digitized content into
 hierarchies that preserve the contextual linkages and provenance of the original archival collection.  The
 tool allows for easy batch ingest preparation--creating nested directory structures and automatically
