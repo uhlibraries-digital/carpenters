@@ -18,12 +18,13 @@
   "scripts": {
     "build": "webpack --progress --profile --colors --display-error-details --display-cached",
     "watch": "webpack --watch --progress --profile --colors --display-error-details --display-cached",
-    "electron": "npm run build && electron app",
+    "electron": "npm run build && NODE_ENV=development electron app",
     "package": "npm run build && babel-node scripts/package.js --platform=all",
     "package:osx": "npm run build && babel-node scripts/package.js --platform=darwin",
     "package:win": "npm run build && babel-node scripts/package.js --platform=win32",
     "package:linux": "npm run build && babel-node scripts/package.js --platform=linux",
-    "postinstall": "typings install"
+    "postinstall": "typings install",
+    "start": "npm run electron"
   },
   "devDependencies": {
     "@angular/common": "2.0.0",
