@@ -532,6 +532,10 @@ export class FilesService {
         let mmFiles = filesByPerpose['modified-master'].splice(0, filesPerObject);
         let pmFiles = filesByPerpose['preservation'].splice(0, filesPerObject);
         let childFiles = acFiles.concat(mmFiles, pmFiles);
+
+        if (object.files === undefined) {
+          object.files = [];
+        }
         object.files = object.files.concat(childFiles);
 
         for (let f of childFiles) {

@@ -40,10 +40,16 @@ export class PreservationService {
       }
     });
     this.loadMap();
+
+    this.activity.finishedKey.subscribe((key) => {
+      if (key === 'preservation') {
+        this.log.info('Done packaging SIP');
+      }
+    })
   }
 
   package(location: string, resource: any): void {
-    this.activity.start();
+    this.activity.start('preservation');
     this.selectedResource = resource;
     this.location = location;
     this.selectedObjects = this.asService.selectedArchivalObjects();
@@ -52,7 +58,7 @@ export class PreservationService {
     }
 
     if (this.selectedObjects.length === 0) {
-      this.activity.stop();
+      this.activity.stop('preservation');
       this.log.error('No Archival Objects selected to export SIP');
       return;
     }
@@ -79,15 +85,14 @@ export class PreservationService {
         this.saveService.save();
         this.saveService.saveLocation = saveTmp;
 
-        this.log.info('Done packaging SIP');
-
         let logFilename = this.location + '/metadata/submissionDocumentation/' +
           'carpenters-' + this.log.toTodayISOString() + '.log';
-        writeFile(logFilename, this.log.toString());
-        this.activity.stop();
+        writeFile(logFilename, this.log.toString(), (err) => {
+          this.activity.stop('preservation');
+        });
       })
       .catch((err) => {
-        this.activity.stop();
+        this.activity.stop('preservation');
       });
   }
 

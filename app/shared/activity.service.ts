@@ -3,19 +3,25 @@ import { Injectable, Output, EventEmitter } from '@angular/core';
 @Injectable()
 export class ActivityService {
 
-  private activityBucket: string[] = [];
+  private activityBucket: any = {};
 
   @Output() active: EventEmitter<any> = new EventEmitter();
+  @Output() finishedKey: EventEmitter<any> = new EventEmitter();
 
-  start(): void {
-    this.activityBucket.push('active');
+  start(key: string = 'app'): void {
+    if (this.activityBucket[key] === undefined) {
+      this.activityBucket[key] = [];
+    }
+    this.activityBucket[key].push('active');
     this.active.emit(true);
   }
 
-  stop(): void {
-    this.activityBucket.pop();
-    if (this.activityBucket.length === 0) {
+  stop(key: string = 'app'): void {
+    if (this.activityBucket[key] === undefined ) { return; }
+    this.activityBucket[key].pop();
+    if (this.activityBucket[key].length === 0) {
       this.active.emit(false);
+      this.finishedKey.emit(key);
     }
   }
 

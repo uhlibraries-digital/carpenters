@@ -38,6 +38,7 @@ export class ExportService {
         this.loadSettings();
       }
     });
+    this.preferences = this.storage.get('preferences');
     this.loadSettings();
   }
 
