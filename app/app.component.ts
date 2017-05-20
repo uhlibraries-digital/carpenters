@@ -34,7 +34,7 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     this.preferences = this.storage.get('preferences');
-    if ((typeof this.preferences) !== 'object') {
+    if ((typeof this.preferences) !== 'object' || !this.preferences) {
       this.setupPreferences();
     }
     ipcRenderer.on('show-preferences', (event, arg) => {
