@@ -1,4 +1,4 @@
-import { Component, ViewEncapsulation, OnInit, ViewChild } from '@angular/core';
+import { Component, ViewEncapsulation, OnInit, ViewChild, HostListener } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ipcRenderer, remote } from 'electron';
 
@@ -7,6 +7,7 @@ let { webContents } = remote;
 import { LocalStorageService } from './shared/local-storage.service';
 import { ExportService } from './shared/export.service';
 import { ProductionNotesService } from './shared/production-notes.service';
+import { ActivityService } from './shared/activity.service';
 
 @Component({
   selector: 'app',
@@ -25,11 +26,19 @@ export class AppComponent implements OnInit {
   private productionNotes: string = '';
   private productionNotesChild: any;
 
+  private quitting = false;
+
   constructor(
     private storage: LocalStorageService,
     private exportService: ExportService,
     private modalService: NgbModal,
-    private notes: ProductionNotesService) {
+    private notes: ProductionNotesService,
+    private activity: ActivityService) {
+  }
+
+  @HostListener('window:beforeunload') checkActivity(event) {
+    this.quitting = true;
+    return this.activity.finishedAll();
   }
 
   ngOnInit(): void {
@@ -56,6 +65,13 @@ export class AppComponent implements OnInit {
     this.notes.displayNote.subscribe((child) => {
       this.productionNotesChild = child;
       webContents.getFocusedWebContents().send('show-notes');
+    });
+
+    this.activity.active.subscribe((loading) => {
+      if (!loading && this.quitting) {
+        let win = remote.getCurrentWindow();
+        win.close();
+      }
     });
   }
 

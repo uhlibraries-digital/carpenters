@@ -25,4 +25,13 @@ export class ActivityService {
     }
   }
 
+  finishedAll(): boolean {
+    for(let key in this.activityBucket) {
+      if (this.activityBucket[key].length > 0) {
+        return false;
+      }
+    }
+    return true;
+  }
+
 }
