@@ -36,7 +36,7 @@ export class FilesService {
     if (location === '') {
       return;
     }
-    this.activity.start();
+    this.activity.start('load-files');
     readdir(location, (err, files) => {
       if (err) {
         this.log.error(err.message);
@@ -50,7 +50,10 @@ export class FilesService {
           this.addAvailableFiles(new File(location + '/' + file));
         }
       }
-      this.activity.stop();
+      this.availableFiles.sort((a, b) => {
+        return a.name.localeCompare(b.name);
+      });
+      this.activity.stop('load-files');
     });
   }
 
