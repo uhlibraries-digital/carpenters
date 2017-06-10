@@ -41,12 +41,9 @@ export class SaveService {
       }
     }
 
-    this.activity.start();
+    this.activity.start('save');
     let saveObject = this.createSaveObject();
     this.saveToFile(saveObject, this.saveLocation);
-    this.saveStatus.emit(true);
-    this.log.success('Saved file: ' + this.saveLocation, false);
-    this.activity.stop();
   }
 
   open(): void {
@@ -174,8 +171,13 @@ export class SaveService {
   private saveToFile(object: any, filename: string): void {
     let dataString = JSON.stringify(object);
     writeFile(filename, dataString), (err) => {
+      this.saveStatus.emit(true);
+      this.activity.stop('save');
       if (err) {
-        dialog.showErrorBox('Error saving file', err.message);
+        this.log.error('Error saving file', err.message);
+      }
+      else {
+        this.log.success('Saved file: ' + this.saveLocation, false);
       }
     }
   }
