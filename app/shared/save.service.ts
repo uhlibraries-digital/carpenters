@@ -170,16 +170,16 @@ export class SaveService {
 
   private saveToFile(object: any, filename: string): void {
     let dataString = JSON.stringify(object);
-    writeFile(filename, dataString), (err) => {
+    writeFile(filename, dataString, (err) => {
       this.saveStatus.emit(true);
       this.activity.stop('save');
       if (err) {
-        this.log.error('Error saving file', err.message);
+        this.log.error('Error saving file: ' + err.message);
       }
       else {
         this.log.success('Saved file: ' + this.saveLocation, false);
       }
-    }
+    });
   }
 
   private loadObjects(obj: any): void {
