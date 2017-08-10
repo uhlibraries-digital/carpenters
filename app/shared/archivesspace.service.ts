@@ -37,15 +37,18 @@ export class ArchivesSpaceService {
     return this.request('/repositories');
   }
 
-  getResources(repositoryUri: string, page: number = 1): Promise<any> {
+  getResources(repositoryUri: string, page: number = 1, prevResults?: any): Promise<any> {
     let url = repositoryUri + '/resources';
     return this.request(url, {
       page_size: 100,
       page: page
     }).then((result) => {
       /* NEED TO FIGURE OUT WHAT TO DO WITH MORE THAN 100 RESOURCES */
+      if (prevResults) {
+        result.results = result.results.concat(prevResults.results);
+      }
       if (result.this_page < result.last_page) {
-        return this.getResources(repositoryUri, result.this_page + 1);
+        return this.getResources(repositoryUri, result.this_page + 1, result);
       }
       else {
         return result;
