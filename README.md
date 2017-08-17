@@ -9,7 +9,7 @@ organizing files in such a way that the resultant Archivematica-compatible SIP s
 physical arrangement of the original collection.  The tool eliminates the need for manually creating
 directories or moving files, making it ideal for larger-scale workflows.  The tool also has the capacity
 to mint package-specific ARKs, allowing the preservation package to have a persistent identifier that
-connects the preservation master files to the access objects produced in Armand.
+connects preservation master files to access objects.
 
 ### Packaging
 
