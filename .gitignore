@@ -3,4 +3,5 @@ node_modules
 bin
 build
 npm-debug.log
+package-lock.json
 .tmp

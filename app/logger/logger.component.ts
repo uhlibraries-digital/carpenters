@@ -48,7 +48,12 @@ export class LoggerComponent implements OnInit, AfterViewChecked {
       ]
     }, (filename) => {
       if (filename === undefined) return;
-      writeFile(filename, this.logger.toString());
+      writeFile(filename, this.logger.toString(), (err) => {
+        if (err) {
+          this.logger.error(err.message);
+          throw err;
+        }
+      });
     });
   }
 

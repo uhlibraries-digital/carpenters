@@ -23,7 +23,6 @@
     "package:osx": "npm run build && babel-node scripts/package.js --platform=darwin",
     "package:win": "npm run build && babel-node scripts/package.js --platform=win32",
     "package:linux": "npm run build && babel-node scripts/package.js --platform=linux",
-    "postinstall": "typings install",
     "start": "npm run electron"
   },
   "devDependencies": {
@@ -37,17 +36,23 @@
     "@angular/router": "3.0.0",
     "@angular/upgrade": "2.0.0",
     "@ng-bootstrap/ng-bootstrap": "1.0.0-alpha.7",
+    "@types/csv-stringify": "^1.4.1",
+    "@types/electron-packager": "^8.7.3",
+    "@types/mime": "^2.0.0",
+    "@types/mkdirp": "^0.5.1",
+    "@types/node": "^8.0.31",
+    "@types/random-seed": "^0.3.2",
     "babel": "^5.8.29",
     "core-js": "^2.4.1",
     "csv-stringify": "^1.0.2",
     "denodeify": "^1.2.1",
+    "electron": "1.7.8",
     "electron-packager": "8.5.1",
-    "electron": "1.4.13",
     "es6-shim": "^0.34.0",
     "json-loader": "^0.5.4",
     "lodash": "^3.10.1",
+    "mime": "^2.0.3",
     "minimist": "^1.2.0",
-    "mime": "^1.3.4",
     "mkdirp": "^0.5.1",
     "node-sass": "^3.8.0",
     "random-seed": "^0.3.0",
@@ -58,15 +63,14 @@
     "sass-loader": "^4.0.0",
     "systemjs": "0.19.27",
     "ts-loader": "^0.8.2",
-    "typescript": "^2.0.2",
-    "typings": "^1.3.2",
+    "typescript": "2.1.5",
     "webpack": "^1.13.2",
     "webpack-dev-server": "^1.16.1",
     "xlsx": "^0.8.0"
   },
   "dependencies": {
     "bootstrap": "4.0.0-alpha.4",
-    "font-awesome": "4.6.3",
+    "font-awesome": "^4.6.3",
     "zone.js": "^0.6.13"
   }
 }

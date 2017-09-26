@@ -1,4 +1,4 @@
-import { lookup } from 'mime';
+import { getType } from 'mime';
 import { statSync } from 'fs';
 
 export class File {
@@ -22,7 +22,7 @@ export class File {
     } catch(e) {
       console.error(e.message);
     }
-    this.type = lookup(this.path);
+    this.type = getType(this.path);
     this.purpose = this.setPurpose();
   }
 

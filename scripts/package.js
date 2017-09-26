@@ -28,7 +28,6 @@ function ignoreBuildFiles() {
     'electron-prebuild($|/)',
     'bin($|/)',
     '\.tmp($|/)',
-    'typings($|/)',
     'tsconfig.json',
     'webpack.config.js'
   ];
