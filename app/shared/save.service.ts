@@ -77,7 +77,7 @@ export class SaveService {
     let filenames = dialog.showOpenDialog({
       title: 'Open Project...',
       filters: [
-        { name: 'Carpetners File', extensions: ['carp'] }
+        { name: 'Carpenters File', extensions: ['carp'] }
       ],
       properties: [
         'openFile'
