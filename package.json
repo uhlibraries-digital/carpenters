@@ -1,7 +1,7 @@
 {
   "name": "carpenters",
   "description": "Digital preservation ingest utility",
-  "version": "2.0.0-alpha.6",
+  "version": "2.0.0-alpha.7",
   "author": {
     "name": "Sean Watkins",
     "email": "slwatkins@uh.edu"
@@ -48,7 +48,7 @@
     "csv-stringify": "^1.0.2",
     "denodeify": "^1.2.1",
     "electron": "1.7.8",
-    "electron-packager": "8.5.1",
+    "electron-packager": "9.1.0",
     "es6-shim": "^0.34.0",
     "json-loader": "^0.5.4",
     "lodash": "^3.10.1",
