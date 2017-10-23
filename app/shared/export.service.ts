@@ -63,14 +63,14 @@ export class ExportService {
     if (!location) {
       return;
     }
-    this.packagePreservation(location);
-    this.packageAccess(location + '_DIP');
+    this.packagePreservation(location)
+      .then((ark) => { this.packageAccess(location + '_DIP'); });
   }
 
-  private packagePreservation(location: string): void {
+  private packagePreservation(location: string): Promise<any> {
     let mint = this.storage.get('mint_sip');
     if (mint && !this.hasArk()) {
-      this.packagePreservationWithMint(location);
+      return this.packagePreservationWithMint(location);
     }
     else {
       if (this.hasArk()) {
@@ -80,10 +80,11 @@ export class ExportService {
       if (this.saveService.saveLocation) {
         this.saveService.save();
       }
+      return Promise.resolve(this.selectedResource.sip_ark);
     }
   }
 
-  private packagePreservationWithMint(location: string): void {
+  private packagePreservationWithMint(location: string): Promise<any> {
     this.log.info('Minting Preservation SIP Ark...', false);
     let erc = new Erc(
       this.preferences.minter.ercWho,
@@ -93,7 +94,7 @@ export class ExportService {
     );
     erc.when = erc.toTodayISOString();
     this.active.start();
-    this.minter.mint(erc)
+    return this.minter.mint(erc)
       .then(id => {
         this.active.stop();
         if (erc.where.indexOf('$ark$') > -1) {
@@ -106,6 +107,7 @@ export class ExportService {
         if (this.saveService.saveLocation) {
           this.saveService.save();
         }
+        return id;
       })
       .catch(error => {
         this.active.stop();

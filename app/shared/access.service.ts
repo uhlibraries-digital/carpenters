@@ -106,6 +106,9 @@ export class AccessService {
       mkdirp.sync(this.location + '/' + dirName);
       row[0] = dirName;
 
+      if (this.selectedResource.sip_ark) {
+        this.setCsvRowColumn(row, 'dcterms.source', this.selectedResource.sip_ark);
+      }
       this.setCsvRowColumn(row, 'uhlib.aSpaceUri', this.getObjectUri(object));
       this.setCsvRowColumn(row, 'productionNotes', this.getObjectProductionNotes(object));
 
