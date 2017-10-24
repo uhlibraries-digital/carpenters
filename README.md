@@ -19,13 +19,14 @@ To learn more about distributing, please read the [Application Distribution](htt
 
 ### Development
 
-Carpenters is built with [Angular 2](https://angular.io/) using Typescript. The main application starts in `app/app.ts`.
+Carpenters is built with [Angular 2](https://angular.io/) using Typescript. You will need to have [NodeJS](https://nodejs.org/en/) installed to run the build commands. The main application starts in `app/app.ts`.
 
-To build the application you can run one of these commands:
+To build the application you can run these commands:
 
-* `npm run build` will build the application
-* `npm run election` will build the application and start electron
-* `npm run watch` will watch the directory for changes and re-build the application
+* `cd <brays directory>`
+* `npm install` installs the required node dependancies
+* `npm start` will build the application and start Brays
+* `npm run watch` will watch the app directory for changes and re-build the application. Usefull while editing code
 
 ## License
 
