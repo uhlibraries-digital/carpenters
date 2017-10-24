@@ -23,9 +23,9 @@ Carpenters is built with [Angular 2](https://angular.io/) using Typescript. You 
 
 To build the application you can run these commands:
 
-* `cd <brays directory>`
+* `cd /path/to/carpenters`
 * `npm install` installs the required node dependancies
-* `npm start` will build the application and start Brays
+* `npm start` will build the application and start Carpenters
 * `npm run watch` will watch the app directory for changes and re-build the application. Usefull while editing code
 
 ## License
