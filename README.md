@@ -8,25 +8,26 @@ Carpenters is an ingest tool that allows archival curators, digitization technic
 
 You can package Carpenters by running the following commands based on your target system:
 
-* `npm run package:osx` will package for MacOS X x64
+* `npm run package:mac` will package for MacOS X x64
 * `npm run package:win` will package for Windows x64
 * `npm run package:linux` will package for Linux x64
 * `npm run package` will package all the above
 
-All packages are stored in the `bin` directory that gets created during the build process.
+All packages are stored in the `app-builds` directory that gets created during the build process.
 
 To learn more about distributing, please read the [Application Distribution](http://electron.atom.io/docs/tutorial/application-distribution/) documentation from Electron.
 
 ### Development
 
-Carpenters is built with [Angular 2](https://angular.io/) using Typescript. You will need to have [NodeJS](https://nodejs.org/en/) installed to run the build commands. The main application starts in `app/app.ts`.
+Carpenters is built with [Angular 4](https://angular.io/) using Typescript. You will need to have [NodeJS](https://nodejs.org/en/) installed to run the build commands. The main application starts in `main.ts`.
 
-To build the application you can run these commands:
+To build the application you can run one of these commands:
 
-* `cd /path/to/carpenters`
-* `npm install` installs the required node dependancies
-* `npm start` will build the application and start Carpenters
-* `npm run watch` will watch the app directory for changes and re-build the application. Usefull while editing code
+* `npm run build` will build the application
+* `npm start` will build the application and start it
+
+You need run a build `npm run build` before running `npm start` for the first time.
+You will only need to do this once.
 
 ## License
 

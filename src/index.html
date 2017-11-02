@@ -1,0 +1,27 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Carpenters</title>
+  <base href="">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+</head>
+<body>
+  <div class="container-fluid">
+    <app-root></app-root>
+  </div>
+  <script>
+    /** Previent Drag-n-Drop into Electron App **/
+    document.addEventListener('dragover', function (event) {
+      event.preventDefault();
+      return false;
+    }, false);
+    document.addEventListener('drop', function (event) {
+      event.preventDefault();
+      return false;
+    }, false);
+  </script>
+</body>
+</html>

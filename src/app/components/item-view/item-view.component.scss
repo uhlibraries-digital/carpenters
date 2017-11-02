@@ -1,0 +1,42 @@
+@import '../../../styles/_variables';
+
+.collection-info {
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+
+  .collection {
+    width: 60%;
+    float: left;
+  }
+
+  .items {
+    float: right;
+    width: auto;
+  }
+}
+
+.items-container {
+  clear: both;
+  width: 100%;
+  overflow-y: auto;
+  background-color: $light-background-color;
+  border-top: 1px solid $darker-background-color;
+
+  .items-list {
+    padding: 20px;
+
+    .items {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+
+      .production-note::after{
+        font-family: 'FontAwesome';
+        content: "\f024";
+        padding-left: 10px;
+        color: $notes-flag;
+      }
+    }
+  }
+}

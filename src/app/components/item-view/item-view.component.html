@@ -1,0 +1,36 @@
+<div class="item-view-container">
+    <div class="collection-info">
+      <div class="collection input-group">
+        <input
+          type="text"
+          placeholder="Collection Title"
+          class="form-control form-control-sm"
+          [(ngModel)]="resource.title"
+          (change)="setTitle()" />
+      </div>
+      <div class="items input-group">
+        <input
+          type="text"
+          size="3"
+          class="items-input form-control form-control-sm"
+          [(ngModel)]="addNumberOfItems"
+          (keyup.enter)="addItems()" />
+        <span class="input-group-btn">
+          <button
+            type="button"
+            class="btn btn-primary"
+            (click)="addItems()">Add Items</button>
+        </span>
+      </div>
+  </div>
+  <div class="items-container scrollbars">
+    <div class="items-list">
+      <ul class="items">
+        <li
+          *ngFor="let c of items; let i = index"
+          [class.production-note]="c.productionNotes"
+          (contextmenu)="onContextMenu(i, c, $event)">{{ c.title }}</li>
+      </ul>
+    </div>
+  </div>
+</div>

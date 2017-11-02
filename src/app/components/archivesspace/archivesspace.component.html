@@ -1,0 +1,59 @@
+<div class="row resource-selection">
+  <div class="form-inline">
+    <div class="form-group">
+      <label class="sr-only">Repository</label>
+      <select #repositoryList class="form-control" [ngModel]="selectedRepository" (ngModelChange)="loadResources($event)">
+        <option *ngFor="let r of repositories" value="{{ r.uri }}">{{ r.name }}</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="sr-only">Resource</label>
+      <select #resourceList class="form-control" [ngModel]="selectedResourceUri" (ngModelChange)="loadResource($event)">
+        <option *ngFor="let resource of resources" value="{{ resource.uri }}">{{ resource.title }}</option>
+      </select>
+    </div>
+    <div class="form-group mint-ark-option">
+      <div class="form-check">
+        <label class="form-check-label">
+          <input
+            class="form-check-input"
+            type="checkbox" [ngModel]="mintSip" (ngModelChange)="toggleMintSip($event)" />
+          Mint Ark on SIP Export
+        </label>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row resouce-container">
+  <ngb-tabset #appTabs class="tabset">
+    <ngb-tab title="Selection" id="selection">
+      <ng-template ngbTabContent>
+        <div *ngIf="selectedResource" class="resource-tree-container scrollbars">
+          <div class="resource-tree">
+            <tree-view [children]="selectedResource.tree.children"></tree-view>
+          </div>
+        </div>
+      </ng-template>
+    </ngb-tab>
+    <ngb-tab title="Files" id="files">
+      <ng-template ngbTabContent>
+        <div *ngIf="selectedResource" class="resource-file-container scrollbars">
+          <file-view [children]="selectedResource.tree.children"></file-view>
+        </div>
+        <div *ngIf="selectedResource" class="resource-file-browser">
+          <file-browser></file-browser>
+        </div>
+      </ng-template>
+    </ngb-tab>
+    <ngb-tab title="ARK Editor" id="editor">
+      <ng-template ngbTabContent>
+        <ark-editor></ark-editor>
+      </ng-template>
+    </ngb-tab>
+    <ngb-tab title="Log" id="logger">
+      <ng-template ngbTabContent>
+        <logger></logger>
+      </ng-template>
+    </ngb-tab>
+  </ngb-tabset>
+</div>
