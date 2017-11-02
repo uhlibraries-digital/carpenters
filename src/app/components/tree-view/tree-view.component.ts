@@ -1,9 +1,9 @@
 import { Component, Input, ChangeDetectorRef } from '@angular/core';
 
-import { ArchivesSpaceService } from '../../services/archivesspace.service';
-import { FilesService } from '../../services/files.service';
-import { ProductionNotesService } from '../../services/production-notes.service';
-import { ElectronService } from '../../services/electron.service';
+import { ArchivesSpaceService } from 'app/services/archivesspace.service';
+import { FilesService } from 'app/services/files.service';
+import { ProductionNotesService } from 'app/services/production-notes.service';
+import { ElectronService } from 'app/services/electron.service';
 
 @Component({
   selector: 'tree-view',

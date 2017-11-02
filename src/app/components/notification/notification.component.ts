@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 
-import { LoggerService } from '../../services/logger.service';
+import { LoggerService } from 'app/services/logger.service';
 
-import { Entry } from '../../classes/entry';
+import { Entry } from 'app/classes/entry';
 
 @Component({
   selector: 'notification',

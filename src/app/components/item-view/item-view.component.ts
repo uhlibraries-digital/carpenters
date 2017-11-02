@@ -1,9 +1,9 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 
-import { StandardItemService } from '../../services/standard-item.service';
-import { LoggerService } from '../../services/logger.service';
-import { ProductionNotesService } from '../../services/production-notes.service';
-import { ElectronService } from '../../services/electron.service';
+import { StandardItemService } from 'app/services/standard-item.service';
+import { LoggerService } from 'app/services/logger.service';
+import { ProductionNotesService } from 'app/services/production-notes.service';
+import { ElectronService } from 'app/services/electron.service';
 
 import { Item } from '../../classes/item';
 

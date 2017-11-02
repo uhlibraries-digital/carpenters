@@ -1,11 +1,11 @@
 import { Component, OnInit, ElementRef, ViewChild, ViewEncapsulation } from '@angular/core';
 
-import { StandardItemService } from '../../services/standard-item.service';
-import { LocalStorageService } from '../../services/local-storage.service';
-import { SessionStorageService } from '../../services/session-storage.service';
-import { SaveService } from '../../services/save.service';
-import { LoggerService } from '../../services/logger.service';
-import { ElectronService } from '../../services/electron.service';
+import { StandardItemService } from 'app/services/standard-item.service';
+import { LocalStorageService } from 'app/services/local-storage.service';
+import { SessionStorageService } from 'app/services/session-storage.service';
+import { SaveService } from 'app/services/save.service';
+import { LoggerService } from 'app/services/logger.service';
+import { ElectronService } from 'app/services/electron.service';
 
 import { Item } from '../../classes/item';
 

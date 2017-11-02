@@ -1,8 +1,8 @@
 import { Component, Input, ElementRef, Renderer } from '@angular/core';
 
-import { ArchivesSpaceService } from '../../services/archivesspace.service';
-import { FilesService } from '../../services/files.service';
-import { ElectronService } from '../../services/electron.service';
+import { ArchivesSpaceService } from 'app/services/archivesspace.service';
+import { FilesService } from 'app/services/files.service';
+import { ElectronService } from 'app/services/electron.service';
 
 @Component({
   selector: 'file-view',

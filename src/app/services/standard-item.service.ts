@@ -1,6 +1,6 @@
 import { Injectable, Output, EventEmitter }    from '@angular/core';
 
-import { Item } from '../classes/item';
+import { Item } from 'app/classes/item';
 
 @Injectable()
 export class StandardItemService {

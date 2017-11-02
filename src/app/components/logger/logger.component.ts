@@ -2,10 +2,10 @@ import { Component, ViewChild, AfterViewChecked, OnInit } from '@angular/core';
 import { ElementRef } from '@angular/core';
 import { writeFile } from 'fs';
 
-import { LoggerService } from '../../services/logger.service';
-import { ElectronService } from '../../services/electron.service';
+import { LoggerService } from 'app/services/logger.service';
+import { ElectronService } from 'app/services/electron.service';
 
-import { Entry } from '../../classes/entry';
+import { Entry } from 'app/classes/entry';
 
 @Component({
   selector: 'logger',

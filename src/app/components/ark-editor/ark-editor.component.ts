@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 
-import { ActivityService } from '../../services/activity.service';
-import { GreensService } from '../../services/greens.service';
-import { LocalStorageService } from '../../services/local-storage.service';
-import { LoggerService } from '../../services/logger.service';
-import { ElectronService } from '../../services/electron.service';
+import { ActivityService } from 'app/services/activity.service';
+import { GreensService } from 'app/services/greens.service';
+import { LocalStorageService } from 'app/services/local-storage.service';
+import { LoggerService } from 'app/services/logger.service';
+import { ElectronService } from 'app/services/electron.service';
 
 import { Erc } from '../../classes/erc';
 

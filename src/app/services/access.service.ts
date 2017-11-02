@@ -11,8 +11,8 @@ import { MapService } from './map.service';
 import { LoggerService } from './logger.service';
 import { CsvService } from './csv.service';
 
-import { MapField } from '../classes/map-field';
-import { File } from '../classes/file';
+import { MapField } from 'app/classes/map-field';
+import { File } from 'app/classes/file';
 
 @Injectable()
 export class AccessService {

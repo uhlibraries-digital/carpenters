@@ -1,13 +1,13 @@
 import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 
-import { ActivityService } from '../../services/activity.service';
-import { ArchivesSpaceService } from '../../services/archivesspace.service';
-import { SaveService } from '../../services/save.service';
-import { LocalStorageService } from '../../services/local-storage.service';
-import { SessionStorageService } from '../../services/session-storage.service';
-import { LoggerService } from '../../services/logger.service';
-import { ElectronService } from '../../services/electron.service';
+import { ActivityService } from 'app/services/activity.service';
+import { ArchivesSpaceService } from 'app/services/archivesspace.service';
+import { SaveService } from 'app/services/save.service';
+import { LocalStorageService } from 'app/services/local-storage.service';
+import { SessionStorageService } from 'app/services/session-storage.service';
+import { LoggerService } from 'app/services/logger.service';
+import { ElectronService } from 'app/services/electron.service';
 
 @Component({
   selector: 'archivesspace',

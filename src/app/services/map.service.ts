@@ -3,7 +3,7 @@ import { Headers, Http } from '@angular/http';
 
 import 'rxjs/add/operator/toPromise';
 
-import { MapField } from '../classes/map-field';
+import { MapField } from 'app/classes/map-field';
 
 @Injectable()
 export class MapService {

@@ -11,8 +11,8 @@ import { StandardItemService } from './standard-item.service';
 import { LoggerService } from './logger.service';
 import { ElectronService } from './electron.service';
 
-import { File } from '../classes/file';
-import { Item } from '../classes/item';
+import { File } from 'app/classes/file';
+import { Item } from 'app/classes/item';
 
 @Injectable()
 export class SaveService {

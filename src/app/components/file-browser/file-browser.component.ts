@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 
-import { FilesService } from '../../services/files.service';
-import { LoggerService } from '../../services/logger.service';
+import { FilesService } from 'app/services/files.service';
+import { LoggerService } from 'app/services/logger.service';
 
-import { File } from '../../classes/file';
+import { File } from 'app/classes/file';
 
 @Component({
   selector: 'file-browser',

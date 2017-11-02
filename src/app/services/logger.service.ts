@@ -1,6 +1,6 @@
 import { Injectable, Output, EventEmitter } from '@angular/core';
 
-import { Entry } from '../classes/entry';
+import { Entry } from 'app/classes/entry';
 
 @Injectable()
 export class LoggerService {

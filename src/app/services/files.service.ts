@@ -8,7 +8,7 @@ import { StandardItemService } from './standard-item.service';
 import { LoggerService } from './logger.service';
 import { ElectronService } from './electron.service';
 
-import { File } from '../classes/file';
+import { File } from 'app/classes/file';
 
 @Injectable()
 export class FilesService {
