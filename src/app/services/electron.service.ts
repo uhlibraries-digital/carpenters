@@ -2,12 +2,17 @@ import { Injectable } from '@angular/core';
 
 // If you import a module but never use any of the imported values other than as TypeScript types,
 // the resulting javascript file will look as if you never imported the module at all.
-import { ipcRenderer } from 'electron';
-import { dialog } from 'electron';
-import { remote } from 'electron';
-import { shell } from 'electron';
+import {
+  ipcRenderer,
+  dialog,
+  remote,
+  shell,
+  app,
+  Menu,
+  MenuItem,
+  webContents
+} from 'electron';
 import * as childProcess from 'child_process';
-let { app, Menu, MenuItem, webContents } = remote;
 
 @Injectable()
 export class ElectronService {
@@ -16,8 +21,8 @@ export class ElectronService {
   childProcess: typeof childProcess;
   dialog: typeof dialog;
   remote: typeof remote;
-  app: typeof app;
   shell: typeof shell;
+  app: typeof app;
   Menu: typeof Menu;
   MenuItem: typeof MenuItem;
   webContents: typeof webContents;
@@ -27,13 +32,13 @@ export class ElectronService {
     if (this.isElectron()) {
       this.ipcRenderer = window.require('electron').ipcRenderer;
       this.childProcess = window.require('child_process');
-      this.remote = remote;
-      this.app = app;
+      this.remote = window.require('electron').remote;
+      this.shell = window.require('electron').shell;
       this.dialog = this.remote.dialog;
-      this.Menu = Menu;
-      this.MenuItem = MenuItem;
-      this.shell = shell;
-      this.webContents = webContents;
+      this.app = this.remote.app;
+      this.Menu = this.remote.Menu;
+      this.MenuItem = this.remote.MenuItem;
+      this.webContents = this.remote.webContents;
     }
   }
 
