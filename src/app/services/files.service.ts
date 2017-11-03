@@ -75,6 +75,9 @@ export class FilesService {
       obj.files.push(newFile);
       usedFiles.push(newFile.name);
     }
+    obj.files.sort((a, b) => {
+      return a.name.localeCompare(b.name);
+    });
     this.removeAvailableFiles(usedFiles);
   }
 
