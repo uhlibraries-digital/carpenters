@@ -34,7 +34,6 @@ export class AppComponent {
 
     @HostListener('window:beforeunload') checkActivity(event) {
       this.quitting = true;
-      return this.activity.finishedAll();
       return this.activity.finished('save');
     }
 
