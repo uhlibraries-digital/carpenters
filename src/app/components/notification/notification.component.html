@@ -1,5 +1,13 @@
 <div class="notifications scrollbars">
   <div
+    *ngFor="let bar of progressbars"
+    class="notification info">
+    <div class="notification-content">
+      <div class="message">{{ bar.description }}</div>
+      <progress max="{{ bar.max }}" value="{{ bar.value }}"></progress>
+    </div>
+  </div>
+  <div
     *ngFor="let entry of entries; let i = index"
     [ngClass]="notifyClass(entry)">
     <div class="notification-content">

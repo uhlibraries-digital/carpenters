@@ -40,6 +40,7 @@ import { LoggerService } from './services/logger.service';
 import { MapService } from './services/map.service';
 import { PreservationService } from './services/preservation.service';
 import { ProductionNotesService } from './services/production-notes.service';
+import { ProgressBarService } from './services/progress-bar.service';
 import { SaveService } from './services/save.service';
 import { SessionStorageService } from './services/session-storage.service';
 import { StandardItemService } from './services/standard-item.service';
@@ -82,6 +83,7 @@ import { StandardItemService } from './services/standard-item.service';
     MapService,
     PreservationService,
     ProductionNotesService,
+    ProgressBarService,
     SaveService,
     SessionStorageService,
     StandardItemService
