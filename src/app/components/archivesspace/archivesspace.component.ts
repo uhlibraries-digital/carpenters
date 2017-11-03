@@ -59,8 +59,6 @@ export class ArchivesSpaceComponent implements OnInit {
     });
     this.electronService.ipcRenderer.on('open-project', (event, arg) => {
       this.saveService.open();
-      this.resourceList.nativeElement.disabled = true;
-      this.repositoryList.nativeElement.disabled = true;
     });
 
     this.asService.selectedResourceChanged.subscribe((resource) => {
@@ -110,6 +108,10 @@ export class ArchivesSpaceComponent implements OnInit {
         return a.title.localeCompare(b.title);
       });
       this.activity.stop();
+      if (this.saveService.fromProjectFile()) {
+        this.resourceList.nativeElement.disabled = true;
+        this.repositoryList.nativeElement.disabled = true;
+      }
     });
   }
 

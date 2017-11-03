@@ -72,6 +72,10 @@ export class SaveService {
     return this.saveLocation.match(/.*[/\\]/).toString();
   }
 
+  fromProjectFile(): boolean {
+    return !(this.saveLocation === null || this.saveLocation === '');
+  }
+
   private openDialog(): string {
     let filenames = this.electronService.dialog.showOpenDialog({
       title: 'Open Project...',
