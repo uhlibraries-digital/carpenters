@@ -57,6 +57,8 @@ export class FilesService {
   }
 
   addFilesToObject(obj: any, type: string, files?: any[]): void {
+    this.setSelectedObjects();
+
     if (!files) {
       files = this.selectFiles();
     }
@@ -124,6 +126,7 @@ export class FilesService {
   }
 
   fileAssigned(file: File): boolean {
+    this.setSelectedObjects();
     if (!this.selectedObjects) { return false; }
     let test = this.selectedObjects.findIndex((value) => {
       if (!Array.isArray(value.files)) {
@@ -560,6 +563,13 @@ export class FilesService {
       returnString += c.type + ' ' + c.indicator + ', ';
     }
     return returnString.slice(0, -2);
+  }
+
+  private setSelectedObjects(): void {
+    this.selectedObjects = this.asService.selectedArchivalObjects();
+    if (this.selectedObjects.length === 0) {
+      this.selectedObjects = this.standardItem.getAll();
+    }
   }
 
 }
