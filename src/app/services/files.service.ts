@@ -565,11 +565,4 @@ export class FilesService {
     return returnString.slice(0, -2);
   }
 
-  private setSelectedObjects(): void {
-    this.selectedObjects = this.asService.selectedArchivalObjects();
-    if (this.selectedObjects.length === 0) {
-      this.selectedObjects = this.standardItem.getAll();
-    }
-  }
-
 }
