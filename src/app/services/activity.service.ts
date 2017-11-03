@@ -34,4 +34,11 @@ export class ActivityService {
     return true;
   }
 
+  finished(key: string): boolean {
+    if (this.activityBucket[key] && this.activityBucket[key].length > 0) {
+      return false;
+    }
+    return true;
+  }
+
 }

@@ -134,11 +134,13 @@ export class ExportService {
       path = this.saveService.saveLocationBasePath() + '/';
     }
     path += this.selectedResource.id_0 || 'Untitled';
-    return this.electronService.dialog.showSaveDialog({
+    let location = this.electronService.dialog.showSaveDialog({
       title: 'Export...',
       buttonLabel: 'Export',
       defaultPath: path
     });
+
+    return location;
   }
 
   private loadSettings(): void {

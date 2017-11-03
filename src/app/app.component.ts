@@ -35,6 +35,7 @@ export class AppComponent {
     @HostListener('window:beforeunload') checkActivity(event) {
       this.quitting = true;
       return this.activity.finishedAll();
+      return this.activity.finished('save');
     }
 
     ngOnInit(): void {
@@ -63,8 +64,8 @@ export class AppComponent {
         this.electronService.webContents.getFocusedWebContents().send('show-notes');
       });
 
-      this.activity.active.subscribe((loading) => {
-        if (!loading && this.quitting) {
+      this.activity.finishedKey.subscribe((key) => {
+        if (key === 'save' && this.quitting) {
           let win = this.electronService.remote.getCurrentWindow();
           win.close();
         }
