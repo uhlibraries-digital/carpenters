@@ -195,7 +195,7 @@ export class ArchivesSpaceService {
       return Promise.reject('Missing ArchivesSpace endpoint');
     }
 
-    let body = 'password=' + password;
+    let body = 'password=' + encodeURIComponent(password);
     let headers = new Headers({ 'Content-Type': 'application/x-www-form-urlencoded' });
     let options = new RequestOptions({ headers: headers });
     let url = this.preferences.endpoint + '/users/' + username + '/login';
