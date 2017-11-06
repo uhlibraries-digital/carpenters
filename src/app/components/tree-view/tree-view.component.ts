@@ -128,7 +128,6 @@ export class TreeViewComponent {
       return e.index === c.index;
     });
     let files = parent.children[index].files;
-    this.file.availableFiles = this.file.availableFiles.concat(files);
     parent.children.splice(index, 1);
     parent.expanded = parent.children.length > 0;
 

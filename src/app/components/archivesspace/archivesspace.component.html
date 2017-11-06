@@ -40,9 +40,6 @@
         <div *ngIf="selectedResource" class="resource-file-container scrollbars">
           <file-view [children]="selectedResource.tree.children"></file-view>
         </div>
-        <div *ngIf="selectedResource" class="resource-file-browser">
-          <file-browser></file-browser>
-        </div>
       </ng-template>
     </ngb-tab>
     <ngb-tab title="ARK Editor" id="editor">

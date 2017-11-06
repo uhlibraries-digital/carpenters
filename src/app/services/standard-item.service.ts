@@ -43,6 +43,7 @@ export class StandardItemService {
   }
 
   getAll(): Item[] {
+    this.itemChanged.emit(this.items);
     return this.items;
   }
 

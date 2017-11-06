@@ -12,7 +12,6 @@ import { ActivityComponent } from './components/activity/activity.component';
 import { AppComponent } from './app.component';
 import { ArchivesSpaceComponent } from './components/archivesspace/archivesspace.component';
 import { ArkEditorComponent } from './components/ark-editor/ark-editor.component';
-import { FileBrowserComponent } from './components/file-browser/file-browser.component';
 import { FileViewComponent } from './components/file-view/file-view.component';
 import { ItemViewComponent } from './components/item-view/item-view.component';
 import { LoggerComponent } from './components/logger/logger.component';
@@ -52,7 +51,6 @@ import { StandardItemService } from './services/standard-item.service';
     AppComponent,
     ArchivesSpaceComponent,
     ArkEditorComponent,
-    FileBrowserComponent,
     FileViewComponent,
     ItemViewComponent,
     LoggerComponent,
