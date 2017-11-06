@@ -1,6 +1,11 @@
 import { Injectable } from '@angular/core';
-import { renameSync } from 'fs';
-import { writeFile } from 'fs';
+import {
+  rename,
+  writeFile,
+  statSync,
+  createReadStream,
+  createWriteStream
+} from 'fs';
 import * as mkdirp from 'mkdirp';
 
 import { ActivityService } from './activity.service';
@@ -9,6 +14,7 @@ import { StandardItemService } from './standard-item.service';
 import { LocalStorageService } from './local-storage.service';
 import { MapService } from './map.service';
 import { LoggerService } from './logger.service';
+import { ProgressBarService } from './progress-bar.service';
 import { CsvService } from './csv.service';
 import { SaveService } from './save.service';
 
@@ -24,6 +30,10 @@ export class PreservationService {
   private location: string;
   private hierarchySquances: any;
 
+  private progressBarId: string;
+  private totalProgress: number = 0;
+  private fileProgress: number[];
+
   constructor(
     private activity: ActivityService,
     private asService: ArchivesSpaceService,
@@ -32,7 +42,8 @@ export class PreservationService {
     private saveService: SaveService,
     private map: MapService,
     private log: LoggerService,
-    private csv: CsvService) {
+    private csv: CsvService,
+    private progress: ProgressBarService) {
 
     this.storage.changed.subscribe((key) => {
       if (key === 'preferences') {
@@ -44,8 +55,9 @@ export class PreservationService {
     this.activity.finishedKey.subscribe((key) => {
       if (key === 'preservation') {
         this.log.info('Done packaging SIP');
+        this.progress.clearProgressBar(this.progressBarId);
       }
-    })
+    });
   }
 
   package(location: string, resource: any): void {
@@ -62,6 +74,13 @@ export class PreservationService {
       this.log.error('No Archival Objects selected to export SIP');
       return;
     }
+
+    this.totalProgress = 0;
+    this.fileProgress = [];
+    this.progressBarId = this.progress.newProgressBar(
+      1,
+      'Creating preservation SIP' + (this.selectedObjects.length > 1 ? 's' : '')
+    );
 
     this.log.info('Creating SIP...', false);
     this.addFilePaths(this.selectedObjects);
@@ -109,12 +128,12 @@ export class PreservationService {
       if (preservationFiles.length > 0) {
         let path = 'objects/pm/' + o.path;
         rows.push(path);
-        rows = rows.concat(this.moveFiles(preservationFiles, path));
+        rows = rows.concat(this.copyFiles(preservationFiles, path));
       }
       if (modifiedFiles. length > 0) {
         let path = 'objects/mm/' + o.path;
         rows.push(path);
-        rows = rows.concat(this.moveFiles(modifiedFiles, path));
+        rows = rows.concat(this.copyFiles(modifiedFiles, path));
       }
     }
     rows.sort();
@@ -126,24 +145,73 @@ export class PreservationService {
     mkdirp.sync(this.location + '/' + path);
     for (let file of files) {
       let filename = this.location + '/' + path + file.name;
-      if (this.moveFile(file.path, filename)) {
-        rows.push(path + file.name);
-        file.path = filename;
-        this.log.success('Moved file ' + file.name + ' to ' + filename, false);
-      }
+      this.moveFile(file.path, filename)
+      rows.push(path + file.name);
+      file.path = filename;
     }
     return rows;
   }
 
-  private moveFile(src: string, dest: string): boolean {
+  private moveFile(src: string, dest: string): void {
+    this.activity.start('preservation');
+    this.totalProgress++;
+    rename(src, dest, (err) => {
+      if (err) {
+        this.activity.stop('preservation');
+        this.log.error('Failed to move file ' + src + ' to ' + dest);
+        this.log.error(err.message, false);
+        return;
+      }
+      
+      this.fileProgress[src] = 1;
+      let sum = Object.keys(this.fileProgress).reduce((sum, key) => {
+        return sum + this.fileProgress[key];
+      }, 0);
+      this.progress.setProgressBar(this.progressBarId, sum / this.totalProgress);
+      this.activity.stop('preservation');
+      this.log.success('Moved file ' + src + ' to ' + dest, false);
+    });
+  }
+
+  private copyFiles(files: File[], path: string): any[] {
+    let rows = [];
+    mkdirp.sync(this.location + '/' + path);
+    for (let file of files) {
+      let filename = this.location + '/' + path + file.name;
+      this.copyFile(file.path, filename);
+      rows.push(path + file.name);
+      this.log.success('Copied file ' + file.name + ' to ' + filename, false);
+    }
+    return rows;
+  }
+
+  private copyFile(src: string, dest: string): void {
+    this.activity.start('preservation');
     try {
-      renameSync(src, dest);
+      let stat = statSync(src);
+      this.totalProgress += stat.size;
+      this.fileProgress[src] = 0;
+
+      let ws = createWriteStream(dest);
+      ws.on('finish', () => {
+        this.activity.stop('preservation');
+      });
+
+      let rs = createReadStream(src);
+      rs.on('data', (buffer) => {
+        this.fileProgress[src] += buffer.length;
+        let sum = Object.keys(this.fileProgress).reduce((sum, key) => {
+          return sum + this.fileProgress[key];
+        }, 0);
+        this.progress.setProgressBar(this.progressBarId, sum / this.totalProgress);
+      });
+
+      rs.pipe(ws);
     }
     catch(e) {
+      this.activity.stop('preservation');
       this.log.error(e.message);
-      return false;
     }
-    return true;
   }
 
   private createDirectories(): boolean {

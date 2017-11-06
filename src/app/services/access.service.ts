@@ -1,6 +1,12 @@
 import { Injectable } from '@angular/core';
-import { renameSync } from 'fs';
-import { writeFile } from 'fs';
+import {
+  rename,
+  writeFile,
+  statSync,
+  createReadStream,
+  createWriteStream,
+  existsSync
+} from 'fs';
 import * as mkdirp from 'mkdirp';
 
 import { ActivityService } from './activity.service';
@@ -8,6 +14,7 @@ import { ArchivesSpaceService } from './archivesspace.service';
 import { StandardItemService } from './standard-item.service';
 import { LocalStorageService } from './local-storage.service';
 import { MapService } from './map.service';
+import { ProgressBarService } from './progress-bar.service';
 import { LoggerService } from './logger.service';
 import { CsvService } from './csv.service';
 
@@ -24,6 +31,10 @@ export class AccessService {
   private csvData: any[];
   private csvHeader: any[];
 
+  private progressBarId: string;
+  private totalProgress: number = 0;
+  private fileProgress: number[];
+
   constructor(
     private activity: ActivityService,
     private asService: ArchivesSpaceService,
@@ -31,7 +42,8 @@ export class AccessService {
     private storage: LocalStorageService,
     private map: MapService,
     private log: LoggerService,
-    private csv: CsvService) {
+    private csv: CsvService,
+    private progress: ProgressBarService) {
 
     this.storage.changed.subscribe((key) => {
       if (key === 'preferences') {
@@ -39,6 +51,13 @@ export class AccessService {
       }
     });
     this.loadMap();
+
+    this.activity.finishedKey.subscribe((key) => {
+      if (key === 'access') {
+        this.log.info('Done packaging DIP');
+        this.progress.clearProgressBar(this.progressBarId);
+      }
+    });
   }
 
   package(location: string, resource: any): void {
@@ -53,6 +72,13 @@ export class AccessService {
       this.log.error('No Archival Objects selected to export DIP');
       return;
     }
+
+    this.totalProgress = 0;
+    this.fileProgress = [];
+    this.progressBarId = this.progress.newProgressBar(
+      1,
+      'Creating access DIP' + (this.selectedObjects.length > 1 ? 's' : '')
+    );
 
     this.log.info('Creating DIP...', false);
     mkdirp.sync(this.location + '/objects');
@@ -76,7 +102,7 @@ export class AccessService {
   }
 
   private process(objects: any[]): void {
-    this.activity.start();
+    this.activity.start('access');
     let csv = [];
     this.csvHeader = this.getCsvHeader();
 
@@ -87,8 +113,7 @@ export class AccessService {
     this.log.info('Writting DIP metadata.csv', false);
     this.csv.write(this.location + '/metadata.csv', csv)
       .then(() => {
-        this.activity.stop();
-        this.log.info('Done packaging DIP');
+        this.activity.stop('access');
       });
   }
 
@@ -172,22 +197,61 @@ export class AccessService {
       let row = this.buildRow();
       let filename = dirName + '/' + file.name;
       row[0] = filename;
-      this.moveFile(file, this.location + '/' + filename);
+      this.copyFile(file.path, this.location + '/' + filename);
       csv.push(row);
     }
   }
 
-  private moveFile(file: File, dest: string): boolean {
+  private moveFile(src: string, dest: string): void {
+    this.activity.start('access');
+    this.totalProgress++;
+    rename(src, dest, (err) => {
+      if (err) {
+        this.activity.stop('access');
+        this.log.error('Failed to move file ' + src + ' to ' + dest);
+        this.log.error(err.message, false);
+        return;
+      }
+
+      this.fileProgress[src] = 1;
+      let sum = Object.keys(this.fileProgress).reduce((sum, key) => {
+        return sum + this.fileProgress[key];
+      }, 0);
+      this.progress.setProgressBar(this.progressBarId, sum / this.totalProgress);
+      this.activity.stop('access');
+      this.log.success('Moved file ' + src + ' to ' + dest, false);
+    });
+  }
+
+  private copyFile(src: string, dest: string): void {
+    this.activity.start('access');
     try {
-      renameSync(file.path, dest);
-      file.path = dest;
-      this.log.success('Moved file ' + file.name + ' to ' + dest, false);
+      let stat = statSync(src);
+      this.totalProgress += stat.size;
+      this.fileProgress[src] = 0;
+
+      let ws = createWriteStream(dest);
+      ws.on('finish', () => {
+        this.activity.stop('access');
+        this.log.success('Copied file ' + src + ' to ' + dest, false);
+      });
+
+      let rs = createReadStream(src);
+      rs.on('data', (buffer) => {
+        this.fileProgress[src] += buffer.length;
+        let sum = 0;
+        for (let psum in this.fileProgress) {
+          sum += this.fileProgress[psum];
+        }
+        this.progress.setProgressBar(this.progressBarId, sum / this.totalProgress);
+      });
+
+      rs.pipe(ws);
     }
     catch(e) {
+      this.activity.stop('access');
       this.log.error(e.message);
-      return false;
     }
-    return true;
   }
 
 }
