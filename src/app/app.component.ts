@@ -1,10 +1,12 @@
 import { Component, ViewEncapsulation, OnInit, ViewChild, HostListener } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+
 import { ElectronService } from './services/electron.service';
 import { LocalStorageService } from './services/local-storage.service';
 import { ExportService } from './services/export.service';
 import { ProductionNotesService } from './services/production-notes.service';
 import { ActivityService } from './services/activity.service';
+import { LoggerService } from './services/logger.service';
 
 @Component({
   selector: 'app-root',
@@ -30,11 +32,16 @@ export class AppComponent {
     private modalService: NgbModal,
     private notes: ProductionNotesService,
     private activity: ActivityService,
-    public electronService: ElectronService) { }
+    public electronService: ElectronService,
+    private log: LoggerService) { }
 
     @HostListener('window:beforeunload') checkActivity(event) {
       this.quitting = true;
-      return this.activity.finished('save');
+      let saving = !this.activity.finished('save');
+      if (saving) {
+        this.log.warn('Hold on while your project is being saved...')
+      }
+      return !saving
     }
 
     ngOnInit(): void {
