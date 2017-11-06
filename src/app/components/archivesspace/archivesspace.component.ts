@@ -59,6 +59,8 @@ export class ArchivesSpaceComponent implements OnInit {
     });
     this.electronService.ipcRenderer.on('open-project', (event, arg) => {
       this.saveService.open();
+      this.resourceList.nativeElement.disabled = true;
+      this.repositoryList.nativeElement.disabled = true;
     });
 
     this.asService.selectedResourceChanged.subscribe((resource) => {
