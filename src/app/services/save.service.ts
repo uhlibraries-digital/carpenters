@@ -1,9 +1,12 @@
 import { Injectable, Output, EventEmitter }    from '@angular/core';
 import { Router } from '@angular/router';
 
-import { writeFile } from 'fs';
-import { readFile } from 'fs';
-import { existsSync } from 'fs';
+import {
+  writeFile,
+  readFile,
+  existsSync
+} from 'fs';
+import { relative, dirname } from 'path';
 
 import { ActivityService } from './activity.service';
 import { ArchivesSpaceService } from './archivesspace.service';
@@ -73,7 +76,7 @@ export class SaveService {
   }
 
   fromProjectFile(): boolean {
-    return !(this.saveLocation === null || this.saveLocation === '');
+    return !(this.saveLocation === undefined || this.saveLocation === '');
   }
 
   private openDialog(): string {
@@ -136,7 +139,8 @@ export class SaveService {
       if (ao.files === undefined) { ao.files = []; }
 
       let files = ao.files.map((value) => {
-        return { path: value.path, purpose: value.purpose };
+        let path = relative(dirname(this.saveLocation), value.path);
+        return { path: path, purpose: value.purpose };
       });
       let object: any = {
         uri: ao.record_uri,
@@ -191,6 +195,7 @@ export class SaveService {
         .then((resource) => {
           this.selectedResource.sip_ark = obj.sip_ark || '';
           this.markSelections(obj.objects, this.selectedResource.tree.children);
+          this.asService.selectedArchivalObjects();
           if (this.selectedResource.sip_ark !== '') {
             this.log.success('SIP Ark: ' + this.selectedResource.sip_ark, false);
           }
@@ -250,9 +255,15 @@ export class SaveService {
 
   private convertToFileObjects(files: any[]): File[] {
     let mapFiles =  files.map((value) => {
+      let path = value.path;
+      value.path = dirname(this.saveLocation) + '/' + value.path;
       if (!existsSync(value.path)) {
-        this.log.error('File does not exist: ' + value.path);
-        return null;
+        /* Backwards compatibility */
+        value.path = path;
+        if (!existsSync(value.path)) {
+          this.log.error('File does not exist: ' + value.path);
+          return null;
+        }
       }
       let file = new File(value.path);
       file.setPurpose(value.purpose);

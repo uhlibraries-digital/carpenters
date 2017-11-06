@@ -15,6 +15,7 @@ export class ArchivesSpaceService {
   public selectedResource: any;
 
   @Output() selectedResourceChanged: EventEmitter<any> = new EventEmitter();
+  @Output() selectedArchivalObjectsChanged: EventEmitter<any> = new EventEmitter<any>();
 
   constructor(
     private storage: LocalStorageService,
@@ -142,10 +143,13 @@ export class ArchivesSpaceService {
 
   selectedArchivalObjects(): any[] {
     if (!this.selectedResource) {
+      this.selectedArchivalObjectsChanged.emit([]);
       return [];
     }
 
-    return this.selectedArchivalObject(this.selectedResource.tree.children);
+    let list = this.selectedArchivalObject(this.selectedResource.tree.children);
+    this.selectedArchivalObjectsChanged.emit(list);
+    return list;
   }
 
   padLeft(value: any, length: number, character: string): string {
