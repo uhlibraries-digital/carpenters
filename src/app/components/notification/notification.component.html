@@ -1,4 +1,4 @@
-<div class="notifications scrollbars">
+<div #notifications class="notifications scrollbars" [ngStyle]="notificationStyles()">
   <div
     *ngFor="let bar of progressbars"
     class="notification info">

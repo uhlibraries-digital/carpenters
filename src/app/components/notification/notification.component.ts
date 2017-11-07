@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 
 import { LoggerService } from 'app/services/logger.service';
 import { ProgressBarService } from 'app/services/progress-bar.service';
@@ -15,6 +15,8 @@ export class NotificationComponent implements OnInit {
 
   entries: Entry[];
   progressbars: ProgressBar[];
+
+  @ViewChild('notifications') element: ElementRef;
 
   constructor(
     private log: LoggerService,
@@ -44,6 +46,14 @@ export class NotificationComponent implements OnInit {
 
   closeAll(): void {
     this.entries = [];
+  }
+
+  notificationStyles(): any {
+    if (this.element.nativeElement.scrollHeight > this.element.nativeElement.offsetHeight
+      && this.entries.length > 0) {
+      return { 'pointer-events': 'auto'};
+    }
+    return { 'pointer-events': 'none'};
   }
 
 
