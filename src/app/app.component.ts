@@ -95,6 +95,7 @@ export class AppComponent {
     setupPreferences(): void {
       this.preferences = {
         'archivesspace': {
+          'frontend': '',
           'endpoint': '',
           'username': '',
           'password': ''

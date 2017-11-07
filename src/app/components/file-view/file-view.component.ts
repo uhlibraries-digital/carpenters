@@ -3,6 +3,8 @@ import { Component, Input, ElementRef, Renderer } from '@angular/core';
 import { ArchivesSpaceService } from 'app/services/archivesspace.service';
 import { FilesService } from 'app/services/files.service';
 import { ElectronService } from 'app/services/electron.service';
+import { LocalStorageService } from 'app/services/local-storage.service';
+import { LoggerService } from 'app/services/logger.service';
 
 @Component({
   selector: 'file-view',
@@ -17,7 +19,9 @@ export class FileViewComponent {
     private asService: ArchivesSpaceService,
     private renderer: Renderer,
     private files: FilesService,
-    private electronService: ElectronService) { }
+    private electronService: ElectronService,
+    private storage: LocalStorageService,
+    private log: LoggerService) { }
 
   getParents(c: any): any[] {
     return this.asService.parentsToArray(c);
@@ -71,6 +75,21 @@ export class FileViewComponent {
 
   openFile(path: string): void {
     this.electronService.shell.openItem(path);
+  }
+
+  openArchivalObjectUrl(c: any) {
+    let preferences = this.storage.get('preferences');
+    if (!preferences.archivesspace.frontend) {
+      this.log.warn('Please include the Archives Space Frontend URL in preferences.');
+      return;
+    }
+
+    if (c.artificial) {
+      this.electronService.shell.openExternal(preferences.archivesspace.frontend + c.parent_uri);
+    }
+    else {
+      this.electronService.shell.openExternal(preferences.archivesspace.frontend + c.record_uri);
+    }
   }
 
 }

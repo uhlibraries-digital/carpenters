@@ -7,6 +7,15 @@
     font-size: 1.25em;
   }
 
+  .level {
+    display: inline-block;
+
+    &:hover{
+      cursor: pointer;
+      text-decoration: underline;
+    }
+  }
+
   .parent-title::after {
     content: '>';
     padding: 0 5px;
@@ -127,10 +136,6 @@
       margin-right: 5px;
 
       .file {
-        div {
-          overflow: hidden;
-          white-space: nowrap;
-        }
         .filename {
           cursor: pointer;
           font-size: 0.9em;

@@ -1,9 +1,9 @@
 <div *ngFor="let c of children" class="file-container">
   <div *ngIf="c.selected" class="file">
     <div class="title">
-      <span [ngClass]="containerClass(c)">{{ displayContainer(c) }}</span>
+      <span class="object-container item">{{ displayContainer(c) }}</span>
     </div>
-    <div class="level">
+    <div class="level" (click)="openArchivalObjectUrl(c)">
       <span class="parent-title" *ngIf="c.artificial">{{ c.parent.title }}</span>{{ c.title }}
     </div>
     <div class="file-list">

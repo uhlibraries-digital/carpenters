@@ -23,6 +23,10 @@
     <div class="modal-body-pane">
       <div class="archivesspace-preference" *ngIf="preferenceIndex === 0">
         <div class="input-group form-group">
+          <label class="input-group-addon">Frontend URL</label>
+          <input class="form-control" type="text" [(ngModel)]="preferences.archivesspace.frontend" />
+        </div>
+        <div class="input-group form-group">
           <label class="input-group-addon">Endpoint</label>
           <input class="form-control" type="text" [(ngModel)]="preferences.archivesspace.endpoint" />
         </div>
