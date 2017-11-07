@@ -1,7 +1,9 @@
 import { lookup } from 'mime-types';
 import { statSync } from 'fs';
+import { v4 } from 'uuid';
 
 export class File {
+  uuid: string;
   name: string;
   path: string;
   lastModified: number;
@@ -11,6 +13,7 @@ export class File {
   purpose: string;
 
   constructor(path: string) {
+    this.uuid = v4();
     this.name = this.basename(path);
     this.path = path;
 
@@ -23,7 +26,7 @@ export class File {
       console.error(e.message);
     }
 
-    this.type = lookup(this.path); 
+    this.type = lookup(this.path);
     this.purpose = this.setPurpose();
   }
 

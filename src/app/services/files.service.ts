@@ -16,6 +16,8 @@ export class FilesService {
   selectedObjects: any;
   unselectObjects: any;
 
+  purposeMap: any[];
+
   @Output() filesChanged: EventEmitter<any> = new EventEmitter();
 
   constructor(
@@ -37,9 +39,28 @@ export class FilesService {
       this.selectedObjects = this.standardItem.getAll();
     }
 
+    this.purposeMap = [
+      {
+        name: 'preservation',
+        title: 'Preservation'
+      },
+      {
+        name: 'modified-master',
+        title: 'Modified Master'
+      },
+      {
+        name: 'access-copy',
+        title: 'Access Copy'
+      },
+      {
+        name: 'sub-documents',
+        title: 'Submission Documentation'
+      },
+    ];
+
   }
 
-  addFilesToObject(obj: any, type: string, files?: any[]): void {
+  addFilesToObject(obj: any, purpose: string, files?: any[]): void {
     if (!files) {
       files = this.selectFiles();
     }
@@ -50,13 +71,11 @@ export class FilesService {
     if (!obj.files) {
       obj.files = [];
     }
-    let usedFiles: string[] = [];
     for (let file of files) {
       let newFile = new File(file);
-      newFile.setPurpose(type);
+      newFile.setPurpose(purpose);
       this.removeFileFromObjects(newFile);
       obj.files.push(newFile);
-      usedFiles.push(newFile.name);
     }
     obj.files.sort((a, b) => {
       return a.name.localeCompare(b.name);

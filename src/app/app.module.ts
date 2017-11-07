@@ -44,6 +44,9 @@ import { SaveService } from './services/save.service';
 import { SessionStorageService } from './services/session-storage.service';
 import { StandardItemService } from './services/standard-item.service';
 
+/* Pipes */
+import { FilePurposeFilterPipe } from './pipes/file-purpose-filter.pipe';
+
 
 @NgModule({
   declarations: [
@@ -58,7 +61,9 @@ import { StandardItemService } from './services/standard-item.service';
     StandardComponent,
     TreeViewComponent,
 
-    FileDraggable
+    FileDraggable,
+
+    FilePurposeFilterPipe
   ],
   imports: [
     AppRoutingModule,

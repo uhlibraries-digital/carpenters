@@ -17,8 +17,7 @@ export class FileViewComponent {
     private asService: ArchivesSpaceService,
     private renderer: Renderer,
     private files: FilesService,
-    private electronService: ElectronService) {
-  }
+    private electronService: ElectronService) { }
 
   getParents(c: any): any[] {
     return this.asService.parentsToArray(c);
@@ -32,12 +31,12 @@ export class FileViewComponent {
     return ['object-container', c.level].join(' ');
   }
 
-  removeFile(c: any, index: number): void {
-    let file = c.files[index];
+  removeFile(c: any, uuid: string): void {
+    let index = c.files.findIndex(file => file.uuid === uuid);
     c.files.splice(index, 1);
   }
 
-  handleDrop(c: any, type: string, e: any): void {
+  handleDrop(c: any, purpose: string, e: any): void {
     e.stopPropagation();
     e.preventDefault();
     this.renderer.setElementClass(e.target, 'hover', false);
@@ -55,7 +54,7 @@ export class FileViewComponent {
     for( let file of dropFiles ) {
       files.push(file.path);
     }
-    this.files.addFilesToObject(c, type, files);
+    this.files.addFilesToObject(c, purpose, files);
   }
 
   handleDragEnter(target: ElementRef): void {
