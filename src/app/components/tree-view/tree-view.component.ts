@@ -113,6 +113,7 @@ export class TreeViewComponent {
       children: [],
       containers: [this.file.convertToASContainer(container)],
       record_uri: undefined,
+      parent_uri: c.record_uri,
       node_type: undefined,
       artificial: true,
       level: 'item',

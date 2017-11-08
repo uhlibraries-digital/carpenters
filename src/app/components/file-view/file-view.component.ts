@@ -84,11 +84,11 @@ export class FileViewComponent {
       return;
     }
 
-    if (c.artificial) {
-      this.electronService.shell.openExternal(preferences.archivesspace.frontend + c.parent_uri);
+    if (c.artificial && c.parent_uri) {
+      this.electronService.shell.openExternal(this.preferences.archivesspace.frontend + c.parent_uri);
     }
-    else {
-      this.electronService.shell.openExternal(preferences.archivesspace.frontend + c.record_uri);
+    else if(c.record_uri) {
+      this.electronService.shell.openExternal(this.preferences.archivesspace.frontend + c.record_uri);
     }
   }
 
