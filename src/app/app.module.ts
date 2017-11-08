@@ -37,7 +37,7 @@ import { GreensService } from './services/greens.service';
 import { LocalStorageService } from './services/local-storage.service';
 import { LoggerService } from './services/logger.service';
 import { MapService } from './services/map.service';
-import { PreservationService } from './services/preservation.service';
+import { PreferencesService } from './services/preferences.service';
 import { ProductionNotesService } from './services/production-notes.service';
 import { ProgressBarService } from './services/progress-bar.service';
 import { SaveService } from './services/save.service';
@@ -84,7 +84,7 @@ import { FilePurposeFilterPipe } from './pipes/file-purpose-filter.pipe';
     LocalStorageService,
     LoggerService,
     MapService,
-    PreservationService,
+    PreferencesService,
     ProductionNotesService,
     ProgressBarService,
     SaveService,

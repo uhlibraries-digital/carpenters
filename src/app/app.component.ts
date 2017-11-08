@@ -2,11 +2,11 @@ import { Component, ViewEncapsulation, OnInit, ViewChild, HostListener } from '@
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 import { ElectronService } from './services/electron.service';
-import { LocalStorageService } from './services/local-storage.service';
 import { ExportService } from './services/export.service';
 import { ProductionNotesService } from './services/production-notes.service';
 import { ActivityService } from './services/activity.service';
 import { LoggerService } from './services/logger.service';
+import { PreferencesService } from './services/preferences.service';
 
 @Component({
   selector: 'app-root',
@@ -27,7 +27,7 @@ export class AppComponent {
   private quitting = false;
 
   constructor(
-    private storage: LocalStorageService,
+    private preferenceService: PreferencesService,
     private exportService: ExportService,
     private modalService: NgbModal,
     private notes: ProductionNotesService,
@@ -45,10 +45,14 @@ export class AppComponent {
     }
 
     ngOnInit(): void {
-      this.preferences = this.storage.get('preferences');
-      if ((typeof this.preferences) !== 'object' || !this.preferences) {
-        this.setupPreferences();
+      this.preferenceService.preferencesChange.subscribe((data) => {
+        this.preferences = data;
+      });
+      this.preferenceService.load();
+      if (this.preferenceService.new) {
+        this.showPreferences();
       }
+
       this.electronService.ipcRenderer.on('show-preferences', (event, arg) => {
         this.showPreferences();
       });
@@ -85,34 +89,11 @@ export class AppComponent {
         keyboard: false,
         size: 'lg'
       }).result.then((result) => {
-        this.storage.set('preferences', this.preferences);
+        this.preferenceService.set(this.preferences);
       },
       (rejected) => {
-        this.preferences = this.storage.get('preferences');
+        this.preferences = this.preferenceService.data;
       });
-    }
-
-    setupPreferences(): void {
-      this.preferences = {
-        'archivesspace': {
-          'frontend': '',
-          'endpoint': '',
-          'username': '',
-          'password': ''
-        },
-        'map': {
-          'archival': '',
-          'full': ''
-        },
-        'minter': {
-          'endpoint': '',
-          'prefix': '',
-          'key': '',
-          'ercWho': '',
-          'ercWhere': ''
-        }
-      }
-      this.showPreferences();
     }
 
     showNotes(): void {

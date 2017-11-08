@@ -3,7 +3,7 @@ import { Headers, Http, RequestOptions, URLSearchParams } from '@angular/http';
 
 import 'rxjs/add/operator/toPromise';
 
-import { LocalStorageService } from './local-storage.service';
+import { PreferencesService } from './preferences.service';
 import { SessionStorageService } from './session-storage.service';
 
 @Injectable()
@@ -18,15 +18,14 @@ export class ArchivesSpaceService {
   @Output() selectedArchivalObjectsChanged: EventEmitter<any> = new EventEmitter<any>();
 
   constructor(
-    private storage: LocalStorageService,
+    private preferenceService: PreferencesService,
     private sessionStorage: SessionStorageService,
     private http: Http) {
-    this.storage.changed.subscribe(key => {
-      if (key === 'preferences') {
-        this.loadPreferences();
-      }
+
+    this.preferenceService.preferencesChange.subscribe((data) => {
+      this.preferences = data;
     });
-    this.loadPreferences();
+    this.preferences = this.preferenceService.data;
   }
 
   clear(): void {
@@ -86,7 +85,7 @@ export class ArchivesSpaceService {
   }
 
   request(uri: string, params?: any): Promise<any> {
-    if (!this.preferences) {
+    if (!this.preferences.archivesspace) {
       return Promise.reject('Preferences are not set');
     }
 
@@ -94,7 +93,7 @@ export class ArchivesSpaceService {
     let session = this.sessionStorage.get(this.storageKey);
 
     if (!session.expires || session.expires <= today.getTime()) {
-      return this.login(this.preferences.username, this.preferences.password)
+      return this.login(this.preferences.archivesspace.username, this.preferences.archivesspace.password)
         .then((session) => {
           return this._request(uri, params, session);
         });
@@ -181,7 +180,7 @@ export class ArchivesSpaceService {
       headers: headers,
       search: searchParams
     });
-    let url = this.preferences.endpoint + uri;
+    let url = this.preferences.archivesspace.endpoint + uri;
 
     return this.http.get(url, options)
       .toPromise()
@@ -195,14 +194,14 @@ export class ArchivesSpaceService {
     if (username === '' || password === '') {
       return Promise.reject('Missing username/password for ArchivesSpace');
     }
-    if (this.preferences.endpoint === '') {
+    if (this.preferences.archivesspace.endpoint === '') {
       return Promise.reject('Missing ArchivesSpace endpoint');
     }
 
     let body = 'password=' + encodeURIComponent(password);
     let headers = new Headers({ 'Content-Type': 'application/x-www-form-urlencoded' });
     let options = new RequestOptions({ headers: headers });
-    let url = this.preferences.endpoint + '/users/' + username + '/login';
+    let url = this.preferences.archivesspace.endpoint + '/users/' + username + '/login';
 
     return this.http.post(url, body, options)
       .toPromise()
@@ -251,15 +250,5 @@ export class ArchivesSpaceService {
     }
     return list;
   }
-
-  private loadPreferences(): boolean {
-    let preferences = this.storage.get('preferences');
-    if (!preferences) {
-      return false;
-    }
-    this.preferences = preferences.archivesspace;
-    return true;
-  }
-
 
 }

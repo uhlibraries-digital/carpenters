@@ -2,9 +2,9 @@ import { Component, OnInit } from '@angular/core';
 
 import { ActivityService } from 'app/services/activity.service';
 import { GreensService } from 'app/services/greens.service';
-import { LocalStorageService } from 'app/services/local-storage.service';
 import { LoggerService } from 'app/services/logger.service';
 import { ElectronService } from 'app/services/electron.service';
+import { PreferencesService } from 'app/services/preferences.service';
 
 import { Erc } from '../../classes/erc';
 
@@ -18,30 +18,30 @@ export class ArkEditorComponent implements OnInit {
   erc: Erc;
   ark: string = '';
   fetched: boolean = false;
+  preferences: any;
 
   constructor(
     private activity: ActivityService,
     private minter: GreensService,
-    private storage: LocalStorageService,
     private log: LoggerService,
-    private electronService: ElectronService) {
+    private electronService: ElectronService,
+    private preferenceService: PreferencesService) {
   }
 
   ngOnInit(): void {
-    this.storage.changed.subscribe((key) => {
-      if (key === 'preferences') {
-        this.setMinter();
-      }
+    this.preferenceService.preferencesChange.subscribe((data) => {
+      this.preferences = data;
+      this.setMinter();
     });
-
+    this.preferences = this.preferenceService.data;
     this.setMinter();
+    
     this.erc = this.createErc();
     this.fetched = false;
   }
 
   createErc(): Erc {
-    let p = this.storage.get('preferences');
-    let erc = new Erc(p.minter.ercWho, '', '', p.minter.ercWhere);
+    let erc = new Erc(this.preferences.minter.ercWho, '', '', this.preferences.minter.ercWhere);
     erc.when = erc.toTodayISOString();
     return erc;
   }
@@ -67,9 +67,8 @@ export class ArkEditorComponent implements OnInit {
   }
 
   setMinter(): void {
-    let preferences = this.storage.get('preferences');
-    this.minter.setEndpoint(preferences.minter.endpoint, preferences.minter.prefix);
-    this.minter.setApiKey(preferences.minter.key);
+    this.minter.setEndpoint(this.preferences.minter.endpoint, this.preferences.minter.prefix);
+    this.minter.setApiKey(this.preferences.minter.key);
   }
 
   reset(): void {
