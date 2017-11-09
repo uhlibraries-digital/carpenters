@@ -20,8 +20,10 @@ export class ActivityService {
     if (this.activityBucket[key] === undefined ) { return; }
     this.activityBucket[key].pop();
     if (this.activityBucket[key].length === 0) {
-      this.active.emit(false);
       this.finishedKey.emit(key);
+    }
+    if (this.finishedAll()) {
+      this.active.emit(false);
     }
   }
 

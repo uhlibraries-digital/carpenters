@@ -42,6 +42,7 @@ import { ProductionNotesService } from './services/production-notes.service';
 import { ProgressBarService } from './services/progress-bar.service';
 import { SaveService } from './services/save.service';
 import { SessionStorageService } from './services/session-storage.service';
+import { SipService } from './services/sip.service';
 import { StandardItemService } from './services/standard-item.service';
 
 /* Pipes */
@@ -89,6 +90,7 @@ import { FilePurposeFilterPipe } from './pipes/file-purpose-filter.pipe';
     ProgressBarService,
     SaveService,
     SessionStorageService,
+    SipService,
     StandardItemService
   ],
   bootstrap: [AppComponent]

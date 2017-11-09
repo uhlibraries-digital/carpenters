@@ -115,6 +115,7 @@ export class SaveService {
         containers: so.containers,
         level: so.level,
         productionNotes: so.productionNotes || '',
+        pm_ark: so.pm_ark,
         files: files
       });
     }
@@ -122,7 +123,6 @@ export class SaveService {
     return ({
       type: 'standard',
       resource: resource,
-      sip_ark: resource.sip_ark || '',
       objects: objects
     });
   }
@@ -146,7 +146,8 @@ export class SaveService {
         uri: ao.record_uri,
         files: files,
         artificial: ao.artificial,
-        productionNotes: this.getObjectProductionNotes(ao)
+        productionNotes: this.getObjectProductionNotes(ao),
+        pm_ark: ao.pm_ark
       };
       if (ao.artificial) {
         object.title = ao.title;
@@ -160,7 +161,6 @@ export class SaveService {
     return ({
       type: 'findingaid',
       resource: resource,
-      sip_ark: this.selectedResource.sip_ark || '',
       objects: objects
     });
   }
@@ -193,12 +193,8 @@ export class SaveService {
     if (obj.type === 'findingaid') {
       this.asService.getResource(obj.resource)
         .then((resource) => {
-          this.selectedResource.sip_ark = obj.sip_ark || '';
           this.markSelections(obj.objects, this.selectedResource.tree.children);
           this.asService.selectedArchivalObjects();
-          if (this.selectedResource.sip_ark !== '') {
-            this.log.success('SIP Ark: ' + this.selectedResource.sip_ark, false);
-          }
           this.log.success('Loaded file: ' + this.saveLocation, false);
         });
     }
@@ -209,16 +205,13 @@ export class SaveService {
 
   private loadStandardObjects(obj: any): void {
     this.standardItem.setResourceTitle(obj.resource.title);
-    this.standardItem.setResourceSipArk(obj.sip_ark);
     for (let o of obj.objects) {
       let item: Item = o;
       item.files = this.convertToFileObjects(o.files);
       item.selected = true;
       item.productionNotes = o.productionNotes;
+      item.pm_ark = o.pm_ark;
       this.standardItem.push(item);
-    }
-    if (obj.sip_ark !== '') {
-      this.log.success('SIP Ark: ' + obj.sip_ark, false);
     }
     this.log.success('Loaded file: ' + this.saveLocation, false);
   }
@@ -231,6 +224,7 @@ export class SaveService {
       if (found) {
         c.selected = true;
         c.productionNotes = found.productionNotes || '';
+        c.pm_ark = found.pm_ark;
         c.files = this.convertToFileObjects(found.files);
       }
 

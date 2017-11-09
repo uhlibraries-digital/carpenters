@@ -2,6 +2,7 @@ import { File } from './file';
 
 export class Item {
   title: string;
+  pm_ark: string;
   level: string;
   selected: boolean = true;
   containers: any[];
@@ -16,6 +17,7 @@ export class Item {
     this.selected = true;
     this.productionNotes = '';
     this.files = [];
+    this.pm_ark = '';
   }
 
   assignTitleAndContainer(index: number): void {
