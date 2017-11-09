@@ -12,8 +12,8 @@ import * as mkdirp from 'mkdirp';
 import { ActivityService } from './activity.service';
 import { ArchivesSpaceService } from './archivesspace.service';
 import { StandardItemService } from './standard-item.service';
-import { LocalStorageService } from './local-storage.service';
 import { MapService } from './map.service';
+import { PreferencesService } from './preferences.service';
 import { ProgressBarService } from './progress-bar.service';
 import { LoggerService } from './logger.service';
 import { CsvService } from './csv.service';
@@ -22,8 +22,9 @@ import { MapField } from 'app/classes/map-field';
 import { File } from 'app/classes/file';
 
 @Injectable()
-export class AccessService {
+export class DipService {
 
+  private preferences: any;
   private selectedObjects: any;
   private selectedResource: any;
   private mapFields: MapField[];
@@ -39,17 +40,17 @@ export class AccessService {
     private activity: ActivityService,
     private asService: ArchivesSpaceService,
     private standardItem: StandardItemService,
-    private storage: LocalStorageService,
+    private preferenceService: PreferencesService,
     private map: MapService,
     private log: LoggerService,
     private csv: CsvService,
     private progress: ProgressBarService) {
 
-    this.storage.changed.subscribe((key) => {
-      if (key === 'preferences') {
-        this.loadMap();
-      }
-    });
+    this.preferenceService.preferencesChange.subscribe((data) => {
+      this.preferences = data;
+      this.loadMap();
+    })
+    this.preferences = this.preferenceService.data;
     this.loadMap();
 
     this.activity.finishedKey.subscribe((key) => {
@@ -77,7 +78,7 @@ export class AccessService {
     this.fileProgress = [];
     this.progressBarId = this.progress.newProgressBar(
       1,
-      'Creating access DIP' + (this.selectedObjects.length > 1 ? 's' : '')
+      'Creating access DIP'
     );
 
     this.log.info('Creating DIP...', false);
@@ -89,7 +90,7 @@ export class AccessService {
   loadMap(): void {
     let accessMap: string;
     try {
-      accessMap = this.storage.get('preferences').map.full;
+      accessMap = this.preferences.map.full;
     }
     catch(e) { return; }
     if (accessMap) {
@@ -131,9 +132,7 @@ export class AccessService {
       mkdirp.sync(this.location + '/' + dirName);
       row[0] = dirName;
 
-      if (this.selectedResource.sip_ark) {
-        this.setCsvRowColumn(row, 'dcterms.source', this.selectedResource.sip_ark);
-      }
+      this.setCsvRowColumn(row, 'dcterms.source', object.pm_ark);
       this.setCsvRowColumn(row, 'uhlib.aSpaceUri', this.getObjectUri(object));
       this.setCsvRowColumn(row, 'productionNotes', this.getObjectProductionNotes(object));
 

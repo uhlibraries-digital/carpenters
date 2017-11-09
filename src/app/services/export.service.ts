@@ -5,7 +5,7 @@ import { ArchivesSpaceService } from './archivesspace.service';
 import { StandardItemService } from './standard-item.service';
 import { SaveService } from './save.service';
 import { SipService } from './sip.service';
-import { AccessService } from './access.service';
+import { DipService } from './dip.service';
 import { LoggerService } from './logger.service';
 import { ElectronService } from './electron.service';
 
@@ -24,7 +24,7 @@ export class ExportService {
     private saveService: SaveService,
     private log: LoggerService,
     private sip: SipService,
-    private dip: AccessService,
+    private dip: DipService,
     private electronService: ElectronService) {
     this.asService.selectedResourceChanged.subscribe(resource => this.selectedResource = resource);
     this.standardItem.resourceChanged.subscribe(resource => this.selectedResource = resource);

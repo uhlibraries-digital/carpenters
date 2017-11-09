@@ -26,10 +26,10 @@ import { AppRoutingModule } from './app-routing.module';
 import { FileDraggable } from './directives/file-draggable.directive';
 
 /* Services */
-import { AccessService } from './services/access.service';
 import { ActivityService } from './services/activity.service';
 import { ArchivesSpaceService } from './services/archivesspace.service';
 import { CsvService } from './services/csv.service';
+import { DipService } from './services/dip.service';
 import { ElectronService } from './services/electron.service';
 import { ExportService } from './services/export.service';
 import { FilesService } from './services/files.service';
@@ -74,10 +74,10 @@ import { FilePurposeFilterPipe } from './pipes/file-purpose-filter.pipe';
     NgbModule.forRoot()
   ],
   providers: [
-    AccessService,
     ActivityService,
     ArchivesSpaceService,
     CsvService,
+    DipService,
     ElectronService,
     ExportService,
     FilesService,
