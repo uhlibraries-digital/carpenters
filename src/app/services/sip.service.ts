@@ -191,10 +191,14 @@ export class SipService {
   }
 
   private sipPath(obj: any): string {
-    let id = obj.pm_ark ?
+    let id = this.sipId(obj);
+    return this.location + '/' + basename(this.location) + '_' + id;
+  }
+
+  private sipId(obj: any): string {
+    return obj.pm_ark ?
       String(obj.pm_ark.split('/').slice(-1)) :
       this.padLeft(this.objectCount, 3, '0');
-    return this.location + '/' + basename(this.location) + '_' + id;
   }
 
   private createMetadataCsv(obj: any): Promise<any> {
@@ -214,7 +218,7 @@ export class SipService {
     csvData.push(objectRow);
 
     let pmFiles = obj.files.filter(file => file.purpose === 'preservation');
-    csvData = csvData.concat(this.getCsvFileRow(pmFiles, 'objects', csvData[0]));
+    csvData = csvData.concat(this.getCsvFileRow(pmFiles, 'objects/' + this.sipId(obj), headers));
 
     /**
      * I don't see where the service information must be included in the metadata.csv
@@ -263,7 +267,9 @@ export class SipService {
     let sdFiles = obj.files.filter(file => file.purpose === 'sub-documents');
 
     let path = this.sipPath(obj);
-    promisses.push(this.copyFiles(pmFiles, path + '/objects'));
+    mkdirp.sync(path + '/objects/' + this.sipId(obj));
+
+    promisses.push(this.copyFiles(pmFiles, path + '/objects/' + this.sipId(obj)));
     promisses.push(this.copyFiles(mmFiles, path + '/service'));
     promisses.push(this.copyFiles(sdFiles, path + '/metadata/submissionDocumentation'));
 
