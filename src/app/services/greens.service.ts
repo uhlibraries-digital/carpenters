@@ -70,6 +70,12 @@ export class GreensService {
       .catch(this.handleError);
   }
 
+  throttle(duration: number): Promise<any> {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => resolve(), duration);
+    })
+  }
+
   private getOptions(): RequestOptions {
     let headers = new Headers({ 'api-key': this.apiKey });
     let options = new RequestOptions({ headers: headers });

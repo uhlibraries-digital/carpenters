@@ -33,6 +33,14 @@ export class ProgressBarService {
     }
   }
 
+  setDescription(id: string, description: string) {
+    let bar = this.findBar(id);
+    if (bar) {
+      bar.description = description;
+      this.changed.emit(this.progressbars);
+    }
+  }
+
   clearProgressBar(id: string): void {
     let index = this.progressbars.findIndex((pb) => {
       return pb.id === id;

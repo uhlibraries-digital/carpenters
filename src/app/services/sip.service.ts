@@ -6,6 +6,7 @@ import {
   createReadStream,
   createWriteStream
 } from 'fs';
+import { createHash } from 'crypto';
 import { basename } from 'path';
 import * as mkdirp from 'mkdirp';
 
@@ -60,13 +61,6 @@ export class SipService {
     this.preferences = this.preferenceService.data;
     this.updateSettings();
 
-    this.activity.finishedKey.subscribe((key) => {
-      if (key === 'preservation') {
-        this.log.info('Done packaging SIPs');
-        this.progress.clearProgressBar(this.progressBarId);
-      }
-    });
-
     this.asService.selectedArchivalObjectsChanged.subscribe((objects) => {
       this.selectedObjects = objects;
     });
@@ -93,16 +87,15 @@ export class SipService {
 
     this.totalProgress = this.getTotalProgress();
 
-    let promisses = [];
-    for (let object of this.selectedObjects) {
-      promisses.push(this.createSip(object));
-    }
+    let chunks = this.createChunks(this.selectedObjects, 10);
 
-    /* Once all the ARKs, if any, are minted save the project file */
-    return Promise.all(promisses)
-      .then(() => {
-        this.saveProject();
-      });
+    return Promise.all(chunks.reduce(
+      (acc, chunk) => acc.then(() => {
+        let waitqueue = 0;
+        return Promise.all(chunk.map(object => this.createSip(object, waitqueue++)));
+      }),
+      Promise.resolve()
+    ));
   }
 
   private saveProject(): void {
@@ -111,11 +104,20 @@ export class SipService {
     }
   }
 
+  private createChunks(objs: any, size: number): any[] {
+    let chunks = [];
+    for (let i = 0; i < objs.length; i += size) {
+      chunks.push(objs.slice(i, i + size));
+    }
+    return chunks;
+  }
+
   private getTotalProgress(): number {
     let total = this.selectedObjects.length;
     for (let obj of this.selectedObjects) {
-      for (let file of obj.files) {
-        total += file.size;
+      let files = obj.files.filter(file => file.purpose !== 'access-copy');
+      for (let file of files) {
+        total += file.size * 2;
       }
     }
     return total;
@@ -125,19 +127,27 @@ export class SipService {
     this.barProgress += value;
     let progress = this.barProgress / this.totalProgress;
     this.progress.setProgressBar(this.progressBarId, progress);
+    if (progress === 1) {
+      this.saveProject();
+      this.log.info('Done packaging SIPs');
+      this.progress.clearProgressBar(this.progressBarId);
+    }
   }
 
-  private createSip(obj: any): Promise<any> {
+  private createSip(obj: any, waitqueue: number): Promise<any> {
+    let waittime = waitqueue * 1000;
     let mint = this.storage.get('mint_sip');
+
     if (mint && !obj.pm_ark) {
-      return this.mintSip(obj)
-        .then((ark) => {
-          this.build(obj);
-        });
+      return this.minter.throttle(waittime).then(() => {
+        this.mintSip(obj).then(ark => this.build(obj))
+          .catch((e) => {
+            this.minter.throttle(1000).then(() => this.createSip(obj, waitqueue));
+          })
+      });
     }
     else {
-      this.build(obj);
-      return Promise.resolve();
+      return this.build(obj);
     }
   }
 
@@ -157,24 +167,22 @@ export class SipService {
         }
         obj.pm_ark = id;
         return id;
-      })
-      .catch((e) => {
-        this.log.error('Unable to mint identifier: ' + e.message);
       });
   }
 
-  private build(obj: any) {
+  private build(obj: any): Promise<any> {
     if (obj.pm_ark) {
-      this.log.success('Using SIP Ark: ' + obj.pm_ark + ' for ' + obj.title, false);
+      this.log.success('Using SIP Ark: ' + obj.pm_ark + ' for ' + this.getObjectTitle(obj), false);
     }
-
     this.objectCount++;
 
     this.createDirectories(this.sipPath(obj), this.hasModifiedMasters(obj));
     this.createMetadataCsv(obj);
-    this.copyObjectFiles(obj);
 
-    this.incrementProgressBar(1);
+    return this.copyObjectFiles(obj)
+      .then(() => {
+        this.incrementProgressBar(1);
+      });
   }
 
   private hasModifiedMasters(obj: any): boolean {
@@ -190,6 +198,8 @@ export class SipService {
   }
 
   private createMetadataCsv(obj: any): Promise<any> {
+    this.log.info('Creating metadata.csv for ' + this.getObjectTitle(obj), false);
+
     let fields = this.map.getMapFieldsAsList();
 
     let headers = ['parts'].concat(fields);
@@ -244,44 +254,64 @@ export class SipService {
     return title;
   }
 
-  private copyObjectFiles(obj: any): void {
+  private copyObjectFiles(obj: any): Promise<any> {
+    this.log.info('Coping files for ' + this.getObjectTitle(obj), false);
+    let promisses = [];
+
     let pmFiles = obj.files.filter(file => file.purpose === 'preservation');
     let mmFiles = obj.files.filter(file => file.purpose === 'modified-master');
     let sdFiles = obj.files.filter(file => file.purpose === 'sub-documents');
 
     let path = this.sipPath(obj);
-    this.copyFiles(pmFiles, path + '/objects');
-    this.copyFiles(mmFiles, path + '/service');
-    this.copyFiles(sdFiles, path + '/metadata/submissionDocumentation')
+    promisses.push(this.copyFiles(pmFiles, path + '/objects'));
+    promisses.push(this.copyFiles(mmFiles, path + '/service'));
+    promisses.push(this.copyFiles(sdFiles, path + '/metadata/submissionDocumentation'));
+
+    return Promise.all(promisses);
   }
 
-  private copyFiles(files: File[], path: string): void {
+  private copyFiles(files: File[], path: string): Promise<any> {
+    let promisses = [];
     for (let file of files) {
       let filename = path + '/' + file.name;
-      this.copyFile(file, filename);
+      promisses.push(
+        this.copyFile(file, filename)
+          .then((checksum) => {
+            return this.validateFileCopy(file, filename, checksum);
+          })
+      );
     }
+
+    return Promise.all(promisses);
   }
 
-  private copyFile(file: File, dest: string): void {
-    this.activity.start('preservation');
-    try {
-      let ws = createWriteStream(dest);
-      ws.on('finish', () => {
-        this.log.success('Copied file ' + file.name + ' to ' + dest, false);
-        this.activity.stop('preservation');
-      });
+  private copyFile(file: File, dest: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      try {
+        let checksum = '';
+        let hash = createHash('sha1');
 
-      let rs = createReadStream(file.path);
-      rs.on('data', (buffer) => {
-        this.incrementProgressBar(buffer.length);
-      });
+        let ws = createWriteStream(dest);
+        ws.on('finish', () => {
+          resolve(checksum);
+        });
 
-      rs.pipe(ws);
-    }
-    catch(e) {
-      this.activity.stop('preservation');
-      this.log.error(e.message);
-    }
+        let rs = createReadStream(file.path);
+        rs.on('data', (buffer) => {
+          hash.update(buffer, 'utf8');
+          this.incrementProgressBar(buffer.length);
+        });
+        rs.on('end', () => {
+          checksum = hash.digest('hex');
+        });
+
+        rs.pipe(ws);
+      }
+      catch(e) {
+        this.log.error(e.message);
+        reject(e);
+      }
+    });
   }
 
   private createDirectories(location: string, createServiceDir: boolean = false): boolean {
@@ -297,6 +327,32 @@ export class SipService {
       return false;
     }
     return true;
+  }
+
+  private validateFileCopy(file: File, newFilePath: string, checksum: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.log.info('Checking file ' + newFilePath, false);
+
+      let hash = createHash('sha1');
+      let rs = createReadStream(newFilePath);
+
+      rs.on('data', (data) => {
+        hash.update(data, 'utf8');
+        this.incrementProgressBar(data.length);
+      });
+      rs.on('end', () => {
+        let copiedChecksum = hash.digest('hex');
+        if (checksum !== copiedChecksum) {
+          this.log.error('Export file ' + file.name + ' failed checksum. ' +
+            'Expected ' + checksum + ' but go ' + copiedChecksum);
+          reject();
+        }
+        else {
+          this.log.success('Copied file ' + file.name + ' to ' + newFilePath, false);
+          resolve();
+        }
+      });
+    });
   }
 
   private updateSettings(): void {
