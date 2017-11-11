@@ -134,6 +134,7 @@ export class AppComponent {
       });
       promptRef.componentInstance.message = 'Enter Archival Information Collection (AIC)';
       promptRef.componentInstance.value = this.selectedResource ? this.selectedResource.aic || '' : '';
+      promptRef.componentInstance.okButtonText = 'Continue';
 
       return promptRef.result.then((result) => {
         if (this.selectedResource) {

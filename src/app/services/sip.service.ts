@@ -7,8 +7,9 @@ import {
   createWriteStream
 } from 'fs';
 import { createHash } from 'crypto';
-import { basename } from 'path';
+import { basename, dirname } from 'path';
 import * as mkdirp from 'mkdirp';
+import * as rimraf from 'rimraf';
 
 import { ActivityService } from './activity.service';
 import { ArchivesSpaceService } from './archivesspace.service';
@@ -330,6 +331,7 @@ export class SipService {
   }
 
   private createDirectories(location: string, createServiceDir: boolean = false): boolean {
+    rimraf.sync(location);
     try {
       mkdirp.sync(location + '/logs');
       mkdirp.sync(location + '/metadata/submissionDocumentation');
@@ -363,7 +365,7 @@ export class SipService {
           reject();
         }
         else {
-          this.log.success('Copied file ' + file.name + ' to ' + newFilePath, false);
+          this.log.success('Copied file ' + file.name + ' to ' + dirname(newFilePath), false);
           resolve();
         }
       });

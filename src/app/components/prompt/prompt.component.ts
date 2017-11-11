@@ -10,6 +10,7 @@ export class PromptComponent implements AfterViewChecked {
 
   @ViewChild('fieldInput') fieldInput;
   @Input() message;
+  @Input() okButtonText = 'Ok';
   value: string;
 
   constructor(public activeModal: NgbActiveModal) { }

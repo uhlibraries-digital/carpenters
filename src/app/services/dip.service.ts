@@ -7,7 +7,9 @@ import {
   createWriteStream,
   existsSync
 } from 'fs';
+import { basename, dirname } from 'path';
 import * as mkdirp from 'mkdirp';
+import * as rimraf from 'rimraf';
 
 import { ActivityService } from './activity.service';
 import { ArchivesSpaceService } from './archivesspace.service';
@@ -86,6 +88,7 @@ export class DipService {
     }
 
     this.log.info('Creating DIP...', false);
+    rimraf.sync(this.location + '/objects');
     mkdirp.sync(this.location + '/objects');
 
     this.process(this.selectedObjects);
@@ -239,8 +242,8 @@ export class DipService {
 
       let ws = createWriteStream(dest);
       ws.on('finish', () => {
+        this.log.success('Copied file ' + basename(src) + ' to ' + dirname(dest), false);
         this.activity.stop('access');
-        this.log.success('Copied file ' + src + ' to ' + dest, false);
       });
 
       let rs = createReadStream(src);
