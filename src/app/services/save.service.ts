@@ -198,6 +198,7 @@ export class SaveService {
           this.selectedResource.aic = obj.aic || '';
           this.markSelections(obj.objects, this.selectedResource.tree.children);
           this.asService.selectedArchivalObjects();
+          this.log.success('Using AIC: ' + this.selectedResource.aic, false);
           this.log.success('Loaded file: ' + this.saveLocation, false);
         });
     }
@@ -217,6 +218,7 @@ export class SaveService {
       item.pm_ark = o.pm_ark;
       this.standardItem.push(item);
     }
+    this.log.success('Using AIC: ' + (obj.aic || ''), false);
     this.log.success('Loaded file: ' + this.saveLocation, false);
   }
 
