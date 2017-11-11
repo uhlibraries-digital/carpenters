@@ -29,6 +29,8 @@ export class FileViewComponent {
         this.preferences = data;
       });
       this.preferences = this.preferenceService.data;
+
+      this.asService.selectedArchivalObjects();
     }
 
   getParents(c: any): any[] {
