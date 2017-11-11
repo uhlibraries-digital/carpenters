@@ -70,13 +70,17 @@ export class AppComponent {
         this.showPreferences();
       });
       this.electronService.ipcRenderer.on('export-preservation', (event, arg) => {
-        this.promptAic();
+        this.promptAic().then(() => {
+          this.exportService.exportPreservation();
+        }).catch(() => { });
       });
       this.electronService.ipcRenderer.on('export-access', (event, arg) => {
         this.exportService.exportAccess();
       });
       this.electronService.ipcRenderer.on('export-both', (event, arg) => {
-        this.exportService.exportBoth();
+        this.promptAic().then(() => {
+          this.exportService.exportBoth();
+        }).catch(() => { });
       });
       this.electronService.ipcRenderer.on('show-notes', (event, arg) => {
         this.showNotes();
@@ -123,18 +127,18 @@ export class AppComponent {
       });
     }
 
-    promptAic(): void {
+    promptAic(): Promise<void> {
       const promptRef = this.modalService.open(PromptComponent, {
         backdrop: 'static',
         windowClass: 'prompt-modal'
       });
       promptRef.componentInstance.message = 'Enter Archival Information Collection (AIC)';
       promptRef.componentInstance.value = this.selectedResource ? this.selectedResource.aic || '' : '';
-      promptRef.result.then((result) => {
+
+      return promptRef.result.then((result) => {
         if (this.selectedResource) {
           this.selectedResource.aic = result;
         }
-        this.exportService.exportPreservation();
-      }, (reason) => { });
+      }, (reason) => { return Promise.reject(reason); });
     }
 }

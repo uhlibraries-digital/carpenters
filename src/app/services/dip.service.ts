@@ -57,6 +57,7 @@ export class DipService {
       if (key === 'access') {
         this.log.info('Done packaging DIP');
         this.progress.clearProgressBar(this.progressBarId);
+        this.progressBarId = undefined;
       }
     });
   }
@@ -76,10 +77,13 @@ export class DipService {
 
     this.totalProgress = 0;
     this.fileProgress = [];
-    this.progressBarId = this.progress.newProgressBar(
-      1,
-      'Creating access DIP'
-    );
+
+    if (this.progressBarId) {
+      this.progress.setDescription(this.progressBarId, 'Creating access DIP');
+    }
+    else {
+      this.createProgressBar('Creating access DIP');
+    }
 
     this.log.info('Creating DIP...', false);
     mkdirp.sync(this.location + '/objects');
@@ -100,6 +104,10 @@ export class DipService {
           this.log.error('Unable to get Access Map');
         });
     }
+  }
+
+  createProgressBar(description: string): void {
+    this.progressBarId = this.progress.newProgressBar(1, description);
   }
 
   private process(objects: any[]): void {

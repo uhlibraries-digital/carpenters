@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, EventEmitter } from '@angular/core';
 import {
   rename,
   writeFile,
@@ -40,6 +40,8 @@ export class SipService {
   private progressBarId: string;
   private totalProgress: number = 0;
   private barProgress: number = 0;
+
+  sipComplete: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   constructor(
     private activity: ActivityService,
@@ -84,11 +86,13 @@ export class SipService {
       1,
       'Creating preservation SIP' + (this.selectedObjects.length > 1 ? 's' : '')
     );
-
     this.totalProgress = this.getTotalProgress();
 
-    let chunks = this.createChunks(this.selectedObjects, 10);
+    this.log.info(
+      'Creating SIP' + (this.selectedObjects.length > 1 ? 's' : '') + '...',
+    false);
 
+    let chunks = this.createChunks(this.selectedObjects, 10);
     return Promise.all(chunks.reduce(
       (acc, chunk) => acc.then(() => {
         let waitqueue = 0;
@@ -127,10 +131,12 @@ export class SipService {
     this.barProgress += value;
     let progress = this.barProgress / this.totalProgress;
     this.progress.setProgressBar(this.progressBarId, progress);
+
     if (progress === 1) {
       this.saveProject();
       this.log.info('Done packaging SIPs');
       this.progress.clearProgressBar(this.progressBarId);
+      this.sipComplete.emit(true);
     }
   }
 
@@ -378,6 +384,5 @@ export class SipService {
     value = String(value);
     return Array(length - value.length + 1).join(character || " ") + value;
   }
-
 
 }

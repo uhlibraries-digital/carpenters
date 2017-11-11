@@ -51,11 +51,12 @@ export class ExportService {
     if (!location) {
       return;
     }
-
-    this.sip.package(location, this.selectedResource)
-      .then(() => {
-        this.dip.package(location + '_DIP', this.selectedResource);
-      });
+    this.dip.createProgressBar('Waiting to create DIP...');
+    this.sip.package(location, this.selectedResource);
+    let sipCompleteSubscription = this.sip.sipComplete.subscribe(() => {
+      this.dip.package(location + '_DIP', this.selectedResource);
+      sipCompleteSubscription.unsubscribe();
+    });
   }
 
   private saveDialog(): string {
