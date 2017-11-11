@@ -123,6 +123,7 @@ export class SaveService {
     return ({
       type: 'standard',
       resource: resource,
+      aic: resource.aic || '',
       objects: objects
     });
   }
@@ -161,6 +162,7 @@ export class SaveService {
     return ({
       type: 'findingaid',
       resource: resource,
+      aic: this.selectedResource.aic || '',
       objects: objects
     });
   }
@@ -193,6 +195,7 @@ export class SaveService {
     if (obj.type === 'findingaid') {
       this.asService.getResource(obj.resource)
         .then((resource) => {
+          this.selectedResource.aic = obj.aic || '';
           this.markSelections(obj.objects, this.selectedResource.tree.children);
           this.asService.selectedArchivalObjects();
           this.log.success('Loaded file: ' + this.saveLocation, false);
@@ -205,6 +208,7 @@ export class SaveService {
 
   private loadStandardObjects(obj: any): void {
     this.standardItem.setResourceTitle(obj.resource.title);
+    this.standardItem.setResourceAic(obj.aic);
     for (let o of obj.objects) {
       let item: Item = o;
       item.files = this.convertToFileObjects(o.files);

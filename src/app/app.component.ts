@@ -1,12 +1,16 @@
 import { Component, ViewEncapsulation, OnInit, ViewChild, HostListener } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
+import { PromptComponent } from './components/prompt/prompt.component';
+
 import { ElectronService } from './services/electron.service';
 import { ExportService } from './services/export.service';
 import { ProductionNotesService } from './services/production-notes.service';
 import { ActivityService } from './services/activity.service';
 import { LoggerService } from './services/logger.service';
 import { PreferencesService } from './services/preferences.service';
+import { ArchivesSpaceService } from './services/archivesspace.service';
+import { StandardItemService } from './services/standard-item.service';
 
 @Component({
   selector: 'app-root',
@@ -26,6 +30,8 @@ export class AppComponent {
 
   private quitting = false;
 
+  selectedResource: any;
+
   constructor(
     private preferenceService: PreferencesService,
     private exportService: ExportService,
@@ -33,7 +39,14 @@ export class AppComponent {
     private notes: ProductionNotesService,
     private activity: ActivityService,
     public electronService: ElectronService,
-    private log: LoggerService) { }
+    private log: LoggerService,
+    private asService: ArchivesSpaceService,
+    private standardItem: StandardItemService) {
+
+      this.asService.selectedResourceChanged.subscribe(resource => this.selectedResource = resource);
+      this.standardItem.resourceChanged.subscribe(resource => this.selectedResource = resource);
+
+  }
 
     @HostListener('window:beforeunload') checkActivity(event) {
       this.quitting = true;
@@ -57,7 +70,7 @@ export class AppComponent {
         this.showPreferences();
       });
       this.electronService.ipcRenderer.on('export-preservation', (event, arg) => {
-        this.exportService.exportPreservation();
+        this.promptAic();
       });
       this.electronService.ipcRenderer.on('export-access', (event, arg) => {
         this.exportService.exportAccess();
@@ -108,5 +121,20 @@ export class AppComponent {
       (rejected) => {
 
       });
+    }
+
+    promptAic(): void {
+      const promptRef = this.modalService.open(PromptComponent, {
+        backdrop: 'static',
+        windowClass: 'prompt-modal'
+      });
+      promptRef.componentInstance.message = 'Enter Archival Information Collection (AIC)';
+      promptRef.componentInstance.value = this.selectedResource ? this.selectedResource.aic || '' : '';
+      promptRef.result.then((result) => {
+        if (this.selectedResource) {
+          this.selectedResource.aic = result;
+        }
+        this.exportService.exportPreservation();
+      }, (reason) => { });
     }
 }

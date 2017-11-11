@@ -206,7 +206,7 @@ export class SipService {
 
     let fields = this.map.getMapFieldsAsList();
 
-    let headers = ['parts'].concat(fields);
+    let headers = ['parts'].concat(fields).concat(['partOfAIC']);
     let csvData = [headers];
 
     let objectRow = Array(headers.length).fill('');
@@ -214,6 +214,7 @@ export class SipService {
     this.setCsvRowValue(objectRow, 'dcterms.title', this.getObjectTitle(obj), headers);
     this.setCsvRowValue(objectRow, 'dcterms.identifier', obj.pm_ark, headers);
     this.setCsvRowValue(objectRow, 'dcterms.isPartOf', this.selectedResource.title, headers);
+    this.setCsvRowValue(objectRow, 'partOfAIC', this.selectedResource.aic, headers);
 
     csvData.push(objectRow);
 

@@ -64,3 +64,9 @@ body {
     top: 38px !important;
   }
 }
+
+.prompt-modal {
+  .modal-dialog {
+    margin-top: 0;
+  }
+}

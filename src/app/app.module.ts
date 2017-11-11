@@ -16,6 +16,7 @@ import { FileViewComponent } from './components/file-view/file-view.component';
 import { ItemViewComponent } from './components/item-view/item-view.component';
 import { LoggerComponent } from './components/logger/logger.component';
 import { NotificationComponent } from './components/notification/notification.component';
+import { PromptComponent } from './components/prompt/prompt.component';
 import { StandardComponent } from './components/standard/standard.component';
 import { TreeViewComponent } from './components/tree-view/tree-view.component';
 
@@ -59,6 +60,7 @@ import { FilePurposeFilterPipe } from './pipes/file-purpose-filter.pipe';
     ItemViewComponent,
     LoggerComponent,
     NotificationComponent,
+    PromptComponent,
     StandardComponent,
     TreeViewComponent,
 
@@ -92,6 +94,9 @@ import { FilePurposeFilterPipe } from './pipes/file-purpose-filter.pipe';
     SessionStorageService,
     SipService,
     StandardItemService
+  ],
+  entryComponents: [
+    PromptComponent
   ],
   bootstrap: [AppComponent]
 })

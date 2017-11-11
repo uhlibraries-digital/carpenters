@@ -1,0 +1,14 @@
+  <div class="modal-body">
+    <label>{{ message }}</label>
+    <div class="input-group">
+      <input
+      class="field-input form-control"
+      type="text"
+      (keydown)="keydownCheck($event)"
+      [(ngModel)]="value" #fieldInput />
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-secondary" (click)="activeModal.dismiss()">Cancel</button>
+    <button type="button" class="btn btn-primary" (click)="activeModal.close(value)">Ok</button>
+  </div>

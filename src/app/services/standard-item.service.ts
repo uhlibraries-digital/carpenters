@@ -33,8 +33,8 @@ export class StandardItemService {
     this.resourceChanged.emit(this.resource);
   }
 
-  setResourceSipArk(ark: string): void {
-    this.resource.sip_ark = ark;
+  setResourceAic(aic: string): void {
+    this.resource.aic = aic;
     this.resourceChanged.emit(this.resource);
   }
 
