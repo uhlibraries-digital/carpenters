@@ -210,13 +210,14 @@ export class SipService {
   private createMetadataCsv(obj: any): Promise<any> {
     this.log.info('Creating metadata.csv for ' + this.getObjectTitle(obj), false);
 
+    let sipId = this.sipId(obj);
     let fields = this.map.getMapFieldsAsList();
 
     let headers = ['parts'].concat(fields).concat(['partOfAIC']);
     let csvData = [headers];
 
     let objectRow = Array(headers.length).fill('');
-    this.setCsvRowValue(objectRow, 'parts', 'objects', headers);
+    this.setCsvRowValue(objectRow, 'parts', 'objects/' + sipId, headers);
     this.setCsvRowValue(objectRow, 'dcterms.title', this.getObjectTitle(obj), headers);
     this.setCsvRowValue(objectRow, 'dcterms.identifier', obj.pm_ark, headers);
     this.setCsvRowValue(objectRow, 'dcterms.isPartOf', this.selectedResource.title, headers);
@@ -225,7 +226,7 @@ export class SipService {
     csvData.push(objectRow);
 
     let pmFiles = obj.files.filter(file => file.purpose === 'preservation');
-    csvData = csvData.concat(this.getCsvFileRow(pmFiles, 'objects/' + this.sipId(obj), headers));
+    csvData = csvData.concat(this.getCsvFileRow(pmFiles, 'objects/' + sipId, headers));
 
     /**
      * I don't see where the service information must be included in the metadata.csv
