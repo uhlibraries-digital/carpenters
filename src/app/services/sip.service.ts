@@ -361,7 +361,7 @@ export class SipService {
         let copiedChecksum = hash.digest('hex');
         if (checksum !== copiedChecksum) {
           this.log.error('Export file ' + file.name + ' failed checksum. ' +
-            'Expected ' + checksum + ' but go ' + copiedChecksum);
+            'Expected ' + checksum + ' but got ' + copiedChecksum);
           reject();
         }
         else {
