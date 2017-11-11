@@ -36,6 +36,7 @@ export class SipService {
   private mapFields: MapField[];
   private location: string;
   private objectCount: number;
+  private mintArks: boolean;
 
   private progressBarId: string;
   private totalProgress: number = 0;
@@ -74,6 +75,7 @@ export class SipService {
   package(location: string, resource: any): Promise<any> {
     this.selectedResource = resource;
     this.location = location;
+    this.mintArks = this.storage.get('mint_sip');
 
     if (!this.selectedObjects || this.selectedObjects.length === 0) {
       this.log.error('No Archival Objects selected to export SIP');
@@ -142,9 +144,8 @@ export class SipService {
 
   private createSip(obj: any, waitqueue: number): Promise<any> {
     let waittime = waitqueue * 1000;
-    let mint = this.storage.get('mint_sip');
 
-    if (mint && !obj.pm_ark) {
+    if (this.mintArks && !obj.pm_ark) {
       return this.minter.throttle(waittime).then(() => {
         this.mintSip(obj).then(ark => this.build(obj))
           .catch((e) => {
