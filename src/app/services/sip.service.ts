@@ -95,11 +95,10 @@ export class SipService {
       'Creating SIP' + (this.selectedObjects.length > 1 ? 's' : '') + '...',
     false);
 
-    let chunks = this.createChunks(this.selectedObjects, 10);
+    let chunks = this.createChunks(this.selectedObjects, 8);
     return Promise.all(chunks.reduce(
       (acc, chunk) => acc.then(() => {
-        let waitqueue = 0;
-        return Promise.all(chunk.map(object => this.createSip(object, waitqueue++)));
+        return Promise.all(chunk.map(object => this.createSip(object)));
       }),
       Promise.resolve()
     ));
@@ -143,16 +142,13 @@ export class SipService {
     }
   }
 
-  private createSip(obj: any, waitqueue: number): Promise<any> {
-    let waittime = waitqueue * 1000;
-
+  private createSip(obj: any): Promise<any> {
     if (this.mintArks && !obj.pm_ark) {
-      return this.minter.throttle(waittime).then(() => {
-        this.mintSip(obj).then(ark => this.build(obj))
-          .catch((e) => {
-            this.minter.throttle(1000).then(() => this.createSip(obj, waitqueue));
-          })
-      });
+      return this.mintSip(obj).then(ark => this.build(obj))
+        .catch((e) => {
+          this.log.error('Failed to mint ark: ' + e + ' trying again...', false);
+          return this.createSip(obj)
+        });
     }
     else {
       return this.build(obj);
