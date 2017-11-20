@@ -223,8 +223,11 @@ export class SipService {
 
     csvData.push(objectRow);
 
-    let pmFiles = obj.files.filter(file => file.purpose === 'preservation');
-    csvData = csvData.concat(this.getCsvFileRow(pmFiles, 'objects/' + sipId, headers));
+    /**
+     * I don't see where the object files must be included in the metadata.csv
+     */
+    //let pmFiles = obj.files.filter(file => file.purpose === 'preservation');
+    //csvData = csvData.concat(this.getCsvFileRow(pmFiles, 'objects/' + sipId, headers));
 
     /**
      * I don't see where the service information must be included in the metadata.csv
