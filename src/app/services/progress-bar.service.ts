@@ -1,13 +1,13 @@
-import { Injectable, Output, EventEmitter } from '@angular/core';
+import { Injectable, EventEmitter } from '@angular/core';
 
-import { ProgressBar } from '../classes/progress-bar';
+import { ProgressBar } from 'app/classes/progress-bar';
 
 @Injectable()
 export class ProgressBarService {
 
   progressbars: ProgressBar[] = [];
 
-  @Output() changed:EventEmitter<any> = new EventEmitter();
+  changed:EventEmitter<any> = new EventEmitter();
 
   newProgressBar(max: number, description?: string): string {
     let pb = new ProgressBar(max, description);

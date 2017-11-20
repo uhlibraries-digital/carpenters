@@ -9,7 +9,7 @@ import { ActivityService } from 'app/services/activity.service';
 })
 export class ActivityComponent implements OnInit {
 
-  private loading: Boolean = false;
+  loading: Boolean = false;
 
   constructor(
     private activeService: ActivityService) {

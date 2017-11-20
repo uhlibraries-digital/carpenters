@@ -14,9 +14,9 @@ import { Item } from '../../classes/item';
 })
 export class ItemViewComponent implements OnInit {
 
-  private items: Item[];
-  private addNumberOfItems: number = 1;
-  private resource: any;
+  resource: any;
+  addNumberOfItems: number = 1;
+  items: Item[];
 
   private contextMenu: any;
 
