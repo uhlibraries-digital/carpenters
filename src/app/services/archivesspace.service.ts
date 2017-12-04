@@ -236,6 +236,7 @@ export class ArchivesSpaceService {
       if (this.isSeriesType(c.level)) {
         c.series_index = series_index++;
       }
+      this.populateContainers(c);
       this.populateChildAttributes(c.children, c);
     }
   }
@@ -249,6 +250,31 @@ export class ArchivesSpaceService {
       }
     }
     return list;
+  }
+
+  private populateContainers(child: any): void {
+    if (child.node_type !== "archival_object" || child.instance_types.length === 0) {
+      return;
+    }
+
+    this._request(child.record_uri).then((object) => {
+      if (!object.instances) {
+        return;
+      }
+      let object_containers = object.instances.filter(instance => instance.sub_container && instance.sub_container.top_container);
+      for (let c of object_containers) {
+        this._request(c.sub_container.top_container.ref).then((topContainer) => {
+          child.containers.push({
+            'type_1': topContainer.type || '',
+            'indicator_1': topContainer.indicator || '',
+            'type_2': c.sub_container.type_2 || '',
+            'indicator_2': c.sub_container.indicator_2 || '',
+            'type_3': c.sub_container.type_3 || '',
+            'indicator_3': c.sub_container.indicator_3 || ''
+          });
+        });
+      }
+    });
   }
 
 }
