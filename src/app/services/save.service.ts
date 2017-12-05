@@ -123,6 +123,7 @@ export class SaveService {
     return ({
       type: 'standard',
       resource: resource,
+      collectionTitle: resource.title || '',
       aic: resource.aic || '',
       objects: objects
     });
@@ -163,6 +164,7 @@ export class SaveService {
     return ({
       type: 'findingaid',
       resource: resource,
+      collectionTitle: this.selectedResource.title || '',
       aic: this.selectedResource.aic || '',
       objects: objects
     });
