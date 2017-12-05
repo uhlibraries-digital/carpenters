@@ -74,14 +74,6 @@ export class AppComponent {
           this.exportService.exportPreservation();
         }).catch(() => { });
       });
-      this.electronService.ipcRenderer.on('export-access', (event, arg) => {
-        this.exportService.exportAccess();
-      });
-      this.electronService.ipcRenderer.on('export-both', (event, arg) => {
-        this.promptAic().then(() => {
-          this.exportService.exportBoth();
-        }).catch(() => { });
-      });
       this.electronService.ipcRenderer.on('show-notes', (event, arg) => {
         this.showNotes();
       });

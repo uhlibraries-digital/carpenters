@@ -65,23 +65,6 @@ let menu: any[] = [
               if (!focusedWindow) return;
               focusedWindow.webContents.send('export-preservation');
             }
-          },
-          {
-            label: 'Access DIP...',
-            click(item, focusedWindow) {
-              if (!focusedWindow) return;
-              focusedWindow.webContents.send('export-access');
-            }
-          },
-          {
-            type: 'separator'
-          },
-          {
-            label: 'Both...',
-            click(item, focusedWindow) {
-              if (!focusedWindow) return;
-              focusedWindow.webContents.send('export-both');
-            }
           }
         ]
       },
