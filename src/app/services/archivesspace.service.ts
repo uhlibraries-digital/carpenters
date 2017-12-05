@@ -265,12 +265,12 @@ export class ArchivesSpaceService {
       for (let c of object_containers) {
         this._request(c.sub_container.top_container.ref).then((topContainer) => {
           child.containers.push({
-            'type_1': topContainer.type || '',
-            'indicator_1': topContainer.indicator || '',
-            'type_2': c.sub_container.type_2 || '',
-            'indicator_2': c.sub_container.indicator_2 || '',
-            'type_3': c.sub_container.type_3 || '',
-            'indicator_3': c.sub_container.indicator_3 || ''
+            'type_1': topContainer.type || null,
+            'indicator_1': topContainer.indicator || null,
+            'type_2': c.sub_container.type_2 || null,
+            'indicator_2': c.sub_container.indicator_2 || null,
+            'type_3': c.sub_container.type_3 || null,
+            'indicator_3': c.sub_container.indicator_3 || null
           });
         });
       }
