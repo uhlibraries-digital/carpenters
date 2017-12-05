@@ -148,7 +148,8 @@ export class SaveService {
         files: files,
         artificial: ao.artificial,
         productionNotes: this.getObjectProductionNotes(ao),
-        pm_ark: ao.pm_ark
+        pm_ark: ao.pm_ark,
+        metadata: ao.metadata || {}
       };
       if (ao.artificial) {
         object.title = ao.title;
@@ -216,6 +217,7 @@ export class SaveService {
       item.selected = true;
       item.productionNotes = o.productionNotes;
       item.pm_ark = o.pm_ark;
+      item.metadata = o.metadata;
       this.standardItem.push(item);
     }
     this.log.success('Using AIC: ' + (obj.aic || ''), false);
@@ -231,6 +233,7 @@ export class SaveService {
         c.selected = true;
         c.productionNotes = found.productionNotes || '';
         c.pm_ark = found.pm_ark;
+        c.metadata = found.metadata || {};
         c.files = this.convertToFileObjects(found.files);
       }
 

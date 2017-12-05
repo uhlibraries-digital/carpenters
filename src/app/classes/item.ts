@@ -8,6 +8,7 @@ export class Item {
   containers: any[];
   productionNotes: string;
   files: File[] = [];
+  metadata: any;
 
   constructor(index?: number) {
     if (index !== undefined) {
@@ -18,6 +19,7 @@ export class Item {
     this.productionNotes = '';
     this.files = [];
     this.pm_ark = '';
+    this.metadata = {};
   }
 
   assignTitleAndContainer(index: number): void {
