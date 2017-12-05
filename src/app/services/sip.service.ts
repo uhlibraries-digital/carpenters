@@ -223,18 +223,6 @@ export class SipService {
 
     csvData.push(objectRow);
 
-    /**
-     * I don't see where the object files must be included in the metadata.csv
-     */
-    //let pmFiles = obj.files.filter(file => file.purpose === 'preservation');
-    //csvData = csvData.concat(this.getCsvFileRow(pmFiles, 'objects/' + sipId, headers));
-
-    /**
-     * I don't see where the service information must be included in the metadata.csv
-     */
-    //let mmFiles = obj.files.filter(file => file.purpose === 'modified-master');
-    //csvData = csvData.concat(this.getCsvFileRow(mmFiles, 'service', csvData[0]));
-
     return this.csv.write(this.sipPath(obj) + '/metadata/metadata.csv', csvData);
   }
 
@@ -279,7 +267,7 @@ export class SipService {
     mkdirp.sync(path + '/objects/' + this.sipId(obj));
 
     promisses.push(this.copyFiles(pmFiles, path + '/objects/' + this.sipId(obj)));
-    promisses.push(this.copyFiles(mmFiles, path + '/service'));
+    promisses.push(this.copyFiles(mmFiles, path + '/service/' + this.sipId(obj)));
     promisses.push(this.copyFiles(sdFiles, path + '/metadata/submissionDocumentation'));
 
     return Promise.all(promisses);
