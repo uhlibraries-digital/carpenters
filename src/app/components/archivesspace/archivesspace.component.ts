@@ -8,6 +8,7 @@ import { LocalStorageService } from 'app/services/local-storage.service';
 import { SessionStorageService } from 'app/services/session-storage.service';
 import { LoggerService } from 'app/services/logger.service';
 import { ElectronService } from 'app/services/electron.service';
+import { PreferencesService } from 'app/services/preferences.service';
 
 @Component({
   selector: 'archivesspace',
@@ -35,7 +36,8 @@ export class ArchivesSpaceComponent implements OnInit {
     private session: SessionStorageService,
     private titleService: Title,
     private log: LoggerService,
-    private electronService: ElectronService) {
+    private electronService: ElectronService,
+    private preferenceService: PreferencesService) {
   }
 
   ngOnInit(): void {
@@ -78,10 +80,9 @@ export class ArchivesSpaceComponent implements OnInit {
       this.log.info('Resource "' + resource.title + '" loaded', false);
     });
 
-    this.storage.changed.subscribe(key => {
-      if (key === 'preferences') {
-        this.loadRepositories();
-      }
+    this.preferenceService.preferencesChange.subscribe((data) => {
+      this.asService.clearSession();
+      this.loadRepositories();
     });
     this.loadRepositories();
 

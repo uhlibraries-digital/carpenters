@@ -104,6 +104,10 @@ export class ArchivesSpaceService {
     }
   }
 
+  clearSession(): void {
+    this.sessionStorage.remove(this.storageKey);
+  }
+
   displayContainer(c: any): string {
     let title: string = '';
     if (c.containers.length > 0) {
