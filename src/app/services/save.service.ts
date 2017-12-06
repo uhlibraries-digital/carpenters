@@ -299,13 +299,29 @@ export class SaveService {
         console.error(err);
       }
       let projectData = JSON.parse(data);
-      this.updateObjects(projectData, filename);
+      if (projectData.type === 'findingaid') {
+        this.updateObjects(projectData, filename);
+      }
+      else {
+        this.updateStandardObjects(projectData, filename);
+      }
     });
   }
 
   private updateObjects(data:any, filename: string): void {
     for (let pObject of data.objects) {
       let object = this.findObjectByUuid(this.selectedResource.tree.children, pObject.uuid);
+      if (object) {
+        object.metadata = pObject.metadata;
+        object.productionNotes = pObject.productionNotes;
+      }
+    }
+  }
+
+  private updateStandardObjects(data: any, filename: string): void {
+    let items = this.standardItem.getAll();
+    for (let pObject of data.objects) {
+      let object = items.find(s => s.uuid === pObject.uuid);
       if (object) {
         object.metadata = pObject.metadata;
         object.productionNotes = pObject.productionNotes;
