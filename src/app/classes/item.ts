@@ -1,6 +1,8 @@
+import { v4 } from 'uuid';
 import { File } from './file';
 
 export class Item {
+  uuid: string;
   title: string;
   pm_ark: string;
   level: string;
@@ -14,6 +16,7 @@ export class Item {
     if (index !== undefined) {
       this.assignTitleAndContainer(index);
     }
+    this.uuid = v4();
     this.level = 'item';
     this.selected = true;
     this.productionNotes = '';

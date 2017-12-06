@@ -7,12 +7,14 @@ import {
   existsSync
 } from 'fs';
 import { relative, dirname } from 'path';
+import { v4 } from 'uuid';
 
 import { ActivityService } from './activity.service';
 import { ArchivesSpaceService } from './archivesspace.service';
 import { StandardItemService } from './standard-item.service';
 import { LoggerService } from './logger.service';
 import { ElectronService } from './electron.service';
+import { WatchService } from './watch.service';
 
 import { File } from 'app/classes/file';
 import { Item } from 'app/classes/item';
@@ -31,8 +33,12 @@ export class SaveService {
     private asService: ArchivesSpaceService,
     private standardItem: StandardItemService,
     private log: LoggerService,
-    private electronService: ElectronService) {
-    this.asService.selectedResourceChanged.subscribe(resource => this.selectedResource = resource);
+    private electronService: ElectronService,
+    private watch: WatchService) {
+      this.asService.selectedResourceChanged.subscribe(resource => this.selectedResource = resource);
+      this.watch.projectChanged.subscribe((filename) => {
+        this.updateProject(filename);
+      });
   }
 
   save(): void {
@@ -63,6 +69,7 @@ export class SaveService {
       let saveObject = JSON.parse(data);
       this.loadObjects(saveObject);
       this.router.navigate([saveObject.type]);
+      this.watch.projectFile(this.saveLocation);
     });
     this.saveStatus.emit(true);
   }
@@ -111,6 +118,7 @@ export class SaveService {
         return { path: file.path, purpose: file.purpose }
       });
       objects.push({
+        uuid: so.uuid,
         title: so.title,
         containers: so.containers,
         level: so.level,
@@ -145,6 +153,7 @@ export class SaveService {
         return { path: path, purpose: value.purpose };
       });
       let object: any = {
+        uuid: ao.uuid,
         uri: ao.record_uri,
         files: files,
         artificial: ao.artificial,
@@ -215,6 +224,7 @@ export class SaveService {
     this.standardItem.setResourceAic(obj.aic);
     for (let o of obj.objects) {
       let item: Item = o;
+      item.uuid = o.uuid || v4();
       item.files = this.convertToFileObjects(o.files);
       item.selected = true;
       item.productionNotes = o.productionNotes;
@@ -232,6 +242,7 @@ export class SaveService {
         return e.uri === c.record_uri && !e.artificial;
       });
       if (found) {
+        c.uuid = found.uuid || v4();
         c.selected = true;
         c.productionNotes = found.productionNotes || '';
         c.pm_ark = found.pm_ark;
@@ -244,6 +255,7 @@ export class SaveService {
       });
       if (artificial.length > 0) {
         artificial = artificial.map((value) => {
+          value.uuid = value.uuid || v4();
           value.files = this.convertToFileObjects(value.files);
           value.selected = true;
           value.record_uri = undefined;
@@ -278,6 +290,45 @@ export class SaveService {
     return mapFiles.filter((value) => {
       return value !== null;
     });
+  }
+
+  private updateProject(filename: string): void {
+    readFile(this.saveLocation, 'utf8', (err, data) => {
+      if (err) {
+        this.log.error(err.message);
+        console.error(err);
+      }
+      let projectData = JSON.parse(data);
+      this.updateObjects(projectData, filename);
+    });
+  }
+
+  private updateObjects(data:any, filename: string): void {
+    for (let pObject of data.objects) {
+      let object = this.findObjectByUuid(this.selectedResource.tree.children, pObject.uuid);
+      if (object) {
+        object.metadata = pObject.metadata;
+        object.productionNotes = pObject.productionNotes;
+      }
+    }
+  }
+
+  private findObjectByUuid(children: any[], uuid: string): any {
+    if (!children) {
+      return null;
+    }
+
+    for( let child of children) {
+      let found = this.findObjectByUuid(child.children, uuid);
+      if (found) {
+        return found;
+      }
+      if (child.uuid === uuid) {
+        return child;
+      }
+    }
+
+    return null;
   }
 
 }

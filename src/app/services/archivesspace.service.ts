@@ -1,5 +1,6 @@
 import { Injectable, Output, EventEmitter }    from '@angular/core';
 import { Headers, Http, RequestOptions, URLSearchParams } from '@angular/http';
+import { v4 } from 'uuid';
 
 import 'rxjs/add/operator/toPromise';
 
@@ -232,6 +233,7 @@ export class ArchivesSpaceService {
   private populateChildAttributes(children: any[], parent?: any): void {
     let series_index = 1;
     for (let c of children) {
+      c.uuid = v4();
       c.parent = parent;
       if (this.isSeriesType(c.level)) {
         c.series_index = series_index++;

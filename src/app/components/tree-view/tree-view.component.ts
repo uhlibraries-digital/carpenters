@@ -1,4 +1,5 @@
 import { Component, Input, ChangeDetectorRef } from '@angular/core';
+import { v4 } from 'uuid';
 
 import { ArchivesSpaceService } from 'app/services/archivesspace.service';
 import { FilesService } from 'app/services/files.service';
@@ -106,6 +107,7 @@ export class TreeViewComponent {
     let container = this.file.convertFromASContainer(c.containers[0]);
     container = this.file.addContainer(container, 'Item', index + 1);
     c.children.push({
+      uuid: v4(),
       title: 'Item ' + this.padLeft(index + 1, 3, '0'),
       parent: c,
       index: index,

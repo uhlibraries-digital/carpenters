@@ -44,6 +44,7 @@ import { SaveService } from './services/save.service';
 import { SessionStorageService } from './services/session-storage.service';
 import { SipService } from './services/sip.service';
 import { StandardItemService } from './services/standard-item.service';
+import { WatchService } from './services/watch.service';
 
 /* Pipes */
 import { FilePurposeFilterPipe } from './pipes/file-purpose-filter.pipe';
@@ -91,7 +92,8 @@ import { FilePurposeFilterPipe } from './pipes/file-purpose-filter.pipe';
     SaveService,
     SessionStorageService,
     SipService,
-    StandardItemService
+    StandardItemService,
+    WatchService
   ],
   entryComponents: [
     PromptComponent
