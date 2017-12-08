@@ -219,6 +219,7 @@ export class SipService {
     this.setCsvRowValue(objectRow, 'dcterms.title', this.getObjectTitle(obj), headers);
     this.setCsvRowValue(objectRow, 'dcterms.identifier', obj.pm_ark, headers);
     this.setCsvRowValue(objectRow, 'dcterms.isPartOf', this.selectedResource.title, headers);
+    this.setCsvRowValue(objectRow, 'uhlib.aSpaceUri', this.getObjectUri(obj), headers);
     this.setCsvRowValue(objectRow, 'partOfAIC', this.selectedResource.aic, headers);
 
     csvData.push(objectRow);
@@ -374,6 +375,16 @@ export class SipService {
   private padLeft(value: any, length: number, character: string): string {
     value = String(value);
     return Array(length - value.length + 1).join(character || " ") + value;
+  }
+
+  private getObjectUri(o: any): string {
+    if (o.record_uri) {
+      return o.record_uri;
+    }
+    if (o.parent) {
+      return this.getObjectUri(o.parent);
+    }
+    return '';
   }
 
 }
