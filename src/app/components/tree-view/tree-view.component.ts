@@ -1,4 +1,4 @@
-import { Component, Input, ChangeDetectorRef } from '@angular/core';
+import { Component, Input, ChangeDetectorRef, ViewChild, AfterViewChecked } from '@angular/core';
 import { v4 } from 'uuid';
 
 import { ArchivesSpaceService } from 'app/services/archivesspace.service';
@@ -11,9 +11,11 @@ import { ElectronService } from 'app/services/electron.service';
   templateUrl: './tree-view.component.html',
   styleUrls: [ './tree-view.component.scss' ]
 })
-export class TreeViewComponent {
+export class TreeViewComponent implements AfterViewChecked {
 
   @Input() children: any;
+
+  @ViewChild('titleField') titleField;
 
   constructor(
     private asService: ArchivesSpaceService,
@@ -21,6 +23,12 @@ export class TreeViewComponent {
     private file: FilesService,
     private note: ProductionNotesService,
     private electronService: ElectronService) {
+  }
+
+  ngAfterViewChecked(): void {
+    if (this.titleField) {
+      this.titleField.nativeElement.focus();
+    }
   }
 
   toggle(c: any, e): void {
@@ -134,14 +142,12 @@ export class TreeViewComponent {
     parent.children.splice(index, 1);
     parent.expanded = parent.children.length > 0;
 
-    /**
-      Reorders the item numbers. Not sure how usful this is, seems like
-      it could cause confusion in the interface.
-    **/
     let newIndex = 0;
     for (let c of parent.children) {
       if (c.artificial) {
-        c.title = 'Item ' + this.padLeft(newIndex + 1, 3, '0');
+        if ( c.title.match(/Item \d+/) ) {
+          c.title = 'Item ' + this.padLeft(newIndex + 1, 3, '0');
+        }
         c.index = newIndex;
         let container = this.file.convertFromASContainer(c.containers[0]);
         for (let con of container) {
@@ -159,6 +165,25 @@ export class TreeViewComponent {
 
   containerClasses(c): string {
     return ['container', c.level].join(' ');
+  }
+
+  editTitle(c: any): void {
+    if (c.artificial) {
+      c.editTitle = true;
+      c.oldTitle = c.title;
+    }
+  }
+
+  keydownCheck(event: KeyboardEvent, c: any): void {
+    if (event.code === 'Enter') {
+      event.preventDefault();
+      event.stopPropagation();
+      c.editTitle = false;
+    }
+    else if (event.code === 'Escape') {
+      c.editTitle = false;
+      c.title = c.oldTitle;
+    }
   }
 
   private padLeft(value: any, length: number, character: string): string {

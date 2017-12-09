@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, ViewChild, AfterViewChecked } from '@angular/core';
 
 import { StandardItemService } from 'app/services/standard-item.service';
 import { LoggerService } from 'app/services/logger.service';
@@ -12,11 +12,13 @@ import { Item } from '../../classes/item';
   templateUrl: './item-view.component.html',
   styleUrls: [ './item-view.component.scss' ]
 })
-export class ItemViewComponent implements OnInit {
+export class ItemViewComponent implements OnInit, AfterViewChecked {
 
   resource: any;
   addNumberOfItems: number = 1;
   items: Item[];
+
+  @ViewChild('titleField') titleField;
 
   private contextMenu: any;
 
@@ -34,6 +36,12 @@ export class ItemViewComponent implements OnInit {
 
     this.standardItem.itemChanged.subscribe(items => this.items = items);
     this.standardItem.resourceChanged.subscribe(resource => this.resource = resource);
+  }
+
+  ngAfterViewChecked(): void {
+    if (this.titleField) {
+      this.titleField.nativeElement.focus();
+    }
   }
 
   onContextMenu(index: number, c: any, e: MouseEvent) {
@@ -94,6 +102,23 @@ export class ItemViewComponent implements OnInit {
 
   setTitle(): void {
     this.standardItem.setResourceTitle(this.resource.title);
+  }
+
+  editTitle(c: any): void {
+    c.editTitle = true;
+    c.oldTitle = c.title;
+  }
+
+  keydownCheck(event: KeyboardEvent, c: any): void {
+    if (event.code === 'Enter') {
+      event.preventDefault();
+      event.stopPropagation();
+      c.editTitle = false;
+    }
+    else if (event.code === 'Escape') {
+      c.editTitle = false;
+      c.title = c.oldTitle;
+    }
   }
 
 }

@@ -29,7 +29,20 @@
         <li
           *ngFor="let c of items; let i = index"
           [class.production-note]="c.productionNotes"
-          (contextmenu)="onContextMenu(i, c, $event)">{{ c.title }}</li>
+          (contextmenu)="onContextMenu(i, c, $event)">
+            <span *ngIf="!c.editTitle" (dblclick)="editTitle(c)">
+              {{ c.title }}
+              <span class="can-edit" (click)="editTitle(c)"></span>
+            </span>
+            <div *ngIf="c.editTitle"
+              class="title-edit input-group">
+              <input
+                class="field-input form-control"
+                type="text"
+                (keydown)="keydownCheck($event, c)"
+                [(ngModel)]="c.title" #titleField />
+            </div>
+        </li>
       </ul>
     </div>
   </div>

@@ -13,9 +13,23 @@
           [(ngModel)]="c.selected"
           [class.subselection]="hasSelectedChildren(c)" />
         <span
+          *ngIf="!c.editTitle"
           class="title"
           [class.production-note]="c.productionNotes"
-          (click)="toggle(c, $event)">{{ displayTitle(c) }}</span>
+          (dblclick)="editTitle(c)"
+          (click)="toggle(c, $event)">
+            {{ displayTitle(c) }}
+            <span *ngIf="c.artificial" class="can-edit" (click)="editTitle(c)"></span>
+        </span>
+        <div *ngIf="c.editTitle"
+          [class.production-note]="c.productionNotes"
+          class="title title-edit input-group">
+          <input
+            class="field-input form-control"
+            type="text"
+            (keydown)="keydownCheck($event, c)"
+            [(ngModel)]="c.title" #titleField />
+        </div>
       </div>
       <div
         [ngClass]="containerClasses(c)">{{ displayContainer(c) }}</div>

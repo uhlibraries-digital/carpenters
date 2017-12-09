@@ -55,6 +55,22 @@
           padding-left: 10px;
           color: $notes-flag;
         }
+
+        .can-edit::before{
+          font-family: 'FontAwesome';
+          content: "\f044";
+          padding-left: 10px;
+          color: $edit-blue;
+          cursor: pointer;
+        }
+
+        &.title-edit {
+          input {
+            width: 50%;
+            font-size: 14px;
+            display: inline-block;
+          }
+        }
       }
 
       .form-check-input {
