@@ -115,7 +115,8 @@ export class SaveService {
     let objects = [];
     for (let so of standardObjects) {
       let files: any[] = so.files.map((file) => {
-        return { path: file.path, purpose: file.purpose }
+        let path = relative(dirname(this.saveLocation), file.path);
+        return { path: path, purpose: file.purpose }
       });
       objects.push({
         uuid: so.uuid,
@@ -124,7 +125,8 @@ export class SaveService {
         level: so.level,
         productionNotes: so.productionNotes || '',
         pm_ark: so.pm_ark,
-        files: files
+        files: files,
+        metadata: so.metadata || {}
       });
     }
 
