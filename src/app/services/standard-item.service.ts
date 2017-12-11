@@ -1,4 +1,4 @@
-import { Injectable, Output, EventEmitter }    from '@angular/core';
+import { Injectable, EventEmitter }    from '@angular/core';
 
 import { Item } from 'app/classes/item';
 
@@ -8,8 +8,8 @@ export class StandardItemService {
   private items: Item[] = [];
   private resource: any = {};
 
-  @Output() itemChanged: EventEmitter<any> = new EventEmitter();
-  @Output() resourceChanged: EventEmitter<any> = new EventEmitter();
+  itemChanged: EventEmitter<any> = new EventEmitter();
+  resourceChanged: EventEmitter<any> = new EventEmitter();
 
   constructor() {
     this.resource.title = '';

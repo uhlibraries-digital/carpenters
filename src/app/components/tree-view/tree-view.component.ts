@@ -171,6 +171,8 @@ export class TreeViewComponent implements AfterViewChecked {
     if (c.artificial) {
       c.editTitle = true;
       c.oldTitle = c.title;
+      this.changeRef.detectChanges();
+      this.ngAfterViewChecked();
     }
   }
 
@@ -179,10 +181,12 @@ export class TreeViewComponent implements AfterViewChecked {
       event.preventDefault();
       event.stopPropagation();
       c.editTitle = false;
+      this.changeRef.detectChanges();
     }
     else if (event.code === 'Escape') {
       c.editTitle = false;
       c.title = c.oldTitle;
+      this.changeRef.detectChanges();
     }
   }
 

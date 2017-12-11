@@ -107,6 +107,8 @@ export class ItemViewComponent implements OnInit, AfterViewChecked {
   editTitle(c: any): void {
     c.editTitle = true;
     c.oldTitle = c.title;
+    this.changeRef.detectChanges();
+    this.ngAfterViewChecked();
   }
 
   keydownCheck(event: KeyboardEvent, c: any): void {
@@ -114,10 +116,12 @@ export class ItemViewComponent implements OnInit, AfterViewChecked {
       event.preventDefault();
       event.stopPropagation();
       c.editTitle = false;
+      this.changeRef.detectChanges();
     }
     else if (event.code === 'Escape') {
       c.editTitle = false;
       c.title = c.oldTitle;
+      this.changeRef.detectChanges();
     }
   }
 
