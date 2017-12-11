@@ -175,7 +175,7 @@ export class TreeViewComponent implements AfterViewChecked {
   }
 
   keydownCheck(event: KeyboardEvent, c: any): void {
-    if (event.code === 'Enter') {
+    if (event.code === 'Enter' || event.code === 'NumpadEnter') {
       event.preventDefault();
       event.stopPropagation();
       c.editTitle = false;
