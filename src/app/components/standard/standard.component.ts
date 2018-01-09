@@ -53,7 +53,7 @@ export class StandardComponent implements OnInit {
     });
     this.electronService.ipcRenderer.on('commit-project', (event, arg) => {
       if (!this.saveService.saveLocation) {
-        this.log.warn("Please save this project before commiting it.");
+        this.log.warn("Please save this project before committing it.");
         return;
       }
       this.saveService.save();
