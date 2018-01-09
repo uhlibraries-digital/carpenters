@@ -1,6 +1,7 @@
 import { Injectable, EventEmitter, Output } from '@angular/core';
 import { readdir } from 'fs';
 import { statSync } from 'fs';
+import * as mkdirp from 'mkdirp';
 
 import { ActivityService } from './activity.service';
 import { ArchivesSpaceService } from './archivesspace.service';
@@ -129,6 +130,16 @@ export class FilesService {
     return rContainer;
   }
 
+  createFolderHierarchy(path: string): void {
+    for (let o of this.selectedObjects) {
+        if (o.containers.length === 1) {
+          let container = this.convertFromASContainer(o.containers[0]);
+          let containerPath = path + '/Files/' + this.containerToPath(container);
+          mkdirp.sync(containerPath);
+        }
+    }
+  }
+
   private selectFiles(): string[] {
     let filenames = this.electronService.dialog.showOpenDialog({
       title: 'Select File...',
@@ -172,11 +183,23 @@ export class FilesService {
     let returnString = '';
     let newContainer = container.filter((value) => {
       return value.type !== null;
-    })
+    });
     for (let c of newContainer) {
       returnString += c.type + ' ' + c.indicator + ', ';
     }
     return returnString.slice(0, -2);
+  }
+
+  private containerToPath(container: any): string {
+    let returnString = '';
+    let newContainer = container.filter((value) => {
+      return value.type && value.type !== null;
+    });
+    for (let c of newContainer) {
+      let indicator = c.type === 'Item' ? this.padLeft(c.indicator, 3, '0') : c.indicator;
+      returnString += c.type + ' ' + indicator + '/';
+    }
+    return returnString;
   }
 
 }

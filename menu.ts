@@ -57,6 +57,16 @@ let menu: any[] = [
         type: 'separator'
       },
       {
+        label: 'Commit Project',
+        click(item, focusedWindow) {
+          if (!focusedWindow) return;
+          focusedWindow.webContents.send('commit-project');
+        }
+      },
+      {
+        type: 'separator'
+      },
+      {
         label: 'Export To',
         submenu: [
           {

@@ -1,5 +1,6 @@
 import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
 import { Title } from '@angular/platform-browser';
+import { dirname } from 'path';
 
 import { ActivityService } from 'app/services/activity.service';
 import { ArchivesSpaceService } from 'app/services/archivesspace.service';
@@ -9,6 +10,7 @@ import { SessionStorageService } from 'app/services/session-storage.service';
 import { LoggerService } from 'app/services/logger.service';
 import { ElectronService } from 'app/services/electron.service';
 import { PreferencesService } from 'app/services/preferences.service';
+import { FilesService } from 'app/services/files.service';
 
 @Component({
   selector: 'archivesspace',
@@ -37,7 +39,8 @@ export class ArchivesSpaceComponent implements OnInit {
     private titleService: Title,
     private log: LoggerService,
     private electronService: ElectronService,
-    private preferenceService: PreferencesService) {
+    private preferenceService: PreferencesService,
+    private filesService: FilesService) {
   }
 
   ngOnInit(): void {
@@ -63,6 +66,15 @@ export class ArchivesSpaceComponent implements OnInit {
       this.saveService.open();
       this.resourceList.nativeElement.disabled = true;
       this.repositoryList.nativeElement.disabled = true;
+    });
+    this.electronService.ipcRenderer.on('commit-project', (event, arg) => {
+      if (!this.saveService.saveLocation) {
+        this.log.warn("Please save this project before commiting it.");
+        return;
+      }
+      this.saveService.save();
+      this.filesService.createFolderHierarchy(dirname(this.saveService.saveLocation));
+      this.log.info("Project committed");
     });
 
     this.asService.selectedResourceChanged.subscribe((resource) => {

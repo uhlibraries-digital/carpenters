@@ -1,10 +1,12 @@
 import { Component, OnInit, ElementRef, ViewChild, ViewEncapsulation } from '@angular/core';
+import { dirname } from 'path';
 
 import { StandardItemService } from 'app/services/standard-item.service';
 import { LocalStorageService } from 'app/services/local-storage.service';
 import { SessionStorageService } from 'app/services/session-storage.service';
 import { SaveService } from 'app/services/save.service';
 import { LoggerService } from 'app/services/logger.service';
+import { FilesService } from 'app/services/files.service';
 import { ElectronService } from 'app/services/electron.service';
 
 import { Item } from '../../classes/item';
@@ -24,6 +26,7 @@ export class StandardComponent implements OnInit {
     private session: SessionStorageService,
     private saveService: SaveService,
     private log: LoggerService,
+    private filesService: FilesService,
     private electronService: ElectronService) {
   }
 
@@ -47,6 +50,15 @@ export class StandardComponent implements OnInit {
     });
     this.electronService.ipcRenderer.on('open-project', (event, arg) => {
       this.saveService.open();
+    });
+    this.electronService.ipcRenderer.on('commit-project', (event, arg) => {
+      if (!this.saveService.saveLocation) {
+        this.log.warn("Please save this project before commiting it.");
+        return;
+      }
+      this.saveService.save();
+      this.filesService.createFolderHierarchy(dirname(this.saveService.saveLocation));
+      this.log.info("Project committed");
     });
   }
 
