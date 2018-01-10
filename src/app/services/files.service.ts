@@ -1,6 +1,5 @@
-import { Injectable, EventEmitter, Output } from '@angular/core';
-import { readdir } from 'fs';
-import { statSync } from 'fs';
+import { Injectable, EventEmitter } from '@angular/core';
+import { readdir, statSync, existsSync } from 'fs';
 import * as mkdirp from 'mkdirp';
 
 import { ActivityService } from './activity.service';
@@ -8,6 +7,7 @@ import { ArchivesSpaceService } from './archivesspace.service';
 import { StandardItemService } from './standard-item.service';
 import { LoggerService } from './logger.service';
 import { ElectronService } from './electron.service';
+import { WatchService } from './watch.service';
 
 import { File } from 'app/classes/file';
 
@@ -19,20 +19,37 @@ export class FilesService {
 
   purposeMap: any[];
 
-  @Output() filesChanged: EventEmitter<any> = new EventEmitter();
+  filesChanged: EventEmitter<any> = new EventEmitter();
+
+  projectFilePath: string = '';
+  filesWatchFirstRun: boolean = true;
 
   constructor(
     private activity: ActivityService,
     private asService: ArchivesSpaceService,
     private standardItem: StandardItemService,
     private log: LoggerService,
+    private watch: WatchService,
     private electronService: ElectronService) {
 
     this.asService.selectedArchivalObjectsChanged.subscribe((objects) => {
       this.selectedObjects = objects;
+      if (this.filesWatchFirstRun && objects.length > 0) {
+        this.filesWatchFirstRun = false;
+        this.updateFileAssignments(this.projectFilePath);
+      }
     });
     this.standardItem.itemChanged.subscribe((objects) => {
       this.selectedObjects = objects;
+      if (this.filesWatchFirstRun && objects.length > 0) {
+        this.filesWatchFirstRun = false;
+        this.updateFileAssignments(this.projectFilePath);
+      }
+    });
+
+    this.watch.hierarchyChanged.subscribe((path) => {
+      this.projectFilePath = path;
+      this.updateFileAssignments(path);
     });
 
     let o = this.asService.selectedArchivalObjects();
@@ -138,6 +155,9 @@ export class FilesService {
           mkdirp.sync(containerPath);
         }
     }
+    if (existsSync(path + '/Files')) {
+      this.watch.fileHierarchy(path + '/Files');
+    }
   }
 
   private selectFiles(): string[] {
@@ -199,6 +219,34 @@ export class FilesService {
       returnString += c.type + '_' + this.padLeft(c.indicator, 3, '0') + '/';
     }
     return returnString;
+  }
+
+  private updateFileAssignments(projectFilePath: string): void {
+    if (projectFilePath === '') {
+      this.filesWatchFirstRun = true;
+      return;
+    }
+
+    for (let o of this.selectedObjects) {
+      if (o.containers.length === 1) {
+        let container = this.convertFromASContainer(o.containers[0]);
+        let containerPath = projectFilePath + '/' + this.containerToPath(container);
+        readdir(containerPath, (err, files) => {
+          if (err) {
+            this.log.warn("Missing container folder: " + containerPath, false);
+            return;
+          }
+
+          o.files = [];
+          files = files.filter((name) => {
+            return (!(/(^|\/)\.[^\/\.]/g).test(name)) && name !== 'Thumbs.db';
+          }).map((name) => {
+            return containerPath + name;
+          });
+          this.addFilesToObject(o, '', files);
+        });
+      }
+    }
   }
 
 }

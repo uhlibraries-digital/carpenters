@@ -1,4 +1,4 @@
-import { Injectable, Output, EventEmitter }    from '@angular/core';
+import { Injectable, EventEmitter }    from '@angular/core';
 import { Router } from '@angular/router';
 
 import {
@@ -25,7 +25,7 @@ export class SaveService {
   saveLocation: string;
   selectedResource: any;
 
-  @Output() saveStatus: EventEmitter<boolean> = new EventEmitter();
+  saveStatus: EventEmitter<boolean> = new EventEmitter();
 
   constructor(
     private activity: ActivityService,
@@ -70,6 +70,7 @@ export class SaveService {
       this.loadObjects(saveObject);
       this.router.navigate([saveObject.type]);
       this.watch.projectFile(this.saveLocation);
+      this.watch.fileHierarchy(dirname(this.saveLocation) + '/Files');
     });
     this.saveStatus.emit(true);
   }
@@ -280,7 +281,9 @@ export class SaveService {
         /* Backwards compatibility */
         value.path = path;
         if (!existsSync(value.path)) {
-          this.log.error('File does not exist: ' + value.path);
+          /* Don't need this anymore since we are updating the files through
+             the Files hierarchy on the filesystem */
+          // this.log.error('File does not exist: ' + value.path);
           return null;
         }
       }

@@ -44,8 +44,11 @@ export class File {
       if (match[0] === '_mm.') {
         return 'modified-master';
       }
+      if (match[0] === '_ac.') {
+        return 'access-copy'
+      }
     }
-    return 'access-copy';
+    return 'sub-documents';
   }
 
   basename(path: string): string {
