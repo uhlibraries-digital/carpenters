@@ -6,11 +6,12 @@ import { basename } from 'path';
 export class WatchService {
 
   filename: string;
+  watchEvent: any;
 
   projectChanged: EventEmitter<any> = new EventEmitter();
   hierarchyChanged: EventEmitter<any> = new EventEmitter();
 
-  public projectFile(projectFilename: string) {
+  public projectFile(projectFilename: string): void {
     this.filename = projectFilename;
     watchFile(projectFilename, (curr, prev) => {
       if (curr.mtime !== prev.mtime) {
@@ -19,16 +20,21 @@ export class WatchService {
     });
   }
 
-  public fileHierarchy(projectFilesPath: string) {
+  public fileHierarchy(projectFilesPath: string): void {
     if (!existsSync(projectFilesPath)) return;
 
     this.hierarchyChanged.emit(projectFilesPath);
-    watch(projectFilesPath, { recursive: true }, (eventType, filename) => {
-      console.log('watch eventType', eventType, 'filename', filename);
+    this.watchEvent = watch(projectFilesPath, { recursive: true }, (eventType, filename) => {
       if (eventType === 'rename') {
         this.hierarchyChanged.emit(projectFilesPath);
       }
     });
+  }
+
+  public unWatch(path: string): void {
+    try{
+      this.watchEvent.close();
+    } catch(e) { }
   }
 
 }

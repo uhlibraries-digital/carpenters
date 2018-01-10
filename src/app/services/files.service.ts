@@ -1,5 +1,6 @@
 import { Injectable, EventEmitter } from '@angular/core';
-import { readdir, statSync, existsSync } from 'fs';
+import { readdir, statSync, existsSync, rename } from 'fs';
+import { parse, dirname } from 'path';
 import * as mkdirp from 'mkdirp';
 
 import { ActivityService } from './activity.service';
@@ -92,8 +93,10 @@ export class FilesService {
     for (let file of files) {
       let newFile = new File(file);
       newFile.setPurpose(purpose);
-      this.removeFileFromObjects(newFile);
-      obj.files.push(newFile);
+      if (this.updateFileLocation(obj, newFile)) {
+        this.removeFileFromObjects(newFile);
+        obj.files.push(newFile);
+      }
     }
     obj.files.sort((a, b) => {
       return a.name.localeCompare(b.name);
@@ -221,6 +224,11 @@ export class FilesService {
     return returnString;
   }
 
+  private fullContainerPath(container: any): string {
+    let c = this.convertFromASContainer(container);
+    return this.projectFilePath + '/' + this.containerToPath(c);
+  }
+
   private updateFileAssignments(projectFilePath: string): void {
     if (projectFilePath === '') {
       this.filesWatchFirstRun = true;
@@ -229,8 +237,7 @@ export class FilesService {
 
     for (let o of this.selectedObjects) {
       if (o.containers.length === 1) {
-        let container = this.convertFromASContainer(o.containers[0]);
-        let containerPath = projectFilePath + '/' + this.containerToPath(container);
+        let containerPath = this.fullContainerPath(o.containers[0]);
         readdir(containerPath, (err, files) => {
           if (err) {
             this.log.warn("Missing container folder: " + containerPath, false);
@@ -247,6 +254,50 @@ export class FilesService {
         });
       }
     }
+  }
+
+  private updateFileLocation(obj: any, file: File): boolean {
+    if (obj.containers.length !== 1) return;
+
+    let expectedFilePath = this.fullContainerPath(obj.containers[0]) +
+      this.filenameWithPurposeSuffix(file);
+
+    if (expectedFilePath !== file.path) {
+      if (existsSync(expectedFilePath)) {
+        this.log.error("Can't move file " + file.path + " to " +
+          expectedFilePath + " because file already exists.");
+        return false;
+      }
+      if (!existsSync(dirname(expectedFilePath))) {
+        mkdirp(dirname(expectedFilePath));
+      }
+      rename(file.path, expectedFilePath, (err) => {
+        if (err) {
+          this.log.error("Unable to move file: " + err.message);
+        }
+      });
+    }
+    return true;
+  }
+
+  private filenameWithPurposeSuffix(file: File): string {
+    let info = parse(file.path);
+    let purpose = info.name.substr(-3);
+    if (purpose === '_pm' || purpose === '_mm' || purpose === '_ac') {
+      info.name = info.name.slice(0, -3);
+    }
+
+    if (file.purpose === 'preservation') {
+      info.name += '_pm';
+    }
+    if (file.purpose === 'modified-master') {
+      info.name += '_mm';
+    }
+    if (file.purpose === 'access-copy') {
+      info.name += '_ac';
+    }
+
+    return info.name + info.ext;
   }
 
 }
