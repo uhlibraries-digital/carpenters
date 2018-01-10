@@ -196,8 +196,7 @@ export class FilesService {
       return value.type && value.type !== null;
     });
     for (let c of newContainer) {
-      let indicator = c.type === 'Item' ? this.padLeft(c.indicator, 3, '0') : c.indicator;
-      returnString += c.type + ' ' + indicator + '/';
+      returnString += c.type + '_' + this.padLeft(c.indicator, 3, '0') + '/';
     }
     return returnString;
   }
