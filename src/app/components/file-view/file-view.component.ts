@@ -108,7 +108,9 @@ export class FileViewComponent {
       return;
     }
     let path = this.files.fullContainerPath(c.containers[0]);
-    this.electronService.shell.openItem(path);
+    if (!this.electronService.shell.openItem(path)) {
+      this.log.warn("Sorry couldn't open container in the filesystem.");
+    }
   }
 
 }
