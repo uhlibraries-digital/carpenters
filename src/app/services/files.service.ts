@@ -40,7 +40,9 @@ export class FilesService {
       if (this.filesWatchFirstRun && objects.length > 0) {
         this.filesWatchFirstRun = false;
         this.updateFileAssignments(this.projectFilePath);
-        this.saveService.save();
+        if (this.saveService.saveLocation) {
+          this.saveService.save();
+        }
       }
     });
     this.standardItem.itemChanged.subscribe((objects) => {
@@ -48,7 +50,9 @@ export class FilesService {
       if (this.filesWatchFirstRun && objects.length > 0) {
         this.filesWatchFirstRun = false;
         this.updateFileAssignments(this.projectFilePath);
-        this.saveService.save();
+        if (this.saveService.saveLocation) {
+          this.saveService.save();
+        }
       }
     });
 
