@@ -9,6 +9,7 @@ import { StandardItemService } from './standard-item.service';
 import { LoggerService } from './logger.service';
 import { ElectronService } from './electron.service';
 import { WatchService } from './watch.service';
+import { SaveService } from './save.service';
 
 import { File } from 'app/classes/file';
 
@@ -31,6 +32,7 @@ export class FilesService {
     private standardItem: StandardItemService,
     private log: LoggerService,
     private watch: WatchService,
+    private saveService: SaveService,
     private electronService: ElectronService) {
 
     this.asService.selectedArchivalObjectsChanged.subscribe((objects) => {
@@ -38,6 +40,7 @@ export class FilesService {
       if (this.filesWatchFirstRun && objects.length > 0) {
         this.filesWatchFirstRun = false;
         this.updateFileAssignments(this.projectFilePath);
+        this.saveService.save();
       }
     });
     this.standardItem.itemChanged.subscribe((objects) => {
@@ -45,6 +48,7 @@ export class FilesService {
       if (this.filesWatchFirstRun && objects.length > 0) {
         this.filesWatchFirstRun = false;
         this.updateFileAssignments(this.projectFilePath);
+        this.saveService.save();
       }
     });
 
