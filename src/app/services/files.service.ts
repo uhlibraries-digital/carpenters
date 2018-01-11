@@ -167,6 +167,11 @@ export class FilesService {
     }
   }
 
+  fullContainerPath(container: any): string {
+    let c = this.convertFromASContainer(container);
+    return this.projectFilePath + '/' + this.containerToPath(c);
+  }
+
   orphanFile(obj: any, file: File): void {
     if (obj.containers.length === 0) {
       this.log.error("Couldn't move file to orphan directory because there is no container information available");
@@ -248,11 +253,6 @@ export class FilesService {
       returnString += c.type + '_' + this.padLeft(c.indicator, 3, '0') + '/';
     }
     return returnString;
-  }
-
-  private fullContainerPath(container: any): string {
-    let c = this.convertFromASContainer(container);
-    return this.projectFilePath + '/' + this.containerToPath(c);
   }
 
   private updateFileAssignments(projectFilePath: string): void {

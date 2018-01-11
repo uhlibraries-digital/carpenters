@@ -102,4 +102,13 @@ export class FileViewComponent {
     }
   }
 
+  openContainerFolder(c: any) {
+    if (c.containers.length === 0) {
+      this.log.warn("Sorry, this object doesn't have a container, or is still waiting to be loaded");
+      return;
+    }
+    let path = this.files.fullContainerPath(c.containers[0]);
+    this.electronService.shell.openItem(path);
+  }
+
 }
