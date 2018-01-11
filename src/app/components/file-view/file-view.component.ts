@@ -47,6 +47,7 @@ export class FileViewComponent {
 
   removeFile(c: any, uuid: string): void {
     let index = c.files.findIndex(file => file.uuid === uuid);
+    this.files.orphanFile(c, c.files[index]);
     c.files.splice(index, 1);
   }
 

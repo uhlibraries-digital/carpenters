@@ -163,6 +163,28 @@ export class FilesService {
     }
   }
 
+  orphanFile(obj: any, file: File): void {
+    if (obj.containers.length === 0) {
+      this.log.error("Couldn't move file to orphan directory because there is no container information available");
+      return;
+    }
+    if (this.projectFilePath === '') {
+      this.log.error("Couldn't move file to orphan directory because the project file has not been created yet");
+      return;
+    }
+
+    let containerPath = this.containerToPath(this.convertFromASContainer(obj.containers[0]));
+    let orphanPath = this.projectFilePath.replace(/\/Files\/?$/, '/Orphaned/');
+    let destPath = orphanPath + containerPath;
+
+    mkdirp.sync(destPath);
+    rename(file.path, destPath + file.name, (err) => {
+      if (err) {
+        this.log.error(err.message);
+      }
+    });
+  }
+
   private selectFiles(): string[] {
     let filenames = this.electronService.dialog.showOpenDialog({
       title: 'Select File...',
@@ -269,7 +291,7 @@ export class FilesService {
         return false;
       }
       if (!existsSync(dirname(expectedFilePath))) {
-        mkdirp(dirname(expectedFilePath));
+        mkdirp.sync(dirname(expectedFilePath));
       }
       rename(file.path, expectedFilePath, (err) => {
         if (err) {
