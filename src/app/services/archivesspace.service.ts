@@ -1,4 +1,4 @@
-import { Injectable, Output, EventEmitter }    from '@angular/core';
+import { Injectable, EventEmitter }    from '@angular/core';
 import { Headers, Http, RequestOptions, URLSearchParams } from '@angular/http';
 import { v4 } from 'uuid';
 
@@ -15,8 +15,8 @@ export class ArchivesSpaceService {
 
   public selectedResource: any;
 
-  @Output() selectedResourceChanged: EventEmitter<any> = new EventEmitter();
-  @Output() selectedArchivalObjectsChanged: EventEmitter<any> = new EventEmitter<any>();
+  selectedResourceChanged: EventEmitter<any> = new EventEmitter();
+  selectedArchivalObjectsChanged: EventEmitter<any> = new EventEmitter<any>();
 
   constructor(
     private preferenceService: PreferencesService,
@@ -168,6 +168,24 @@ export class ArchivesSpaceService {
       level === 'subseries' || level.indexOf('sub-series') > -1;
   }
 
+  commitArtificialItems(): Promise<any> {
+    let artificialItems = this.selectedArchivalObject(this.selectedResource.tree.children)
+      .filter((object) => {
+        return object.artificial && object.parent_uri;
+      });
+    let promises = [];
+    for (let item of artificialItems) {
+      promises.push(this.createArchivalObject(item)
+        .then((data) => {
+          item.record_uri = data.uri;
+          item.id = data.id;
+          item.artificial = false;
+          item.parent_uri = null;
+        }));
+    }
+    return Promise.all(promises);
+  }
+
   private _request(uri: string, params?: any, session?: any): Promise<any> {
     if (!session) {
       session = this.sessionStorage.get(this.storageKey);
@@ -190,6 +208,32 @@ export class ArchivesSpaceService {
     return this.http.get(url, options)
       .toPromise()
       .then(response => response.json())
+      .catch((error) => {
+        return this.handleError(error);
+      });
+  }
+
+  private _post(uri: string, params: any = '', encode = false): Promise<any> {
+    let session = this.sessionStorage.get(this.storageKey);
+    let headers = new Headers({ 'X-ArchivesSpace-Session': session.id });
+    let options = new RequestOptions({
+      headers: headers
+    });
+    let url = this.preferences.archivesspace.endpoint + uri;
+
+    let body = new URLSearchParams();
+    if (params) {
+      for (let key in params) {
+        body.set(key, params[key]);
+      }
+    }
+
+    return this.http.post(url, (encode ? body : params), options)
+      .toPromise()
+      .then((resonse) => {
+        let data = resonse.json();
+        return data;
+      })
       .catch((error) => {
         return this.handleError(error);
       });
@@ -267,10 +311,12 @@ export class ArchivesSpaceService {
       if (!object.instances) {
         return;
       }
+      child.instances = object.instances;
       let object_containers = object.instances.filter(instance => instance.sub_container && instance.sub_container.top_container);
       for (let c of object_containers) {
         this._request(c.sub_container.top_container.ref).then((topContainer) => {
           child.containers.push({
+            'top_container': { 'ref': topContainer.uri || null },
             'type_1': topContainer.type || null,
             'indicator_1': topContainer.indicator || null,
             'type_2': c.sub_container.type_2 || null,
@@ -281,6 +327,89 @@ export class ArchivesSpaceService {
         });
       }
     });
+  }
+
+  private createArchivalObject(item: any): Promise<any> {
+    let ao = {
+      jsonmodel_type: "archival_object",
+      parent: {
+        ref: item.parent_uri
+      },
+      resource: {
+        ref: this.selectedResource.tree.record_uri
+      },
+      title: item.title,
+      level: "item",
+      publish: false,
+      restructions_apply: false,
+      external_ids: [],
+      subjects: [],
+      extents: [],
+      dates: [],
+      external_documents: [],
+      rights_statments: [],
+      linked_agents: [],
+      ancestors: [],
+      instances: this.containerInstances(item),
+      notes: [],
+      linked_events: [],
+      component_id: ""
+    }
+
+    return this._post(this.selectedResource.repository.ref + '/archival_objects', ao)
+      .then((response) => {
+        if (response.status !== 'Created') {
+          throw Error("Unable to create archival object '" + item.title + "'");
+        }
+        let query = {
+          "children[]": response.uri,
+          "position": this.whereAmI(item)
+        };
+        this._post(item.parent_uri + '/accept_children', query, true);
+        return response;
+      });
+  }
+
+  private whereAmI(item: any): number {
+    if (!item.parent) { return 0; }
+    return item.parent.children.findIndex((object) => {
+      return object.uuid === item.uuid;
+    });
+  }
+
+  private containerInstances(obj: any): any {
+    let instances = [];
+    for (let container of obj.containers) {
+      if (!container.top_container && obj.parent) {
+        let ptc = this.findTopContainers(obj.parent);
+        if (ptc.length > 0) {
+          /* just going to grab the first top container */
+          container.top_container = ptc[0].sub_container.top_container;
+        }
+      }
+
+      let sub_container = {
+        top_container: container.top_container
+      }
+      if (container.type_2) {
+        sub_container['type_2'] = container.type_2;
+        sub_container['indicator_2'] = String(container.indicator_2);
+      }
+      if (container.type_3) {
+        sub_container['type_3'] = container.type_3;
+        sub_container['indicator_3'] = String(container.indicator_3);
+      }
+      instances.push({
+        instance_type: 'mixed_materials',
+        sub_container: sub_container
+      })
+    }
+    return instances;
+  }
+
+  private findTopContainers(object: any): any {
+    if (!object.instances) { return []; }
+    return object.instances.filter(instance => instance.sub_container && instance.sub_container.top_container);
   }
 
 }

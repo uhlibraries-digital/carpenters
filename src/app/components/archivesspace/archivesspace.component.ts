@@ -72,9 +72,19 @@ export class ArchivesSpaceComponent implements OnInit {
         this.log.warn("Please save this project before committing it.");
         return;
       }
-      this.saveService.save();
+      this.activity.start('commit');
       this.filesService.createFolderHierarchy(dirname(this.saveService.saveLocation));
-      this.log.info("Project committed");
+      this.asService.commitArtificialItems()
+        .then(() => {
+          this.saveService.save();
+          this.log.info("Project committed");
+          this.activity.stop('commit');
+        })
+        .catch((error) => {
+          this.saveService.save();
+          this.log.error(error);
+          this.activity.stop('commit');
+        });
     });
 
     this.asService.selectedResourceChanged.subscribe((resource) => {
