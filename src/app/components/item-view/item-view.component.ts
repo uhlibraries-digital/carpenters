@@ -104,6 +104,10 @@ export class ItemViewComponent implements OnInit, AfterViewChecked {
     this.standardItem.setResourceTitle(this.resource.title);
   }
 
+  titleIsArk(): boolean {
+    return this.resource.title.match(/https?:\/\/.*\/ark:\/\d+\/.*$/);
+  }
+
   editTitle(c: any): void {
     c.editTitle = true;
     c.oldTitle = c.title;

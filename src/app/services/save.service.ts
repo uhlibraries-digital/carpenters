@@ -111,7 +111,7 @@ export class SaveService {
 
   private createSaveStandardObject(): any {
     let resource = this.standardItem.getResource();
-    let standardObjects = this.standardItem.getAll();
+    let standardObjects = this.standardItem.items;
 
     let objects = [];
     for (let so of standardObjects) {
@@ -127,14 +127,15 @@ export class SaveService {
         productionNotes: so.productionNotes || '',
         pm_ark: so.pm_ark,
         files: files,
-        metadata: so.metadata || {}
+        metadata: so.metadata
       });
     }
 
     return ({
       type: 'standard',
       resource: resource,
-      collectionTitle: resource.title || '',
+      collectionTitle: resource.vocabTitle || resource.title || '',
+      collectionArkUrl : resource.collectionArkUrl  || '',
       aic: resource.aic || '',
       objects: objects
     });
@@ -223,7 +224,8 @@ export class SaveService {
   }
 
   private loadStandardObjects(obj: any): void {
-    this.standardItem.setResourceTitle(obj.resource.title);
+    this.standardItem.setResourceTitle(obj.collectionArkUrl ||
+      obj.collectionTitle || obj.resource.title);
     this.standardItem.setResourceAic(obj.aic);
     for (let o of obj.objects) {
       let item: Item = o;

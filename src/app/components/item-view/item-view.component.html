@@ -3,10 +3,11 @@
       <div class="collection input-group">
         <input
           type="text"
-          placeholder="Collection Title"
+          placeholder="Collection Title or ARK Url"
           class="form-control form-control-sm"
           [(ngModel)]="resource.title"
           (change)="setTitle()" />
+        <span class="vocab" *ngIf="titleIsArk()">{{ resource.vocabTitle }}</span>
       </div>
       <div class="items input-group">
         <input
