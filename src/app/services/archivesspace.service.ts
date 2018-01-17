@@ -61,6 +61,7 @@ export class ArchivesSpaceService {
     return this.request(uri)
       .then(resource => this.selectedResource = resource)
       .then((resource) => {
+        this.setCollectionTitle();
         return this.getResourceTree(uri).then((tree) => {
           this.selectedResource.tree = tree;
           this.selectedResourceChanged.emit(this.selectedResource);
@@ -410,6 +411,52 @@ export class ArchivesSpaceService {
   private findTopContainers(object: any): any {
     if (!object.instances) { return []; }
     return object.instances.filter(instance => instance.sub_container && instance.sub_container.top_container);
+  }
+
+  private setCollectionTitle(): string {
+    let ark = this.getArkFromExternalDocuments();
+    if (!ark) {
+      this.selectedResource.vocabTitle = this.selectedResource.title;
+      return this.selectedResource.title
+    }
+
+    this.http.get(ark + '.rdf')
+      .toPromise()
+      .then((data) => {
+        try {
+          let parser = new DOMParser();
+          let xml = parser.parseFromString(data['_body'], "text/xml");
+          let prefLabels = xml.getElementsByTagName('prefLabel');
+          this.selectedResource.vocabTitle = prefLabels[prefLabels.length - 1].textContent;
+        }
+        catch(e) {
+          this.selectedResource.vocabTitle = this.selectedResource.title;
+        }
+      })
+      .catch((error) => {
+        this.selectedResource.vocabTitle = this.selectedResource.title;
+      });
+
+  }
+
+  private getArkFromExternalDocuments(): string {
+    this.selectedResource.collectionArkUrl = '';
+    this.selectedResource.collectionArk = '';
+
+    if (!this.selectedResource.external_documents) {
+      return '';
+    }
+    
+    let found;
+    for (let edoc of this.selectedResource.external_documents) {
+      if (edoc.location && (found = edoc.location.match(/ark:\/\d+\/.*$/))) {
+        this.selectedResource.collectionArkUrl = edoc.location;
+        this.selectedResource.collectionArk = found[0];
+        return edoc.location;
+      }
+    }
+
+    return '';
   }
 
 }

@@ -218,7 +218,8 @@ export class SipService {
     this.setCsvRowValue(objectRow, 'parts', 'objects/' + sipId, headers);
     this.setCsvRowValue(objectRow, 'dcterms.title', this.getObjectTitle(obj), headers);
     this.setCsvRowValue(objectRow, 'dcterms.identifier', obj.pm_ark, headers);
-    this.setCsvRowValue(objectRow, 'dcterms.isPartOf', this.selectedResource.title, headers);
+    this.setCsvRowValue(objectRow, 'dcterms.isPartOf', this.selectedResource.collectionArk || '', headers);
+    this.setCsvRowValue(objectRow, 'uhlib.note', this.selectedResource.vocabTitle || '', headers);
     this.setCsvRowValue(objectRow, 'uhlib.aSpaceUri', this.getObjectUri(obj), headers);
     this.setCsvRowValue(objectRow, 'partOfAIC', this.selectedResource.aic, headers);
 
