@@ -258,7 +258,7 @@ export class SipService {
   }
 
   private copyObjectFiles(obj: any): Promise<any> {
-    this.log.info('Coping files for ' + this.getObjectTitle(obj), false);
+    this.log.info('Copying files for ' + this.getObjectTitle(obj), false);
     let promisses = [];
 
     let pmFiles = obj.files.filter(file => file.purpose === 'preservation');
