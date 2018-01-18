@@ -158,6 +158,7 @@ export class SaveService {
       });
       let object: any = {
         uuid: ao.uuid,
+        title: ao.title,
         uri: ao.record_uri,
         files: files,
         artificial: ao.artificial,
@@ -166,7 +167,6 @@ export class SaveService {
         metadata: ao.metadata || {}
       };
       if (ao.artificial) {
-        object.title = ao.title;
         object.parent_uri = ao.parent.record_uri;
         object.level = ao.level;
         object.containers = ao.containers;
