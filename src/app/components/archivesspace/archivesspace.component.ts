@@ -22,6 +22,7 @@ export class ArchivesSpaceComponent implements OnInit {
   repositories: any;
   selectedRepository: string;
   mintSip: boolean;
+  committing: boolean = false;
 
   resources: any;
   selectedResource: any;
@@ -68,10 +69,12 @@ export class ArchivesSpaceComponent implements OnInit {
       this.repositoryList.nativeElement.disabled = true;
     });
     this.electronService.ipcRenderer.on('commit-project', (event, arg) => {
+      if (this.committing) { return; }
       if (!this.saveService.saveLocation) {
         this.log.warn("Please save this project before committing it.");
         return;
       }
+      this.committing = true;
       this.activity.start('commit');
       this.filesService.createFolderHierarchy(dirname(this.saveService.saveLocation));
       this.asService.commitArtificialItems()
@@ -79,11 +82,13 @@ export class ArchivesSpaceComponent implements OnInit {
           this.saveService.save();
           this.log.info("Project committed");
           this.activity.stop('commit');
+          this.committing = false;
         })
         .catch((error) => {
           this.saveService.save();
           this.log.error(error);
           this.activity.stop('commit');
+          this.committing = false;
         });
     });
 
