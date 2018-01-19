@@ -40,6 +40,7 @@ export class StandardComponent implements OnInit {
     this.electronService.ipcRenderer.removeAllListeners('save-project');
     this.electronService.ipcRenderer.removeAllListeners('save-as-project');
     this.electronService.ipcRenderer.removeAllListeners('open-project');
+    this.electronService.ipcRenderer.removeAllListeners('commit-project');
 
     this.electronService.ipcRenderer.on('save-project', (event, arg) => {
       this.saveService.save();
