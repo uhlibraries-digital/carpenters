@@ -105,6 +105,25 @@ export class ArchivesSpaceService {
     }
   }
 
+  post(uri: string, params: any = '', encode: boolean = false): Promise<any> {
+    if (!this.preferences.archivesspace) {
+      return Promise.reject('Preferences are not set');
+    }
+
+    let today = new Date();
+    let session = this.sessionStorage.get(this.storageKey);
+
+    if (!session.expires || session.expires <= today.getTime()) {
+      return this.login(this.preferences.archivesspace.username, this.preferences.archivesspace.password)
+        .then((session) => {
+          return this._post(uri, params, encode, session);
+        });
+    }
+    else {
+      return this._post(uri, params, encode);
+    }
+  }
+
   clearSession(): void {
     this.sessionStorage.remove(this.storageKey);
   }
@@ -216,8 +235,11 @@ export class ArchivesSpaceService {
       });
   }
 
-  private _post(uri: string, params: any = '', encode = false): Promise<any> {
-    let session = this.sessionStorage.get(this.storageKey);
+  private _post(uri: string, params: any = '', encode: boolean = false, session?: any): Promise<any> {
+    if (!session) {
+      session = this.sessionStorage.get(this.storageKey);
+    }
+
     let headers = new Headers({ 'X-ArchivesSpace-Session': session.id });
     let options = new RequestOptions({
       headers: headers
@@ -359,7 +381,7 @@ export class ArchivesSpaceService {
       component_id: ""
     }
 
-    return this._post(this.selectedResource.repository.ref + '/archival_objects', ao)
+    return this.post(this.selectedResource.repository.ref + '/archival_objects', ao)
       .then((response) => {
         if (response.status !== 'Created') {
           throw Error("Unable to create archival object '" + item.title + "'");
@@ -368,7 +390,7 @@ export class ArchivesSpaceService {
           "children[]": response.uri,
           "position": this.whereAmI(item)
         };
-        this._post(item.parent_uri + '/accept_children', query, true);
+        this.post(item.parent_uri + '/accept_children', query, true);
         return response;
       });
   }
