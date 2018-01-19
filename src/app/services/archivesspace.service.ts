@@ -146,14 +146,16 @@ export class ArchivesSpaceService {
     return [];
   }
 
-  selectedArchivalObjects(): any[] {
+  selectedArchivalObjects(returnOnly: boolean = false): any[] {
     if (!this.selectedResource) {
       this.selectedArchivalObjectsChanged.emit([]);
       return [];
     }
 
     let list = this.selectedArchivalObject(this.selectedResource.tree.children);
-    this.selectedArchivalObjectsChanged.emit(list);
+    if (!returnOnly) {
+      this.selectedArchivalObjectsChanged.emit(list);
+    }
     return list;
   }
 
@@ -446,7 +448,7 @@ export class ArchivesSpaceService {
     if (!this.selectedResource.external_documents) {
       return '';
     }
-    
+
     let found;
     for (let edoc of this.selectedResource.external_documents) {
       if (edoc.location && (found = edoc.location.match(/ark:\/\d+\/.*$/))) {
