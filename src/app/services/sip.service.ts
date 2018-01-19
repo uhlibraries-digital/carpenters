@@ -267,6 +267,9 @@ export class SipService {
 
     let path = this.sipPath(obj);
     mkdirp.sync(path + '/objects/' + this.sipId(obj));
+    if (mmFiles) {
+      mkdirp.sync(path + '/service/' + this.sipId(obj));
+    }
 
     promisses.push(this.copyFiles(pmFiles, path + '/objects/' + this.sipId(obj)));
     promisses.push(this.copyFiles(mmFiles, path + '/service/' + this.sipId(obj)));
