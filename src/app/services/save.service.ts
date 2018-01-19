@@ -15,6 +15,7 @@ import { StandardItemService } from './standard-item.service';
 import { LoggerService } from './logger.service';
 import { ElectronService } from './electron.service';
 import { WatchService } from './watch.service';
+import { FilesService } from './files.service';
 
 import { File } from 'app/classes/file';
 import { Item } from 'app/classes/item';
@@ -26,6 +27,7 @@ export class SaveService {
   selectedResource: any;
 
   saveStatus: EventEmitter<boolean> = new EventEmitter();
+  saveChanged: EventEmitter<string> = new EventEmitter();
 
   constructor(
     private activity: ActivityService,
@@ -52,6 +54,7 @@ export class SaveService {
     this.activity.start('save');
     let saveObject = this.createSaveObject();
     this.saveToFile(saveObject, this.saveLocation);
+    this.saveChanged.emit(this.saveLocation);
   }
 
   open(): void {

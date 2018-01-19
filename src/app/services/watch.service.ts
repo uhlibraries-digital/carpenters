@@ -12,6 +12,8 @@ export class WatchService {
   hierarchyChanged: EventEmitter<any> = new EventEmitter();
 
   public projectFile(projectFilename: string): void {
+    if (!existsSync(projectFilename)) return;
+
     this.filename = projectFilename;
     watchFile(projectFilename, (curr, prev) => {
       if (curr.mtime !== prev.mtime) {
@@ -23,12 +25,13 @@ export class WatchService {
   public fileHierarchy(projectFilesPath: string): void {
     if (!existsSync(projectFilesPath)) return;
 
-    this.hierarchyChanged.emit(projectFilesPath);
+    this.unWatch(projectFilesPath);
     this.watchEvent = watch(projectFilesPath, { recursive: true }, (eventType, filename) => {
       if (eventType === 'rename') {
         this.hierarchyChanged.emit(projectFilesPath);
       }
     });
+    this.hierarchyChanged.emit(projectFilesPath);
   }
 
   public unWatch(path: string): void {

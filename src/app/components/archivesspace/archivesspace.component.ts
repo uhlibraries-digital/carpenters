@@ -74,7 +74,6 @@ export class ArchivesSpaceComponent implements OnInit {
         return;
       }
       this.activity.start('commit');
-      this.filesService.createFolderHierarchy(dirname(this.saveService.saveLocation));
       this.asService.commitArtificialItems()
         .then(() => {
           this.saveService.save();

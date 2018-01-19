@@ -58,7 +58,6 @@ export class StandardComponent implements OnInit {
         return;
       }
       this.saveService.save();
-      this.filesService.createFolderHierarchy(dirname(this.saveService.saveLocation));
       this.log.info("Project committed");
     });
   }

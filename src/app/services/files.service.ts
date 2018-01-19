@@ -61,6 +61,10 @@ export class FilesService {
       this.updateFileAssignments(path);
     });
 
+    this.saveService.saveChanged.subscribe((location) => {
+      this.createFolderHierarchy(dirname(location));
+    });
+
     let o = this.asService.selectedArchivalObjects();
     if (o.length === 0) {
       this.selectedObjects = this.standardItem.getAll();
@@ -88,6 +92,11 @@ export class FilesService {
   }
 
   addFilesToObject(obj: any, purpose: string, files?: any[]): void {
+    if (!this.saveService.saveLocation) {
+      this.log.warn("Please save this project before adding files.");
+      return;
+    }
+
     if (!files) {
       files = this.selectFiles();
     }
@@ -159,6 +168,7 @@ export class FilesService {
   }
 
   createFolderHierarchy(path: string): void {
+    console.log('create folder hierarchy');
     for (let o of this.selectedObjects) {
         if (o.containers.length === 1) {
           let container = this.convertFromASContainer(o.containers[0]);
@@ -166,7 +176,7 @@ export class FilesService {
           mkdirp.sync(containerPath);
         }
     }
-    if (existsSync(path + '/Files')) {
+    if (!this.watch.watchEvent) {
       this.watch.fileHierarchy(path + '/Files');
     }
   }
@@ -288,6 +298,10 @@ export class FilesService {
 
   private updateFileLocation(obj: any, file: File): boolean {
     if (obj.containers.length !== 1) return;
+    if (!this.projectFilePath && !this.saveService.saveLocation) {
+      this.log.warn("Couldn't move file into containers. Try saving the project first.");
+      return;
+    }
 
     let expectedFilePath = this.fullContainerPath(obj.containers[0]) +
       this.filenameWithPurposeSuffix(file);
