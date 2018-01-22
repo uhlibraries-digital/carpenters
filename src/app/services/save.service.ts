@@ -150,7 +150,7 @@ export class SaveService {
     }
 
     let resource = this.selectedResource.uri;
-    let archivalObjects = this.asService.selectedArchivalObjects(true);
+    let archivalObjects = this.asService.selectedArchivalObjects();
     let objects = [];
     for (let ao of archivalObjects) {
       if (ao.files === undefined) { ao.files = []; }
