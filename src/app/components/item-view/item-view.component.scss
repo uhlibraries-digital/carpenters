@@ -27,6 +27,9 @@
   overflow-y: auto;
   background-color: $light-background-color;
   border-top: 1px solid $darker-background-color;
+  position: absolute;
+  top: 108px;
+  bottom: 0;
 
   .items-list {
     padding: 20px;
