@@ -162,7 +162,6 @@ export class FilesService {
   }
 
   createFolderHierarchy(path: string): void {
-    console.log('create folder hierarchy');
     for (let o of this.selectedObjects) {
         if (o.containers.length === 1) {
           let container = this.convertFromASContainer(o.containers[0]);
