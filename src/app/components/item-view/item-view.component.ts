@@ -115,17 +115,25 @@ export class ItemViewComponent implements OnInit, AfterViewChecked {
     this.ngAfterViewChecked();
   }
 
+  clickConfirm (c: any): void {
+    event.preventDefault();
+    event.stopPropagation();
+    c.editTitle = false;
+    this.changeRef.detectChanges();
+  }
+
+  clickCancel (c: any) {
+    c.editTitle = false;
+    c.title = c.oldTitle;
+    this.changeRef.detectChanges();
+  }
+
   keydownCheck(event: KeyboardEvent, c: any): void {
     if (event.code === 'Enter' || event.code === 'NumpadEnter') {
-      event.preventDefault();
-      event.stopPropagation();
-      c.editTitle = false;
-      this.changeRef.detectChanges();
+      this.clickConfirm(c);
     }
     else if (event.code === 'Escape') {
-      c.editTitle = false;
-      c.title = c.oldTitle;
-      this.changeRef.detectChanges();
+      this.clickCancel(c);
     }
   }
 

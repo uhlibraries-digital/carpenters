@@ -42,6 +42,8 @@
                 type="text"
                 (keydown)="keydownCheck($event, c)"
                 [(ngModel)]="c.title" #titleField />
+              <span class="confirm-edit" (click)="clickConfirm(c)"></span>
+              <span class="cancel-edit" (click)="clickCancel(c)"></span>
             </div>
         </li>
       </ul>

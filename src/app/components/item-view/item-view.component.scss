@@ -61,6 +61,23 @@
           font-size: 14px;
           display: inline-block;
         }
+
+        .confirm-edit::after{
+          font-family: 'FontAwesome';
+          content: "\f00c";
+          padding-left: 10px;
+          color: $green;
+          cursor: pointer;
+        }
+
+        .cancel-edit::after{
+          font-family: 'FontAwesome';
+          content: "\f00d";
+          padding-left: 10px;
+          color: $red;
+          cursor: pointer;
+        }
+
       }
 
     }
