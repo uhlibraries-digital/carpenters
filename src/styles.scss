@@ -36,7 +36,7 @@ body {
   background: $scrollbar-background;
 }
 .scrollbars::-webkit-scrollbar-thumb {
-  border-radius: 5px;
+  border-radius: 7.5px;
   border: 3px solid $background-color;
   border-color: $scrollbar-background;
   background: #3c424e;
