@@ -39,11 +39,14 @@
       margin: 0;
       padding: 0;
 
-      .production-note::after{
-        font-family: 'FontAwesome';
-        content: "\f024";
-        padding-left: 10px;
-        color: $notes-flag;
+      .production-note{
+          > span::after,
+          div::after {
+            font-family: 'FontAwesome';
+            content: "\f024";
+            padding-left: 10px;
+            color: $notes-flag;
+        }
       }
 
       .can-edit::before{
