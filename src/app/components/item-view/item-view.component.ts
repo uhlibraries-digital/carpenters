@@ -116,8 +116,6 @@ export class ItemViewComponent implements OnInit, AfterViewChecked {
   }
 
   clickConfirm (c: any): void {
-    event.preventDefault();
-    event.stopPropagation();
     c.editTitle = false;
     this.changeRef.detectChanges();
   }

@@ -177,8 +177,6 @@ export class TreeViewComponent implements AfterViewChecked {
   }
 
   clickConfirm (c: any): void {
-    event.preventDefault();
-    event.stopPropagation();
     c.editTitle = false;
     this.changeRef.detectChanges();
   }
