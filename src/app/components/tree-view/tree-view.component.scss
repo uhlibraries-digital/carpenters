@@ -75,7 +75,7 @@
             font-family: 'FontAwesome';
             content: "\f00c";
             padding-left: 10px;
-            color: $green;
+            color: $confirm-blue;
             cursor: pointer;
           }
 
@@ -83,10 +83,10 @@
             font-family: 'FontAwesome';
             content: "\f00d";
             padding-left: 10px;
-            color: $red;
+            color: $cancel-gray;
             cursor: pointer;
           }
-          
+
         }
       }
 
