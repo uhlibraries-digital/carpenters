@@ -129,6 +129,7 @@ export class SaveService {
         level: so.level,
         productionNotes: so.productionNotes || '',
         pm_ark: so.pm_ark,
+        do_ark: so.do_ark,
         files: files,
         metadata: so.metadata
       });
@@ -167,6 +168,7 @@ export class SaveService {
         artificial: ao.artificial,
         productionNotes: this.getObjectProductionNotes(ao),
         pm_ark: ao.pm_ark,
+        do_ark: ao.do_ark,
         metadata: ao.metadata || {}
       };
       if (ao.artificial) {
@@ -237,6 +239,7 @@ export class SaveService {
       item.selected = true;
       item.productionNotes = o.productionNotes;
       item.pm_ark = o.pm_ark;
+      item.do_ark = o.do_ark;
       item.metadata = o.metadata;
       this.standardItem.push(item);
     }
@@ -254,6 +257,7 @@ export class SaveService {
         c.selected = true;
         c.productionNotes = found.productionNotes || '';
         c.pm_ark = found.pm_ark;
+        c.do_ark = found.do_ark;
         c.metadata = found.metadata || {};
         c.files = this.convertToFileObjects(found.files);
       }
@@ -324,6 +328,7 @@ export class SaveService {
       if (object) {
         object.metadata = pObject.metadata;
         object.productionNotes = pObject.productionNotes;
+        object.do_ark = pObject.do_ark || '';
       }
     }
   }
@@ -335,6 +340,7 @@ export class SaveService {
       if (object) {
         object.metadata = pObject.metadata;
         object.productionNotes = pObject.productionNotes;
+        object.do_ark = pObject.do_ark || '';
       }
     }
   }

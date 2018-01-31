@@ -5,6 +5,7 @@ export class Item {
   uuid: string;
   title: string;
   pm_ark: string;
+  do_ark: string;
   level: string;
   selected: boolean = true;
   containers: any[];
@@ -22,6 +23,7 @@ export class Item {
     this.productionNotes = '';
     this.files = [];
     this.pm_ark = '';
+    this.do_ark = '';
     this.metadata = {};
   }
 
