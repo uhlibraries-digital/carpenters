@@ -311,7 +311,7 @@ export class ArchivesSpaceService {
       if (this.isSeriesType(c.level)) {
         c.series_index = series_index++;
       }
-      this.populateContainers(c);
+      this.populateDatesAndContainers(c);
       this.populateChildAttributes(c.children, c);
     }
   }
@@ -327,7 +327,7 @@ export class ArchivesSpaceService {
     return list;
   }
 
-  private populateContainers(child: any): void {
+  private populateDatesAndContainers(child: any): void {
     if (child.node_type !== "archival_object" || child.instance_types.length === 0) {
       return;
     }
@@ -336,6 +336,7 @@ export class ArchivesSpaceService {
       if (!object.instances) {
         return;
       }
+      child.dates = object.dates.filter(d => d.begin || d.end);
       child.instances = object.instances;
       let object_containers = object.instances.filter(instance => instance.sub_container && instance.sub_container.top_container);
       for (let c of object_containers) {

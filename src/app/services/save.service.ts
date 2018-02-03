@@ -125,6 +125,7 @@ export class SaveService {
       objects.push({
         uuid: so.uuid,
         title: so.title,
+        dates: [],
         containers: so.containers,
         level: so.level,
         productionNotes: so.productionNotes || '',
@@ -163,6 +164,7 @@ export class SaveService {
       let object: any = {
         uuid: ao.uuid,
         title: ao.title,
+        dates: ao.dates.map(d => d.begin + (d.end ? '/' + d.end : '')),
         uri: ao.record_uri,
         files: files,
         artificial: ao.artificial,

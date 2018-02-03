@@ -117,6 +117,7 @@ export class TreeViewComponent implements AfterViewChecked {
     c.children.push({
       uuid: v4(),
       title: 'Item ' + this.padLeft(index + 1, 3, '0'),
+      dates: [],
       parent: c,
       index: index,
       selected: true,
