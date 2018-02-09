@@ -1,5 +1,8 @@
 import { Injectable, EventEmitter } from '@angular/core';
-import { readdir, statSync, existsSync, rename } from 'fs';
+import {
+  readdir, statSync, existsSync, rename,
+  createReadStream, createWriteStream
+} from 'fs';
 import { parse, dirname } from 'path';
 import * as mkdirp from 'mkdirp';
 
@@ -310,7 +313,18 @@ export class FilesService {
       }
       rename(file.path, expectedFilePath, (err) => {
         if (err) {
-          this.log.error("Unable to move file: " + err.message);
+          if (err.message.indexOf("cross-device link not permitted") !== -1) {
+            this.activity.start('file copy');
+            this.copyFile(file.path, expectedFilePath)
+              .then(() => this.activity.stop('file copy'))
+              .catch((err) => {
+                this.activity.stop('file copy');
+                this.log.error("Unable to copy file: " + err.message);
+              });
+          }
+          else {
+            this.log.error("Unable to move file: " + err.message);
+          }
         }
       });
     }
@@ -335,6 +349,22 @@ export class FilesService {
     }
 
     return info.name + info.ext;
+  }
+
+  private copyFile(src: string, dest: string): Promise<any> {
+    let ws = createWriteStream(dest);
+    let rs = createReadStream(src);
+    return new Promise(function(resolve, reject) {
+      rs.on('error', reject);
+      ws.on('error', reject);
+      ws.on('finish', resolve);
+      rs.pipe(ws);
+    })
+    .catch((err) => {
+      rs.destroy();
+      ws.end();
+      return err;
+    });
   }
 
 }
