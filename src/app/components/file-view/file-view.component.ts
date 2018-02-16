@@ -1,6 +1,7 @@
 import { Component, Input, ElementRef, Renderer } from '@angular/core';
 
 import { ArchivesSpaceService } from 'app/services/archivesspace.service';
+import { StandardItemService } from 'app/services/standard-item.service';
 import { FilesService } from 'app/services/files.service';
 import { ElectronService } from 'app/services/electron.service';
 import { LoggerService } from 'app/services/logger.service';
@@ -19,6 +20,7 @@ export class FileViewComponent {
 
   constructor(
     private asService: ArchivesSpaceService,
+    private standardItems: StandardItemService,
     private renderer: Renderer,
     private files: FilesService,
     private electronService: ElectronService,
@@ -31,6 +33,7 @@ export class FileViewComponent {
       this.preferences = this.preferenceService.data;
 
       this.asService.selectedArchivalObjects();
+      this.standardItems.getAll();
     }
 
   getParents(c: any): any[] {
