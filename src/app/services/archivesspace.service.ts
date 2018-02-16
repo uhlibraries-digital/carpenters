@@ -328,17 +328,26 @@ export class ArchivesSpaceService {
   }
 
   private populateDatesAndContainers(child: any): void {
-    if (child.node_type !== "archival_object" || child.instance_types.length === 0) {
+    if ((child.node_type !== "archival_object" || child.instance_types.length === 0) && child.level !== 'item') {
       return;
     }
 
     this._request(child.record_uri).then((object) => {
-      if (!object.instances) {
-        return;
-      }
       child.dates = object.dates.filter(d => d.begin || d.end);
-      child.instances = object.instances;
+      child.instances = object.instances || [];
       let object_containers = object.instances.filter(instance => instance.sub_container && instance.sub_container.top_container);
+
+      if (child.level === 'item' && object_containers.length === 0) {
+        child.containers.push({
+          'type_1': 'Item',
+          'indicator_1': '1',
+          'type_2': null,
+          'indicator_2': null,
+          'type_3': null,
+          'indicator_3': null
+        });
+      }
+
       for (let c of object_containers) {
         this._request(c.sub_container.top_container.ref).then((topContainer) => {
           child.containers.push({
