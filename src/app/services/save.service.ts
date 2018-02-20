@@ -165,6 +165,7 @@ export class SaveService {
         uuid: ao.uuid,
         title: ao.title,
         dates: ao.dates.map(d => d.begin + (d.end ? '/' + d.end : '')),
+        containers: ao.containers,
         uri: ao.record_uri,
         files: files,
         artificial: ao.artificial,
@@ -257,6 +258,7 @@ export class SaveService {
       if (found) {
         c.uuid = found.uuid || v4();
         c.selected = true;
+        c.containers = found.containers || [];
         c.productionNotes = found.productionNotes || '';
         c.pm_ark = found.pm_ark;
         c.do_ark = found.do_ark;

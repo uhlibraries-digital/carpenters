@@ -34,7 +34,7 @@
         </div>
       </div>
       <div
-        [ngClass]="containerClasses(c)">{{ displayContainer(c) }}</div>
+        [ngClass]="containerClasses(c)"><i *ngIf="c.containersLoading" class="fa fa-refresh fa-spin" aria-hidden="true" style="margin-right: 5px;"></i>{{ displayContainer(c) }}</div>
       <tree-view *ngIf="c.children && c.expanded" [children]="c.children"></tree-view>
     </li>
   </ul>

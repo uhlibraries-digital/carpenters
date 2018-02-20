@@ -32,8 +32,10 @@ export class FileViewComponent {
       });
       this.preferences = this.preferenceService.data;
 
-      this.asService.selectedArchivalObjects();
-      this.standardItems.getAll();
+      let obj = this.asService.selectedArchivalObjects();
+      if (obj.length === 0) {
+        this.standardItems.getAll();
+      }
     }
 
   getParents(c: any): any[] {
@@ -41,7 +43,8 @@ export class FileViewComponent {
   }
 
   displayContainer(c: any): string {
-    return this.asService.displayContainer(c);
+    return c.containersLoading ? 'Loading container information'
+      : this.asService.displayContainer(c);
   }
 
   containerClass(c: any): string {

@@ -339,7 +339,9 @@ export class ArchivesSpaceService {
       itemNumber = this.itemIndicator++;
     }
 
+    child.containersLoading = true;
     this._request(child.record_uri).then((object) => {
+      child.containers = [];
       child.dates = object.dates.filter(d => d.begin || d.end);
       child.instances = object.instances || [];
       let object_containers = object.instances.filter(instance => instance.sub_container && instance.sub_container.top_container);
@@ -368,6 +370,7 @@ export class ArchivesSpaceService {
           });
         });
       }
+      child.containersLoading = false;
     });
   }
 

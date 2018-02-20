@@ -96,7 +96,8 @@ export class TreeViewComponent implements AfterViewChecked {
   }
 
   displayContainer(c: any): string {
-    return this.asService.displayContainer(c);
+    return c.containersLoading ? 'Loading container information'
+      : this.asService.displayContainer(c);
   }
 
   hasSelectedChildren(parent: any): boolean {
