@@ -14,6 +14,7 @@ export class ArchivesSpaceService {
   private storageKey: string = 'archivesspace';
 
   public selectedResource: any;
+  public itemIndicator: number;
 
   selectedResourceChanged: EventEmitter<any> = new EventEmitter();
   selectedArchivalObjectsChanged: EventEmitter<any> = new EventEmitter<any>();
@@ -72,6 +73,7 @@ export class ArchivesSpaceService {
   getResourceTree(uri: string): Promise<any> {
     return this.request(uri + '/tree')
       .then((tree) => {
+        this.itemIndicator = 1;
         this.populateChildAttributes(tree.children);
         return tree;
       });
@@ -332,6 +334,11 @@ export class ArchivesSpaceService {
       return;
     }
 
+    let itemNumber: number = 0;
+    if (child.level === 'item') {
+      itemNumber = this.itemIndicator++;
+    }
+
     this._request(child.record_uri).then((object) => {
       child.dates = object.dates.filter(d => d.begin || d.end);
       child.instances = object.instances || [];
@@ -340,7 +347,7 @@ export class ArchivesSpaceService {
       if (child.level === 'item' && object_containers.length === 0) {
         child.containers.push({
           'type_1': 'Item',
-          'indicator_1': '1',
+          'indicator_1': itemNumber,
           'type_2': null,
           'indicator_2': null,
           'type_3': null,
