@@ -169,7 +169,7 @@ export class FilesService {
         if (o.containers.length === 1) {
           let container = this.convertFromASContainer(o.containers[0]);
           let containerPath = path + '/Files/' + this.containerToPath(container);
-          mkdirp(containerPath, (err) => {
+          mkdirp.sync(containerPath, (err) => {
             if (err) console.error(err);
           });
         }
