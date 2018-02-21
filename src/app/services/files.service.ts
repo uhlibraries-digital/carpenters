@@ -165,6 +165,7 @@ export class FilesService {
   }
 
   createFolderHierarchy(path: string): void {
+    this.activity.start('fileHierarchy');
     for (let o of this.selectedObjects) {
         if (o.containers.length === 1) {
           let container = this.convertFromASContainer(o.containers[0]);
@@ -174,6 +175,7 @@ export class FilesService {
           });
         }
     }
+    this.activity.stop('fileHierarchy');
     if (!this.watch.watchEvent) {
       this.watch.fileHierarchy(path + '/Files');
     }

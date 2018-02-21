@@ -4,7 +4,8 @@ import {
   writeFile,
   statSync,
   createReadStream,
-  createWriteStream
+  createWriteStream,
+  existsSync
 } from 'fs';
 import { createHash } from 'crypto';
 import { basename, dirname } from 'path';
@@ -64,13 +65,6 @@ export class SipService {
     });
     this.preferences = this.preferenceService.data;
     this.updateSettings();
-
-    this.asService.selectedArchivalObjectsChanged.subscribe((objects) => {
-      this.selectedObjects = objects;
-    });
-    this.standardItem.itemChanged.subscribe((objects) => {
-      this.selectedObjects = objects;
-    });
   }
 
   package(location: string, resource: any): Promise<any> {
@@ -78,8 +72,13 @@ export class SipService {
     this.location = location;
     this.mintArks = this.storage.get('mint_sip');
 
+    this.selectedObjects = this.asService.selectedArchivalObjects();
+    if (this.selectedObjects.length === 0) {
+      this.selectedObjects = this.standardItem.getAll();
+    }
+
     if (!this.selectedObjects || this.selectedObjects.length === 0) {
-      this.log.error('No Archival Objects selected to export SIP');
+      this.log.error('No Archival Objects/Standard Objects selected to export SIP');
       return;
     }
 
@@ -299,6 +298,10 @@ export class SipService {
         let checksum = '';
         let hash = createHash('sha1');
 
+        if (!existsSync(file.path)) {
+          throw Error('File does not exist: ' + file.path);
+        }
+
         let ws = createWriteStream(dest);
         ws.on('finish', () => {
           resolve(checksum);
@@ -341,6 +344,11 @@ export class SipService {
   private validateFileCopy(file: File, newFilePath: string, checksum: string): Promise<any> {
     return new Promise((resolve, reject) => {
       this.log.info('Checking file ' + newFilePath, false);
+
+      if (!existsSync(newFilePath)) {
+        this.log.error("Validation failed, file doesn't exist: " + newFilePath);
+        reject();
+      }
 
       let hash = createHash('sha1');
       let rs = createReadStream(newFilePath);
