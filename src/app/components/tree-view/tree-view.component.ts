@@ -1,6 +1,7 @@
 import { Component, Input, ChangeDetectorRef, ViewChild, AfterViewChecked } from '@angular/core';
 import { v4 } from 'uuid';
 
+import { LoggerService } from 'app/services/logger.service';
 import { ArchivesSpaceService } from 'app/services/archivesspace.service';
 import { FilesService } from 'app/services/files.service';
 import { ProductionNotesService } from 'app/services/production-notes.service';
@@ -22,6 +23,7 @@ export class TreeViewComponent implements AfterViewChecked {
     private changeRef: ChangeDetectorRef,
     private file: FilesService,
     private note: ProductionNotesService,
+    private log: LoggerService,
     private electronService: ElectronService) {
   }
 
@@ -112,6 +114,12 @@ export class TreeViewComponent implements AfterViewChecked {
   }
 
   addChild(c: any): void {
+    if (c.containersLoading) {
+      this.log.warn("Hold on, container still loading");
+      return;
+    }
+    if (!c.containers[0]) { return; }
+
     let index = c.children.length;
     let container = this.file.convertFromASContainer(c.containers[0]);
     container = this.file.addContainer(container, 'Item', index + 1);

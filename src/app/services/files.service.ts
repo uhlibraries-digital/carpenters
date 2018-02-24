@@ -139,6 +139,7 @@ export class FilesService {
         c.type = type;
         c.indicator = indicator
         rContainer[i] = c;
+        return rContainer;
       }
     }
     return rContainer;
