@@ -266,7 +266,7 @@ export class SipService {
 
     let path = this.sipPath(obj);
     mkdirp.sync(path + '/objects/' + this.sipId(obj));
-    if (mmFiles) {
+    if (mmFiles && mmFiles.length > 0) {
       mkdirp.sync(path + '/service/' + this.sipId(obj));
     }
 
