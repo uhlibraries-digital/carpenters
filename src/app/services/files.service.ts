@@ -188,7 +188,11 @@ export class FilesService {
   }
 
   orphanFile(obj: any, file: File): void {
-    if (obj.containers.length === 0) {
+    if (obj.containersLoading) {
+      this.log.warn("Hold on, container information still loading")
+      return;
+    }
+    if (!obj.containers || !obj.containers[0]) {
       this.log.error("Couldn't move file to orphan directory because there is no container information available");
       return;
     }
@@ -299,10 +303,17 @@ export class FilesService {
   }
 
   private updateFileLocation(obj: any, file: File): boolean {
-    if (obj.containers.length !== 1) return;
     if (!this.projectFilePath && !this.saveService.saveLocation) {
       this.log.warn("Couldn't move file into containers. Try saving the project first.");
-      return;
+      return false;
+    }
+    if (obj.containersLoading) {
+      this.log.warn("Hold on, still waiting for container information to load");
+      return false;
+    }
+    if (!obj.containers || !obj.containers[0]) {
+      this.log.warn("Wait a tick, there doesn't appear to be any container information");
+      return false;
     }
 
     let expectedFilePath = this.fullContainerPath(obj.containers[0]) +
