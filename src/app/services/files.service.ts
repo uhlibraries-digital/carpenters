@@ -117,20 +117,6 @@ export class FilesService {
     });
   }
 
-  fileAssigned(file: File): boolean {
-    if (!this.selectedObjects) { return false; }
-    let test = this.selectedObjects.findIndex((value) => {
-      if (!Array.isArray(value.files)) {
-        return false;
-      }
-      let fileIndex = value.files.findIndex((fileValue) => {
-        return fileValue.path === file.path;
-      });
-      return fileIndex > -1;
-    });
-    return test > -1;
-  }
-
   addContainer(container: any, type: string, indicator: string): any {
     let rContainer = container.slice(0);
     for (let i = 0; i < rContainer.length; i++) {
