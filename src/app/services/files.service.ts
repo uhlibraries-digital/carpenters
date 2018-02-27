@@ -307,11 +307,11 @@ export class FilesService {
       this.log.warn("Couldn't move file into containers. Try saving the project first.");
       return false;
     }
-    if (obj.containersLoading) {
-      this.log.warn("Hold on, still waiting for container information to load");
-      return false;
-    }
     if (!obj.containers || !obj.containers[0]) {
+      if (obj.containersLoading) {
+        this.log.warn("Hold on, still waiting for container information to load");
+        return false;
+      }
       this.log.warn("Wait a tick, there doesn't appear to be any container information");
       return false;
     }

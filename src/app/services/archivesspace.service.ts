@@ -357,8 +357,9 @@ export class ArchivesSpaceService {
         });
       }
 
+      let containerPromises = [];
       for (let c of object_containers) {
-        this._request(c.sub_container.top_container.ref).then((topContainer) => {
+        containerPromises.push(this._request(c.sub_container.top_container.ref).then((topContainer) => {
           child.containers.push({
             'top_container': { 'ref': topContainer.uri || null },
             'type_1': topContainer.type || null,
@@ -368,9 +369,9 @@ export class ArchivesSpaceService {
             'type_3': c.sub_container.type_3 || null,
             'indicator_3': c.sub_container.indicator_3 || null
           });
-        });
+        }));
       }
-      child.containersLoading = false;
+      Promise.all(containerPromises).then(() => { child.containersLoading = false; });
     });
   }
 

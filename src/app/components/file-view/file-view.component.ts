@@ -87,6 +87,10 @@ export class FileViewComponent {
   }
 
   addFile(c: any, type: string): void {
+    if (c.containersLoading) {
+      this.log.warn("Hold on, containers are still loading");
+      return;
+    }
     this.files.addFilesToObject(c, type);
   }
 
