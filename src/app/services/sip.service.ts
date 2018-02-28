@@ -86,9 +86,17 @@ export class SipService {
     this.barProgress = 0;
     this.progressBarId = this.progress.newProgressBar(
       1,
-      'Creating preservation SIP' + (this.selectedObjects.length > 1 ? 's' : '')
+      'Checking for preservation files'
     );
     this.totalProgress = this.getTotalProgress();
+
+    if (!this.isGoodToGo()) {
+      this.log.error("Export Failed");
+      this.progress.clearProgressBar(this.progressBarId);
+      return Promise.reject(Error("Export Failed"));
+    }
+
+    this.progress.setDescription(this.progressBarId, 'Creating preservation SIP' + (this.selectedObjects.length > 1 ? 's' : ''));
 
     this.log.info(
       'Creating SIP' + (this.selectedObjects.length > 1 ? 's' : '') + '...',
@@ -101,6 +109,27 @@ export class SipService {
       }),
       Promise.resolve()
     ));
+  }
+
+  private isGoodToGo(): boolean {
+    let gtg = true;
+    for (let obj of this.selectedObjects) {
+      let files = obj.files.filter(file => file.purpose === 'preservation');
+      if (files.length === 0) {
+        this.log.error("Item '" + obj.title + "' doesn't have preservation files");
+        gtg = false;
+      }
+      else {
+        for (let file of files) {
+          if (!existsSync(file.path)) {
+            this.log.error("Missing preservation file '" + file.path + "' for '" + obj.title + "' is missing");
+            gtg = false;
+          }
+        }
+      }
+    }
+
+    return gtg;
   }
 
   private saveProject(): void {
@@ -135,7 +164,7 @@ export class SipService {
 
     if (progress === 1) {
       this.saveProject();
-      this.log.info('Done packaging SIPs');
+      this.log.success('Done packaging SIPs');
       this.progress.clearProgressBar(this.progressBarId);
       this.sipComplete.emit(true);
     }
