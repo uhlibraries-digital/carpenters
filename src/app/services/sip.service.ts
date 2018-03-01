@@ -245,6 +245,7 @@ export class SipService {
     let objectRow = Array(headers.length).fill('');
     this.setCsvRowValue(objectRow, 'parts', 'objects/' + sipId, headers);
     this.setCsvRowValue(objectRow, 'dcterms.title', this.getObjectTitle(obj), headers);
+    this.setCsvRowValue(objectRow, 'dc.date', this.getObjectDate(obj), headers);
     this.setCsvRowValue(objectRow, 'dcterms.identifier', obj.pm_ark, headers);
     this.setCsvRowValue(objectRow, 'dcterms.isPartOf', this.selectedResource.collectionArk || '', headers);
     this.setCsvRowValue(objectRow, 'uhlib.note', this.selectedResource.vocabTitle || '', headers);
@@ -283,6 +284,13 @@ export class SipService {
     }
 
     return title;
+  }
+
+  private getObjectDate(obj: any): string {
+    if (!obj.dates) { return ''; }
+
+    let dates = obj.dates.map(d => d.begin + (d.end ? '/' + d.end : ''));
+    return dates.join('; ');
   }
 
   private copyObjectFiles(obj: any): Promise<any> {
