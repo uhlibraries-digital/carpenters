@@ -69,7 +69,16 @@ export class SaveService {
         this.log.error('Error opening file: ' + err.message);
         throw err;
       }
-      let saveObject = JSON.parse(data);
+
+      let saveObject: any;
+      try {
+        saveObject = JSON.parse(data);
+      }
+      catch(err) {
+        this.log.error('Unable to read file: ' + err.message);
+        throw err;
+      }
+
       this.loadObjects(saveObject);
       this.router.navigate([saveObject.type]);
       this.watch.projectFile(this.saveLocation);
@@ -202,7 +211,18 @@ export class SaveService {
   }
 
   private saveToFile(object: any, filename: string): void {
-    let dataString = JSON.stringify(object);
+    let dataString = '';
+    try {
+      dataString = JSON.stringify(object);
+      if (dataString === '') {
+        throw Error('Data appears to be empty');
+      }
+    }
+    catch(err) {
+      this.log.error('Error saving file: ' + err.message);
+      return;
+    }
+
     writeFile(filename, dataString, (err) => {
       this.saveStatus.emit(true);
       this.activity.stop('save');
