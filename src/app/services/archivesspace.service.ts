@@ -341,26 +341,26 @@ export class ArchivesSpaceService {
 
     child.containersLoading = true;
     this._request(child.record_uri).then((object) => {
-      child.containers = [];
       child.dates = object.dates.filter(d => d.begin || d.end);
       child.instances = object.instances || [];
       let object_containers = object.instances.filter(instance => instance.sub_container && instance.sub_container.top_container);
+      let newContainers = [];
 
       if (child.level === 'item' && object_containers.length === 0) {
-        child.containers.push({
+        newContainers = [{
           'type_1': 'Item',
           'indicator_1': itemNumber,
           'type_2': null,
           'indicator_2': null,
           'type_3': null,
           'indicator_3': null
-        });
+        }];
       }
 
       let containerPromises = [];
       for (let c of object_containers) {
         containerPromises.push(this._request(c.sub_container.top_container.ref).then((topContainer) => {
-          child.containers.push({
+          newContainers.push({
             'top_container': { 'ref': topContainer.uri || null },
             'type_1': topContainer.type || null,
             'indicator_1': topContainer.indicator || null,
@@ -371,7 +371,10 @@ export class ArchivesSpaceService {
           });
         }));
       }
-      Promise.all(containerPromises).then(() => { child.containersLoading = false; });
+      Promise.all(containerPromises).then(() => {
+        child.containers = newContainers;
+        child.containersLoading = false;
+      });
     });
   }
 
