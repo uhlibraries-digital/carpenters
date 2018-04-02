@@ -210,6 +210,7 @@ module.exports = {
     "crypto": "require('crypto')",
     "events": "require('events')",
     "fs": "require('fs')",
+    "fsevents": "require('fsevents')",
     "http": "require('http')",
     "https": "require('https')",
     "assert": "require('assert')",

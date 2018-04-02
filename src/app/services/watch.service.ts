@@ -1,5 +1,6 @@
 import { Injectable, EventEmitter } from '@angular/core';
-import { watchFile, watch, existsSync } from 'fs';
+import { watchFile, existsSync } from 'fs';
+import { watch } from 'chokidar';
 import { basename } from 'path';
 
 @Injectable()
@@ -26,11 +27,12 @@ export class WatchService {
     if (!existsSync(projectFilesPath)) return;
 
     this.unWatch(projectFilesPath);
-    this.watchEvent = watch(projectFilesPath, { recursive: true }, (eventType, filename) => {
-      if (eventType === 'rename') {
-        this.hierarchyChanged.emit(projectFilesPath);
-      }
-    });
+    this.watchEvent = watch(projectFilesPath, { ignored: /(^|[\/\\])\../, depth: 10 })
+      .on('all', (event, path, details) => {
+        if (event === 'add' || event === 'unlink') {
+          this.hierarchyChanged.emit(projectFilesPath);
+        }
+      });
     this.hierarchyChanged.emit(projectFilesPath);
   }
 

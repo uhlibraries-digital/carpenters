@@ -109,6 +109,7 @@ export class FilesService {
       newFile.setPurpose(purpose);
       if (this.updateFileLocation(obj, newFile)) {
         this.removeFileFromObjects(newFile);
+        newFile.name = this.filenameWithPurposeSuffix(newFile);
         obj.files.push(newFile);
       }
     }
@@ -302,8 +303,8 @@ export class FilesService {
       return false;
     }
 
-    let expectedFilePath = this.fullContainerPath(obj.containers[0]) +
-      this.filenameWithPurposeSuffix(file);
+    let newFilename = this.filenameWithPurposeSuffix(file);
+    let expectedFilePath = this.fullContainerPath(obj.containers[0]) + newFilename;
 
     if (expectedFilePath !== file.path) {
       if (existsSync(expectedFilePath)) {
@@ -319,7 +320,10 @@ export class FilesService {
           if (err.message.indexOf("cross-device link not permitted") !== -1) {
             this.activity.start('file copy');
             this.copyFile(file.path, expectedFilePath)
-              .then(() => this.activity.stop('file copy'))
+              .then(() => {
+                this.activity.stop('file copy');
+                file.path = expectedFilePath;
+              })
               .catch((err) => {
                 this.activity.stop('file copy');
                 this.log.error("Unable to copy file: " + err.message);
@@ -328,6 +332,9 @@ export class FilesService {
           else {
             this.log.error("Unable to move file: " + err.message);
           }
+        }
+        else {
+          file.path = expectedFilePath;
         }
       });
     }
