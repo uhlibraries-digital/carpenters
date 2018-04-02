@@ -1,4 +1,7 @@
-import { Component, Input, ElementRef, Renderer } from '@angular/core';
+import {
+  Component, Input, ElementRef, Renderer, AfterViewInit,
+  ChangeDetectionStrategy, ChangeDetectorRef
+} from '@angular/core';
 
 import { ArchivesSpaceService } from 'app/services/archivesspace.service';
 import { StandardItemService } from 'app/services/standard-item.service';
@@ -10,15 +13,17 @@ import { PreferencesService } from 'app/services/preferences.service';
 @Component({
   selector: 'file-view',
   templateUrl: './file-view.component.html',
-  styleUrls: [ './file-view.component.scss' ]
+  styleUrls: [ './file-view.component.scss' ],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class FileViewComponent {
+export class FileViewComponent implements AfterViewInit {
 
   preferences: any;
 
   @Input() children: any;
 
   constructor(
+    private cdr: ChangeDetectorRef,
     private asService: ArchivesSpaceService,
     private standardItems: StandardItemService,
     private renderer: Renderer,
@@ -36,7 +41,15 @@ export class FileViewComponent {
       if (obj.length === 0) {
         this.standardItems.getAll();
       }
-    }
+
+      this.files.filesChanged.subscribe((files) => {
+        this.detechChange();
+      });
+  }
+
+  ngAfterViewInit() {
+    this.cdr.detach();
+  }
 
   getParents(c: any): any[] {
     return this.asService.parentsToArray(c);
@@ -52,9 +65,7 @@ export class FileViewComponent {
   }
 
   removeFile(c: any, uuid: string): void {
-    let index = c.files.findIndex(file => file.uuid === uuid);
-    this.files.orphanFile(c, c.files[index]);
-    c.files.splice(index, 1);
+    this.files.orphanFile(c, uuid);
   }
 
   handleDrop(c: any, purpose: string, e: any): void {
@@ -120,6 +131,24 @@ export class FileViewComponent {
     let path = this.files.fullContainerPath(c.containers[0]);
     if (!this.electronService.shell.openItem(path)) {
       this.log.warn("Sorry couldn't open container in the filesystem.");
+    }
+  }
+
+  trackByFileUuid(index, file) {
+    return file.uuid;
+  }
+
+  trackByChildUuid(index, child) {
+    return child.uuid;
+  }
+
+  trackByPurposeName(index, purpose) {
+    return purpose.name;
+  }
+
+  private detechChange(): void {
+    if (!this.cdr['destroyed']) {
+      this.cdr.detectChanges();
     }
   }
 

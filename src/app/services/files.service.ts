@@ -116,6 +116,7 @@ export class FilesService {
     obj.files.sort((a, b) => {
       return a.name.localeCompare(b.name);
     });
+    this.filesChanged.emit(obj.files);
   }
 
   addContainer(container: any, type: string, indicator: string): any {
@@ -174,7 +175,7 @@ export class FilesService {
     return this.projectFilePath + '/' + this.containerToPath(c);
   }
 
-  orphanFile(obj: any, file: File): void {
+  orphanFile(obj: any, fileUuid: string): void {
     if (obj.containersLoading) {
       this.log.warn("Hold on, container information still loading")
       return;
@@ -188,6 +189,12 @@ export class FilesService {
       return;
     }
 
+    let index = obj.files.findIndex(file => file.uuid === fileUuid);
+    if (index === -1 ) { return; }
+
+    let file = obj.files[index];
+    obj.files.splice(index, 1);
+
     let containerPath = this.containerToPath(this.convertFromASContainer(obj.containers[0]));
     let orphanPath = this.projectFilePath.replace(/\/Files\/?$/, '/Orphaned/');
     let destPath = orphanPath + containerPath;
@@ -198,6 +205,7 @@ export class FilesService {
         this.log.error(err.message);
       }
     });
+    this.filesChanged.emit(obj.files);
   }
 
   private selectFiles(): string[] {

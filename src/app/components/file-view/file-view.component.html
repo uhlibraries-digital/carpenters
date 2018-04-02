@@ -1,4 +1,4 @@
-<div *ngFor="let c of children" class="file-container">
+<div *ngFor="let c of children; trackBy: trackByChildUuid" class="file-container">
   <div *ngIf="c.selected" class="file">
     <div class="title">
       <span class="object-container item" (click)="openContainerFolder(c)"><i *ngIf="c.containersLoading" class="fa fa-refresh fa-spin" aria-hidden="true" style="margin-right: 5px;"></i>{{ displayContainer(c) }}</span>
@@ -8,7 +8,7 @@
     </div>
     <div class="file-list">
       <div class="row">
-        <div *ngFor="let purpose of files.purposeMap" class="col file-col text-truncate">
+        <div *ngFor="let purpose of files.purposeMap; trackBy: trackByPurposeName" class="col file-col text-truncate">
           <div
             class="drop {{ purpose.name }}"
             (dragenter)="handleDragEnter($event.target)"
@@ -24,7 +24,7 @@
             </span>
           </div>
           <ul class="files">
-            <li class="file" *ngFor="let file of c.files | filepurposefilter:purpose.name" [file-draggable]="file">
+            <li class="file" *ngFor="let file of c.files | filepurposefilter:purpose.name; trackBy: trackByFileUuid" [file-draggable]="file">
               <div class="{{file.purpose}}">
                 <span
                   class="filename"
