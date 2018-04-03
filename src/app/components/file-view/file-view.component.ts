@@ -1,6 +1,6 @@
 import {
   Component, Input, ElementRef, Renderer, AfterViewInit,
-  ChangeDetectionStrategy, ChangeDetectorRef
+  OnInit, ChangeDetectionStrategy, ChangeDetectorRef
 } from '@angular/core';
 
 import { ArchivesSpaceService } from 'app/services/archivesspace.service';
@@ -16,7 +16,7 @@ import { PreferencesService } from 'app/services/preferences.service';
   styleUrls: [ './file-view.component.scss' ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class FileViewComponent implements AfterViewInit {
+export class FileViewComponent implements OnInit, AfterViewInit {
 
   preferences: any;
 
@@ -45,6 +45,12 @@ export class FileViewComponent implements AfterViewInit {
       this.files.filesChanged.subscribe((files) => {
         this.detechChange();
       });
+  }
+
+  ngOnInit() {
+    this.asService.dataChanged.subscribe(() => {
+      this.detechChange();
+    });
   }
 
   ngAfterViewInit() {

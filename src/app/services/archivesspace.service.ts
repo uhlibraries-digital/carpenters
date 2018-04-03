@@ -18,6 +18,7 @@ export class ArchivesSpaceService {
 
   selectedResourceChanged: EventEmitter<any> = new EventEmitter();
   selectedArchivalObjectsChanged: EventEmitter<any> = new EventEmitter<any>();
+  dataChanged: EventEmitter<any> = new EventEmitter<any>();
 
   constructor(
     private preferenceService: PreferencesService,
@@ -374,6 +375,7 @@ export class ArchivesSpaceService {
       Promise.all(containerPromises).then(() => {
         child.containers = newContainers;
         child.containersLoading = false;
+        this.dataChanged.emit(child);
       });
     });
   }
