@@ -27,12 +27,20 @@ export class WatchService {
     if (!existsSync(projectFilesPath)) return;
 
     this.unWatch(projectFilesPath);
-    this.watchEvent = watch(projectFilesPath, { ignored: /(^|[\/\\])\../, depth: 10 })
-      .on('all', (event, path, details) => {
-        if (event === 'add' || event === 'unlink') {
-          this.hierarchyChanged.emit(projectFilesPath);
-        }
-      });
+    this.watchEvent = watch(projectFilesPath, {
+      ignored: /(^|[\/\\])\../,
+      ignoreInitial: true,
+      followSymlinks: false,
+      depth: 5,
+      usePolling: true,
+      interval: 2000
+    })
+    .on('all', (event, path, details) => {
+      if (event === 'add' || event === 'unlink') {
+        this.hierarchyChanged.emit(projectFilesPath);
+      }
+    });
+
     this.hierarchyChanged.emit(projectFilesPath);
   }
 

@@ -48,7 +48,7 @@ export class FileViewComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
-    this.asService.dataChanged.subscribe(() => {
+    this.asService.containersChanged.subscribe(() => {
       this.detechChange();
     });
   }
