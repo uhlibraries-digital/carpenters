@@ -1,10 +1,14 @@
+import { v4 } from 'uuid';
+
 export class Entry {
+  uuid: string;
   timestamp: string;
   type: string;
   message: string;
   notify: boolean;
 
   constructor(type:string, message: string, notify: boolean = true) {
+    this.uuid = v4();
     this.type = type;
     this.message = message;
     this.timestamp = this.getTimestamp();

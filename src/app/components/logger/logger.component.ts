@@ -1,4 +1,7 @@
-import { Component, ViewChild, AfterViewChecked, OnInit } from '@angular/core';
+import {
+  Component, ViewChild, AfterViewChecked, AfterViewInit, OnInit,
+  ChangeDetectionStrategy, ChangeDetectorRef
+} from '@angular/core';
 import { ElementRef } from '@angular/core';
 import { writeFile } from 'fs';
 
@@ -10,9 +13,10 @@ import { Entry } from 'app/classes/entry';
 @Component({
   selector: 'logger',
   templateUrl: './logger.component.html',
-  styleUrls: [ './logger.component.scss' ]
+  styleUrls: [ './logger.component.scss' ],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class LoggerComponent implements OnInit, AfterViewChecked {
+export class LoggerComponent implements OnInit, AfterViewChecked, AfterViewInit {
 
   entries: Entry[];
 
@@ -20,14 +24,22 @@ export class LoggerComponent implements OnInit, AfterViewChecked {
   private scrollContainer: ElementRef;
 
   constructor(
+    private cdr: ChangeDetectorRef,
     private logger: LoggerService,
     private electronService: ElectronService){
   }
 
   ngOnInit(): void {
     this.entries = this.logger.entries;
-    this.logger.log.subscribe(entries => this.entries = entries);
+    this.logger.log.subscribe((entries) => {
+      this.entries = entries;
+      this.detechChange();
+    });
     this.scrollToBottom();
+  }
+
+  ngAfterViewInit() {
+    this.cdr.detach();
   }
 
   ngAfterViewChecked(): void {
@@ -54,6 +66,16 @@ export class LoggerComponent implements OnInit, AfterViewChecked {
         }
       });
     });
+  }
+
+  trackByEntryUuid(index: number, entry: Entry) {
+    return entry.uuid;
+  }
+
+  private detechChange(): void {
+    if (!this.cdr['destroyed']) {
+      this.cdr.detectChanges();
+    }
   }
 
 }
