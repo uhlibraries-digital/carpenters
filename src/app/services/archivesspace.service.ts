@@ -56,6 +56,11 @@ export class ArchivesSpaceService {
       else {
         return result;
       }
+    }).then((result) => {
+      result.results = result.results.filter((resource, index, self) =>
+        self.findIndex(r => r.uri === resource.uri) === index
+      );
+      return result;
     });
   }
 
