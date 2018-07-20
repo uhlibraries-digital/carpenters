@@ -75,6 +75,13 @@ let menu: any[] = [
               if (!focusedWindow) return;
               focusedWindow.webContents.send('export-preservation');
             }
+          },
+          {
+            label: 'Shot List...',
+            click(item, focusedWindow) {
+              if (!focusedWindow) return;
+              focusedWindow.webContents.send('export-shot-list');
+            }
           }
         ]
       },

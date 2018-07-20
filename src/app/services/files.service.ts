@@ -259,7 +259,7 @@ export class FilesService {
     return returnString.slice(0, -2);
   }
 
-  private containerToPath(container: any): string {
+  public containerToPath(container: any): string {
     let returnString = '';
     let newContainer = container.filter((value) => {
       return value.type && value.type !== null;

@@ -42,6 +42,7 @@ import { ProductionNotesService } from './services/production-notes.service';
 import { ProgressBarService } from './services/progress-bar.service';
 import { SaveService } from './services/save.service';
 import { SessionStorageService } from './services/session-storage.service';
+import { ShotListService } from './services/shot-list.service';
 import { SipService } from './services/sip.service';
 import { StandardItemService } from './services/standard-item.service';
 import { WatchService } from './services/watch.service';
@@ -92,6 +93,7 @@ import { FilePurposeFilterPipe } from './pipes/file-purpose-filter.pipe';
     SaveService,
     SessionStorageService,
     SipService,
+    ShotListService,
     StandardItemService,
     WatchService
   ],

@@ -74,6 +74,9 @@ export class AppComponent {
           this.exportService.exportPreservation();
         }).catch(() => { });
       });
+      this.electronService.ipcRenderer.on('export-shot-list', (event, arg) => {
+        this.exportService.exportShotList();
+      });
       this.electronService.ipcRenderer.on('show-notes', (event, arg) => {
         this.showNotes();
       });
