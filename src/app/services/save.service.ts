@@ -257,14 +257,16 @@ export class SaveService {
     this.standardItem.setResourceAic(obj.aic);
     for (let o of obj.objects) {
       let item: Item = o;
-      item.uuid = o.uuid || v4();
-      item.files = this.convertToFileObjects(o.files);
-      item.selected = true;
-      item.productionNotes = o.productionNotes;
-      item.pm_ark = o.pm_ark;
-      item.do_ark = o.do_ark;
-      item.metadata = o.metadata;
-      this.standardItem.push(item);
+      if (!this.itemExists(item, this.standardItem.items)) {
+        item.uuid = o.uuid || v4();
+        item.files = this.convertToFileObjects(o.files);
+        item.selected = true;
+        item.productionNotes = o.productionNotes;
+        item.pm_ark = o.pm_ark;
+        item.do_ark = o.do_ark;
+        item.metadata = o.metadata;
+        this.standardItem.push(item);
+      }
     }
     this.log.success('Using AIC: ' + (obj.aic || ''), false);
     this.log.success('Loaded file: ' + this.saveLocation, false);
@@ -385,6 +387,11 @@ export class SaveService {
     }
 
     return null;
+  }
+
+  private itemExists(item: Item, items: any) {
+    let tmp = items.filter(i => i.uuid === item.uuid);
+    return tmp.length > 0;
   }
 
 }
