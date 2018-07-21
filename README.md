@@ -17,6 +17,9 @@ You can package Carpenters by running the following commands based on your targe
 
 All packages are stored in the `app-builds` directory that gets created during the build process.
 
+In addition you can create distributions using the following command: `npm run dist`. Distributions 
+will be stored in the `release` directory.
+
 To learn more about distributing, please read the [Application Distribution](http://electron.atom.io/docs/tutorial/application-distribution/) documentation from Electron.
 
 ### Development

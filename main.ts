@@ -24,7 +24,7 @@ export function createWindow(route = null) {
     minWidth: 1200,
     minHeight: 900,
     title: pkg.productName,
-    icon: 'src/favicon.png',
+    icon: 'src/resources/icon.png',
     backgroundColor: '#21252b'
   });
 

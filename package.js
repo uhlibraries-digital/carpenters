@@ -36,7 +36,7 @@ function pack(plat, arch, cb) {
     // there is no darwin ia32 electron
     if (plat === 'darwin' && arch === 'ia32') return;
 
-    let icon = 'src/favicon';
+    let icon = 'src/resources/icon';
 
     if (icon) {
         DEFAULT_OPTS.icon = icon + (() => {
