@@ -40,6 +40,7 @@
   "build": {
     "productName": "Carpenters",
     "appId": "edu.uh.lib.Carpenters",
+    "extraResources": ["resources/"],
     "dmg": {
       "contents": [
         {
@@ -60,6 +61,7 @@
       ]
     },
     "linux": {
+      "category": "Office",
       "target": [
         "deb",
         "AppImage"
