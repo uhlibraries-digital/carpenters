@@ -40,7 +40,9 @@
   "build": {
     "productName": "Carpenters",
     "appId": "edu.uh.lib.Carpenters",
-    "extraResources": ["resources/"],
+    "extraResources": [
+      "resources/"
+    ],
     "dmg": {
       "contents": [
         {
