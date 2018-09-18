@@ -38,23 +38,15 @@ export class FilesService {
 
     this.asService.selectedArchivalObjectsChanged.subscribe((objects) => {
       this.selectedObjects = objects;
-      if (this.filesWatchFirstRun && objects.length > 0) {
-        this.filesWatchFirstRun = false;
-        this.updateFileAssignments(this.projectFilePath);
-      }
     });
     this.standardItem.itemChanged.subscribe((objects) => {
       this.selectedObjects = objects;
-      if (this.filesWatchFirstRun && objects.length > 0) {
-        this.filesWatchFirstRun = false;
-        this.updateFileAssignments(this.projectFilePath);
-      }
     });
 
     this.saveService.saveChanged.subscribe((location) => {
       this.createFolderHierarchy(dirname(location));
       this.projectFilePath = dirname(location) + '/Files/';
-      this.updateFileAssignments(this.projectFilePath);
+      this.updateFileAssignments();
     });
 
     let o = this.asService.selectedArchivalObjects();
@@ -262,32 +254,35 @@ export class FilesService {
     return returnString;
   }
 
-  public updateFileAssignments(projectFilePath: string): void {
-    if (projectFilePath === '') {
-      this.filesWatchFirstRun = true;
+  public updateFileAssignments(): void {
+    for (let o of this.selectedObjects) {
+      this.updateFileAssignment(o);
+    }
+  }
+
+  public updateFileAssignment(obj: any) {
+    if (this.projectFilePath === '') {
       return;
     }
+    
+    if (obj.containers.length === 1) {
+      this.activity.start('file-assignment');
+      let containerPath = this.fullContainerPath(obj.containers[0]);
+      readdir(containerPath, (err, files) => {
+        this.activity.stop('file-assignment');
+        if (err) {
+          this.log.warn("Missing container folder: " + containerPath, false);
+          return;
+        }
 
-    for (let o of this.selectedObjects) {
-      if (o.containers.length === 1) {
-        this.activity.start('file-assignment');
-        let containerPath = this.fullContainerPath(o.containers[0]);
-        readdir(containerPath, (err, files) => {
-          this.activity.stop('file-assignment');
-          if (err) {
-            this.log.warn("Missing container folder: " + containerPath, false);
-            return;
-          }
-
-          o.files = [];
-          files = files.filter((name) => {
-            return (!(/(^|\/)\.[^\/\.]/g).test(name)) && name !== 'Thumbs.db';
-          }).map((name) => {
-            return containerPath + name;
-          });
-          this.addFilesToObject(o, '', files);
+        obj.files = [];
+        files = files.filter((name) => {
+          return (!(/(^|\/)\.[^\/\.]/g).test(name)) && name !== 'Thumbs.db';
+        }).map((name) => {
+          return containerPath + name;
         });
-      }
+        this.addFilesToObject(obj, '', files);
+      });
     }
   }
 

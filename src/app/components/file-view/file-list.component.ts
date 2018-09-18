@@ -49,6 +49,7 @@ export class FileListComponent implements OnInit, AfterViewInit {
 
       this.objectService.objectChanged.subscribe((obj) => {
         this.child = obj;
+        this.files.updateFileAssignment(obj);
         this.detechChange();
       });
   }
