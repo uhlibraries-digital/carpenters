@@ -15,7 +15,6 @@ import { StandardItemService } from './standard-item.service';
 import { LoggerService } from './logger.service';
 import { ElectronService } from './electron.service';
 import { WatchService } from './watch.service';
-import { FilesService } from './files.service';
 
 import { File } from 'app/classes/file';
 import { Item } from 'app/classes/item';
@@ -82,7 +81,7 @@ export class SaveService {
       this.loadObjects(saveObject);
       this.router.navigate([saveObject.type]);
       this.watch.projectFile(this.saveLocation);
-      this.watch.fileHierarchy(dirname(this.saveLocation) + '/Files');
+      this.saveChanged.emit(this.saveLocation);
     });
     this.saveStatus.emit(true);
   }

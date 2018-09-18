@@ -11,7 +11,6 @@ import { ArchivesSpaceService } from './archivesspace.service';
 import { StandardItemService } from './standard-item.service';
 import { LoggerService } from './logger.service';
 import { ElectronService } from './electron.service';
-import { WatchService } from './watch.service';
 import { SaveService } from './save.service';
 
 import { File } from 'app/classes/file';
@@ -34,7 +33,6 @@ export class FilesService {
     private asService: ArchivesSpaceService,
     private standardItem: StandardItemService,
     private log: LoggerService,
-    private watch: WatchService,
     private saveService: SaveService,
     private electronService: ElectronService) {
 
@@ -53,13 +51,10 @@ export class FilesService {
       }
     });
 
-    this.watch.hierarchyChanged.subscribe((path) => {
-      this.projectFilePath = path;
-      this.updateFileAssignments(path);
-    });
-
     this.saveService.saveChanged.subscribe((location) => {
       this.createFolderHierarchy(dirname(location));
+      this.projectFilePath = dirname(location) + '/Files/';
+      this.updateFileAssignments(this.projectFilePath);
     });
 
     let o = this.asService.selectedArchivalObjects();
@@ -165,9 +160,6 @@ export class FilesService {
         }
     }
     this.activity.stop('fileHierarchy');
-    if (!this.watch.watchEvent) {
-      this.watch.fileHierarchy(path + '/Files');
-    }
   }
 
   fullContainerPath(container: any): string {
@@ -270,7 +262,7 @@ export class FilesService {
     return returnString;
   }
 
-  private updateFileAssignments(projectFilePath: string): void {
+  public updateFileAssignments(projectFilePath: string): void {
     if (projectFilePath === '') {
       this.filesWatchFirstRun = true;
       return;
@@ -278,8 +270,10 @@ export class FilesService {
 
     for (let o of this.selectedObjects) {
       if (o.containers.length === 1) {
+        this.activity.start('file-assignment');
         let containerPath = this.fullContainerPath(o.containers[0]);
         readdir(containerPath, (err, files) => {
+          this.activity.stop('file-assignment');
           if (err) {
             this.log.warn("Missing container folder: " + containerPath, false);
             return;
