@@ -37,8 +37,8 @@
     </ngb-tab>
     <ngb-tab title="Files" id="files">
       <ng-template ngbTabContent>
-        <div *ngIf="selectedResource" class="resource-file-container scrollbars">
-          <file-view [children]="selectedResource.tree.children"></file-view>
+        <div *ngIf="selectedResource" class="resource-file-container">
+          <file-view class="panel"></file-view>
         </div>
       </ng-template>
     </ngb-tab>

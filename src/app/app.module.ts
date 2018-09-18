@@ -12,10 +12,12 @@ import { ActivityComponent } from './components/activity/activity.component';
 import { AppComponent } from './app.component';
 import { ArchivesSpaceComponent } from './components/archivesspace/archivesspace.component';
 import { ArkEditorComponent } from './components/ark-editor/ark-editor.component';
+import { FileListComponent } from './components/file-view/file-list.component';
 import { FileViewComponent } from './components/file-view/file-view.component';
 import { ItemViewComponent } from './components/item-view/item-view.component';
 import { LoggerComponent } from './components/logger/logger.component';
 import { NotificationComponent } from './components/notification/notification.component';
+import { ObjectListComponent } from './components/file-view/object-list.component';
 import { PromptComponent } from './components/prompt/prompt.component';
 import { StandardComponent } from './components/standard/standard.component';
 import { TreeViewComponent } from './components/tree-view/tree-view.component';
@@ -37,6 +39,7 @@ import { GreensService } from './services/greens.service';
 import { LocalStorageService } from './services/local-storage.service';
 import { LoggerService } from './services/logger.service';
 import { MapService } from './services/map.service';
+import { ObjectService } from './services/object.service';
 import { PreferencesService } from './services/preferences.service';
 import { ProductionNotesService } from './services/production-notes.service';
 import { ProgressBarService } from './services/progress-bar.service';
@@ -57,10 +60,12 @@ import { FilePurposeFilterPipe } from './pipes/file-purpose-filter.pipe';
     AppComponent,
     ArchivesSpaceComponent,
     ArkEditorComponent,
+    FileListComponent,
     FileViewComponent,
     ItemViewComponent,
     LoggerComponent,
     NotificationComponent,
+    ObjectListComponent,
     PromptComponent,
     StandardComponent,
     TreeViewComponent,
@@ -87,6 +92,7 @@ import { FilePurposeFilterPipe } from './pipes/file-purpose-filter.pipe';
     LocalStorageService,
     LoggerService,
     MapService,
+    ObjectService,
     PreferencesService,
     ProductionNotesService,
     ProgressBarService,

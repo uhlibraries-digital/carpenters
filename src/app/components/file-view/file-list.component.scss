@@ -1,0 +1,183 @@
+@import '~styles/_variables';
+
+.file-container {
+  margin: 20px;
+  box-sizing: border-box;
+  width: 100%;
+  overflow: auto;
+
+
+  .title {
+    font-size: 1.25em;
+  }
+
+  .level {
+    display: inline-block;
+
+    &:hover{
+      cursor: pointer;
+      text-decoration: underline;
+    }
+  }
+
+  .parent-title::after {
+    content: '>';
+    padding: 0 5px;
+    color: $container-item-level;
+  }
+
+  .object-container {
+    font-size: 1em;
+    color: $series-level;
+    padding: 0;
+    margin: 0;
+    display: inline-block;
+
+    &:hover {
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    &:not(:first-child)::before {
+      content: '>';
+      color: #9da5b4;
+      padding: 0 5px;
+    }
+
+    &.subseries {
+      color: $subseries-level;
+    }
+    &.file {
+      color: $container-file-level;
+    }
+    &.item {
+      color: $container-item-level;
+    }
+  }
+
+  .file-list {
+
+    .file-col {
+
+      
+    }
+
+    .drop {
+      background-image: repeating-linear-gradient(
+        -45deg,
+        rgba(0,0,0,.05),
+        rgba(0,0,0,.05) 10px,
+        rgba(0,0,0,.15) 10px,
+        rgba(0,0,0,.15) 20px);
+      
+      padding: 5px 10px;
+      border-bottom: 2px solid;
+      position: relative;
+
+      &.hover {
+        background-image: repeating-linear-gradient(
+          -45deg,
+          hsla(0,0%,100%,.05),
+          hsla(0,0%,100%,.05) 10px,
+          transparent 10px,
+          transparent 20px);
+      }
+
+      .label {
+        display: inline-block;
+      }
+
+      .btn-add {
+        height: 33px;
+        line-height: 14px;
+        display: inline-block;
+        position: absolute;
+        top: 0;
+        right: 0;
+        padding: 10px;
+        color: $light-text-color;
+        cursor: pointer;
+      }
+
+      &.preservation {
+        color: $purple;
+        border-color: $purple;
+
+        .btn-add {
+          color: $dark-purple;
+          background-color: $purple;
+        }
+      }
+      &.modified-master {
+        color: $green;
+        border-color: $green;
+
+        .btn-add {
+          color: $dark-green;
+          background-color: $green;
+        }
+      }
+      &.access-copy {
+        color: $yellow;
+        border-color: $yellow;
+
+        .btn-add {
+          color: $dark-yellow;
+          background-color: $yellow;
+        }
+      }
+      &.sub-documents {
+        color: $aqua;
+        border-color: $aqua;
+
+        .btn-add {
+          color: $dark-aqua;
+          background-color: $aqua;
+        }
+      }
+    }
+
+    .files {
+      list-style: none;
+      padding-left: 0;
+      margin-top: 0.5em;
+      margin-left: 5px;
+      margin-right: 5px;
+
+      .file {
+        .filename {
+          cursor: pointer;
+          font-size: 0.9em;
+          overflow: hidden;
+          display: inline-block;
+          text-overflow: ellipsis;
+          width: 100%;
+          padding-right: 16px;
+        }
+        .preservation {
+          color: $purple;
+        }
+        .modified-master {
+          color: $green;
+        }
+        .access-copy {
+          color: $yellow;
+        }
+        .sub-documents {
+          color: $aqua;
+        }
+        .remove {
+          color: $red;
+          cursor: pointer;
+          position: absolute;
+          width: 14px;
+          height: 14px;
+          right: 16px;
+        }
+      }
+    }
+  }
+
+
+
+}
