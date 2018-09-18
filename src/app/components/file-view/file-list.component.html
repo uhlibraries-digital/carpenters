@@ -15,11 +15,11 @@
             (dragleave)="handleDragLeave($event.target)"
             (dragover)="false"
             (dragend)="false"
-            (drop)="handleDrop(c, purpose.name, $event)">
+            (drop)="handleDrop(child, purpose.name, $event)">
             <span class="label">{{ purpose.title }}</span>
             <span
               class="btn-add"
-              (click)="addFile(c, purpose.name)">
+              (click)="addFile(child, purpose.name)">
               <i class="fa fa-plus" aria-hidden="true"></i>
             </span>
           </div>
@@ -33,7 +33,7 @@
                 <i
                   class="fa fa-trash remove"
                   aria-hidden="true"
-                  (click)="removeFile(c, file.uuid)"></i>
+                  (click)="removeFile(child, file.uuid)"></i>
               </div>
             </li>
           </ul>
