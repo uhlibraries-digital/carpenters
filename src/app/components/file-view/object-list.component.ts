@@ -25,7 +25,6 @@ export class ObjectListComponent implements OnInit {
     if (this.objects.length === 0) {
       this.objects = this.standardItemService.getAll();
     }
-    console.log('objects', this.objects);
   }
 
   onClick(obj: any) {
