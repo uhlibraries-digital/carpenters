@@ -38,4 +38,9 @@ export class ObjectListComponent implements OnInit {
     }
     return obj.title;
   }
+
+  displayContainer(obj: any): string {
+    return obj.containersLoading ? 'Loading container information'
+      : this.archivesSpaceService.displayContainer(obj);
+  }
 }

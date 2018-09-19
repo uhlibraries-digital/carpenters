@@ -1,9 +1,10 @@
 <ol class="object-list">
-  <li *ngFor="let c of objects; trackBy: trackByChildUuid" 
+  <li *ngFor="let obj of objects; trackBy: trackByChildUuid" 
     class="object good"
-    [class.selected]="c === selectedObject"
-    (click)="onClick(c)"
+    [class.selected]="obj === selectedObject"
+    (click)="onClick(obj)"
   >
-    <span class="title">{{ displayTitle(c) }}</span>
+    <span class="title">{{ displayTitle(obj) }}</span>
+    <span class="object-container">{{ displayContainer(obj) }}</span>
   </li>
 </ol>

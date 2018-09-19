@@ -11,6 +11,7 @@
     cursor: pointer;
     position: relative;
     margin-left: 10px;
+    margin-right: 10px;
   }
 }
 
@@ -36,5 +37,14 @@
   left: -10px;
   right: 0;
   top: 0;
-  height: 22px;
+  height: 40px;
+}
+
+.object-container {
+  position: relative;
+  display: block;
+  font-size: 12px;
+  height: 18px;
+  padding-left: 20px;
+  color: #61afef;
 }

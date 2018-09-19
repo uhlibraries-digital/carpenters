@@ -44,13 +44,13 @@
     }
 
     &.subseries {
-      color: $subseries-level;
+      color: $container-file-level;
     }
     &.file {
       color: $container-file-level;
     }
     &.item {
-      color: $container-item-level;
+      color: $container-file-level;
     }
   }
 
