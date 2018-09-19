@@ -42,7 +42,7 @@ export class SaveService {
       });
   }
 
-  save(): void {
+  save(log: boolean = true): void {
     if (!this.saveLocation) {
       this.saveLocation = this.saveDialog();
       if (!this.saveLocation) {
@@ -52,7 +52,7 @@ export class SaveService {
 
     this.activity.start('save');
     let saveObject = this.createSaveObject();
-    this.saveToFile(saveObject, this.saveLocation);
+    this.saveToFile(saveObject, this.saveLocation, log);
     this.saveChanged.emit(this.saveLocation);
   }
 
@@ -209,7 +209,7 @@ export class SaveService {
     return '';
   }
 
-  private saveToFile(object: any, filename: string): void {
+  private saveToFile(object: any, filename: string, log: boolean = true): void {
     let dataString = '';
     try {
       dataString = JSON.stringify(object);
@@ -228,7 +228,7 @@ export class SaveService {
       if (err) {
         this.log.error('Error saving file: ' + err.message);
       }
-      else {
+      else if(log) {
         this.log.success('Saved file: ' + this.saveLocation, false);
       }
     });
