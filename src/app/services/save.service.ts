@@ -57,14 +57,17 @@ export class SaveService {
   }
 
   open(): void {
+    this.activity.start('open');
     this.saveLocation = this.openDialog();
     if (!this.saveLocation) {
+      this.activity.stop('open');
       return;
     }
     this.asService.clear();
     this.standardItem.clear();
     readFile(this.saveLocation, 'utf8', (err, data) => {
       if (err) {
+        this.activity.stop('open');
         this.log.error('Error opening file: ' + err.message);
         throw err;
       }
@@ -74,6 +77,7 @@ export class SaveService {
         saveObject = JSON.parse(data);
       }
       catch(err) {
+        this.activity.stop('open');
         this.log.error('Unable to read file: ' + err.message);
         throw err;
       }
@@ -82,6 +86,7 @@ export class SaveService {
       this.router.navigate([saveObject.type]);
       this.watch.projectFile(this.saveLocation);
       this.saveChanged.emit(this.saveLocation);
+      this.activity.stop('open');
     });
     this.saveStatus.emit(true);
   }
