@@ -46,7 +46,6 @@ export class FilesService {
     this.saveService.saveChanged.subscribe((location) => {
       this.createFolderHierarchy(dirname(location));
       this.projectFilePath = dirname(location) + '/Files/';
-      this.updateFileAssignments();
     });
 
     let o = this.asService.selectedArchivalObjects();
@@ -261,29 +260,29 @@ export class FilesService {
   }
 
   public updateFileAssignment(obj: any) {
-    if (this.projectFilePath === '') {
-      return;
-    }
-    
-    if (obj.containers.length === 1) {
-      this.activity.start('file-assignment');
-      let containerPath = this.fullContainerPath(obj.containers[0]);
-      readdir(containerPath, (err, files) => {
-        this.activity.stop('file-assignment');
-        if (err) {
-          this.log.warn("Missing container folder: " + containerPath, false);
-          return;
-        }
-
-        obj.files = [];
-        files = files.filter((name) => {
-          return (!(/(^|\/)\.[^\/\.]/g).test(name)) && name !== 'Thumbs.db';
-        }).map((name) => {
-          return containerPath + name;
+      if (this.projectFilePath === '') {
+        return;
+      }
+  
+      if (obj.containers.length === 1) {
+        this.activity.start('file-assignment');
+        let containerPath = this.fullContainerPath(obj.containers[0]);
+        readdir(containerPath, (err, files) => {
+          this.activity.stop('file-assignment');
+          if (err) {
+            this.log.warn("Missing container folder: " + containerPath, false);
+            return;
+          }
+  
+          obj.files = [];
+          files = files.filter((name) => {
+            return (!(/(^|\/)\.[^\/\.]/g).test(name)) && name !== 'Thumbs.db';
+          }).map((name) => {
+            return containerPath + name;
+          });
+          this.addFilesToObject(obj, '', files);
         });
-        this.addFilesToObject(obj, '', files);
-      });
-    }
+      }
   }
 
   private updateFileLocation(obj: any, file: File): boolean {
