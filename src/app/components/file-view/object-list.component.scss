@@ -30,12 +30,18 @@
   padding-right: 5px;
 }
 
+.title.artificial:before {
+  font-family: 'FontAwesome';
+  content: '\f005';
+  padding-right: 5px;
+}
+
 .selected:before {
   content: '';
   background-color: #3a3f4b;
   position: absolute;
   left: -10px;
-  right: 0;
+  right: -10px;
   top: 0;
   height: 40px;
 }

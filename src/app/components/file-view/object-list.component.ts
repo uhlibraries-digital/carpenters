@@ -28,6 +28,7 @@ export class ObjectListComponent implements OnInit {
   }
 
   onClick(obj: any) {
+    console.log('object:', obj);
     this.selectedObject = obj;
     this.objectService.setObject(obj);
   }

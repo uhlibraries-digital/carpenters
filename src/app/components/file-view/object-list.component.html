@@ -4,7 +4,12 @@
     [class.selected]="obj === selectedObject"
     (click)="onClick(obj)"
   >
-    <span class="title">{{ displayTitle(obj) }}</span>
+    <span 
+      class="title"
+      [class.artificial]="obj.artificial"
+    >
+      {{ displayTitle(obj) }}
+    </span>
     <span class="object-container">{{ displayContainer(obj) }}</span>
   </li>
 </ol>
