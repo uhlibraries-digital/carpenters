@@ -19,6 +19,7 @@ import { LoggerComponent } from './components/logger/logger.component';
 import { NotificationComponent } from './components/notification/notification.component';
 import { ObjectListComponent } from './components/file-view/object-list.component';
 import { PromptComponent } from './components/prompt/prompt.component';
+import { ResizeComponent } from './components/file-view/resize';
 import { StandardComponent } from './components/standard/standard.component';
 import { TreeViewComponent } from './components/tree-view/tree-view.component';
 
@@ -67,6 +68,7 @@ import { FilePurposeFilterPipe } from './pipes/file-purpose-filter.pipe';
     NotificationComponent,
     ObjectListComponent,
     PromptComponent,
+    ResizeComponent,
     StandardComponent,
     TreeViewComponent,
 
