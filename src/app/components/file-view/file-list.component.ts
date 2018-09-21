@@ -10,6 +10,7 @@ import { ElectronService } from 'app/services/electron.service';
 import { LoggerService } from 'app/services/logger.service';
 import { ObjectService } from 'app/services/object.service';
 import { PreferencesService } from 'app/services/preferences.service';
+import { SaveService } from 'app/services/save.service';
 
 @Component({
   selector: 'file-list',
@@ -31,7 +32,8 @@ export class FileListComponent implements OnInit, AfterViewInit {
     private electronService: ElectronService,
     private log: LoggerService,
     private preferenceService: PreferencesService,
-    private objectService: ObjectService) {
+    private objectService: ObjectService,
+    private saveService: SaveService) {
 
       this.preferenceService.preferencesChange.subscribe((data) => {
         this.preferences = data;
@@ -45,6 +47,9 @@ export class FileListComponent implements OnInit, AfterViewInit {
 
       this.files.filesChanged.subscribe((files) => {
         this.detechChange();
+        if (this.saveService.saveLocation) {
+          this.saveService.save(false);
+        }
       });
 
       this.objectService.objectChanged.subscribe((obj) => {
