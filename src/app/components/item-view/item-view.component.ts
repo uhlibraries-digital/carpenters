@@ -19,6 +19,7 @@ export class ItemViewComponent implements OnInit, AfterViewChecked {
   items: Item[];
 
   @ViewChild('titleField') titleField;
+  titleFieldClicked: boolean = false;
 
   private contextMenu: any;
 
@@ -39,8 +40,10 @@ export class ItemViewComponent implements OnInit, AfterViewChecked {
   }
 
   ngAfterViewChecked(): void {
-    if (this.titleField) {
+    if (this.titleField && this.titleFieldClicked) {
       this.titleField.nativeElement.focus();
+      this.titleField.nativeElement.select();
+      this.titleFieldClicked = false;
     }
   }
 
@@ -111,18 +114,20 @@ export class ItemViewComponent implements OnInit, AfterViewChecked {
   editTitle(c: any): void {
     c.editTitle = true;
     c.oldTitle = c.title;
+    this.titleFieldClicked = true;
     this.changeRef.detectChanges();
-    this.ngAfterViewChecked();
   }
 
   clickConfirm (c: any): void {
     c.editTitle = false;
+    this.titleFieldClicked = false;
     this.changeRef.detectChanges();
   }
 
   clickCancel (c: any) {
     c.editTitle = false;
     c.title = c.oldTitle;
+    this.titleFieldClicked = false;
     this.changeRef.detectChanges();
   }
 

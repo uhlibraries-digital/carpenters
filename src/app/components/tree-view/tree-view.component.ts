@@ -17,6 +17,7 @@ export class TreeViewComponent implements AfterViewChecked {
   @Input() children: any;
 
   @ViewChild('titleField') titleField;
+  titleFieldClicked: boolean = false;
 
   constructor(
     private asService: ArchivesSpaceService,
@@ -28,8 +29,10 @@ export class TreeViewComponent implements AfterViewChecked {
   }
 
   ngAfterViewChecked(): void {
-    if (this.titleField) {
+    if (this.titleField && this.titleFieldClicked) {
       this.titleField.nativeElement.focus();
+      this.titleField.nativeElement.select();
+      this.titleFieldClicked = false;
     }
   }
 
@@ -181,19 +184,21 @@ export class TreeViewComponent implements AfterViewChecked {
     if (c.artificial) {
       c.editTitle = true;
       c.oldTitle = c.title;
+      this.titleFieldClicked = true;
       this.changeRef.detectChanges();
-      this.ngAfterViewChecked();
     }
   }
 
   clickConfirm (c: any): void {
     c.editTitle = false;
+    this.titleFieldClicked = false;
     this.changeRef.detectChanges();
   }
 
   clickCancel (c: any) {
     c.editTitle = false;
     c.title = c.oldTitle;
+    this.titleFieldClicked = false;
     this.changeRef.detectChanges();
   }
 
