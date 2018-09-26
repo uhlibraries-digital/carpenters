@@ -1,6 +1,5 @@
 import { Injectable, EventEmitter }    from '@angular/core';
 import { Router } from '@angular/router';
-
 import {
   writeFile,
   readFile,
@@ -24,6 +23,7 @@ export class SaveService {
 
   saveLocation: string;
   selectedResource: any;
+  startSave: number;
 
   saveStatus: EventEmitter<boolean> = new EventEmitter();
   saveChanged: EventEmitter<string> = new EventEmitter();
@@ -50,6 +50,8 @@ export class SaveService {
       }
     }
 
+    this.startSave = this.now();
+    console.log('Start save:', this.startSave);
     this.activity.start('save');
     let saveObject = this.createSaveObject();
     this.saveToFile(saveObject, this.saveLocation, log);
@@ -63,6 +65,8 @@ export class SaveService {
       this.activity.stop('open');
       return;
     }
+    const startLoad = this.now()
+    console.log('Loading Project: ', startLoad)
     this.asService.clear();
     this.standardItem.clear();
     readFile(this.saveLocation, 'utf8', (err, data) => {
@@ -87,6 +91,9 @@ export class SaveService {
       this.watch.projectFile(this.saveLocation);
       this.saveChanged.emit(this.saveLocation);
       this.activity.stop('open');
+
+      const loadTime = this.now() - startLoad
+      console.log(`Project load time: ${loadTime}ms`)
     });
     this.saveStatus.emit(true);
   }
@@ -230,6 +237,8 @@ export class SaveService {
     writeFile(filename, dataString, (err) => {
       this.saveStatus.emit(true);
       this.activity.stop('save');
+      const saveTime = this.now() - this.startSave
+      console.log(`Project save time: ${saveTime}ms`)
       if (err) {
         this.log.error('Error saving file: ' + err.message);
       }
@@ -396,6 +405,11 @@ export class SaveService {
   private itemExists(item: Item, items: any) {
     let tmp = items.filter(i => i.uuid === item.uuid);
     return tmp.length > 0;
+  }
+
+  private now() {
+    const date = new Date();
+    return date.getTime();
   }
 
 }
