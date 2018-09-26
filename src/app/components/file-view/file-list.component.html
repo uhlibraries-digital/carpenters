@@ -3,7 +3,7 @@
     <div class="title">
       <span class="object-container item" (click)="openContainerFolder(child)"><i *ngIf="child.containersLoading" class="fa fa-refresh fa-spin" aria-hidden="true" style="margin-right: 5px;"></i>{{ displayContainer(child) }}</span>
     </div>
-    <div class="level" (click)="openArchivalObjectUrl(c)">
+    <div class="level" (click)="openArchivalObjectUrl(child)">
       <span class="parent-title" *ngIf="child.artificial">{{ child.parent.title }}</span>{{ child.title }}
     </div>
     <div class="file-list">
