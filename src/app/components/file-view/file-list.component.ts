@@ -3,7 +3,7 @@ import {
   OnInit, ChangeDetectionStrategy, ChangeDetectorRef,
   OnDestroy
 } from '@angular/core';
-import { ISubscription, Subscription } from "rxjs/Subscription";
+import { Subscription } from "rxjs/Subscription";
 
 import { ArchivesSpaceService } from 'app/services/archivesspace.service';
 import { StandardItemService } from 'app/services/standard-item.service';
@@ -47,11 +47,6 @@ export class FileListComponent implements OnInit, OnDestroy, AfterViewInit {
     this.subscription.add(prefSub);
     this.preferences = this.preferenceService.data;
 
-    let obj = this.asService.selectedArchivalObjects();
-    if (obj.length === 0) {
-      this.standardItems.getAll();
-    }
-
     const fileSub = this.files.filesChanged.subscribe((files) => {
       this.detechChange();
       if (this.saveService.saveLocation) {
@@ -62,7 +57,9 @@ export class FileListComponent implements OnInit, OnDestroy, AfterViewInit {
 
     const objSub = this.objectService.objectChanged.subscribe((obj) => {
       this.child = obj;
-      this.files.updateFileAssignment(obj);
+      if (this.child) {
+        this.files.updateFileAssignment(obj);
+      }
       this.detechChange();
     });
     this.subscription.add(objSub);

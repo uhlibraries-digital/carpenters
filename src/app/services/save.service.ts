@@ -27,6 +27,7 @@ export class SaveService {
 
   saveStatus: EventEmitter<boolean> = new EventEmitter();
   saveChanged: EventEmitter<string> = new EventEmitter();
+  projectChanged: EventEmitter<string> = new EventEmitter();
 
   constructor(
     private activity: ActivityService,
@@ -48,6 +49,7 @@ export class SaveService {
       if (!this.saveLocation) {
         return;
       }
+      this.projectChanged.emit(this.saveLocation);
     }
 
     this.startSave = this.now();
@@ -90,6 +92,7 @@ export class SaveService {
       this.router.navigate([saveObject.type]);
       this.watch.projectFile(this.saveLocation);
       this.saveChanged.emit(this.saveLocation);
+      this.projectChanged.emit(this.saveLocation);
       this.activity.stop('open');
 
       const loadTime = this.now() - startLoad
