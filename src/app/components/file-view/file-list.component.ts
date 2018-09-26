@@ -1,7 +1,9 @@
 import {
   Component, ElementRef, Renderer, AfterViewInit,
-  OnInit, ChangeDetectionStrategy, ChangeDetectorRef
+  OnInit, ChangeDetectionStrategy, ChangeDetectorRef,
+  OnDestroy
 } from '@angular/core';
+import { ISubscription, Subscription } from "rxjs/Subscription";
 
 import { ArchivesSpaceService } from 'app/services/archivesspace.service';
 import { StandardItemService } from 'app/services/standard-item.service';
@@ -18,10 +20,11 @@ import { SaveService } from 'app/services/save.service';
   styleUrls: [ './file-list.component.scss' ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class FileListComponent implements OnInit, AfterViewInit {
+export class FileListComponent implements OnInit, OnDestroy, AfterViewInit {
 
   preferences: any;
   child: any;
+  private subscription: Subscription;
 
   constructor(
     private cdr: ChangeDetectorRef,
@@ -34,35 +37,44 @@ export class FileListComponent implements OnInit, AfterViewInit {
     private preferenceService: PreferencesService,
     private objectService: ObjectService,
     private saveService: SaveService) {
-
-      this.preferenceService.preferencesChange.subscribe((data) => {
-        this.preferences = data;
-      });
-      this.preferences = this.preferenceService.data;
-
-      let obj = this.asService.selectedArchivalObjects();
-      if (obj.length === 0) {
-        this.standardItems.getAll();
-      }
-
-      this.files.filesChanged.subscribe((files) => {
-        this.detechChange();
-        if (this.saveService.saveLocation) {
-          this.saveService.save(false);
-        }
-      });
-
-      this.objectService.objectChanged.subscribe((obj) => {
-        this.child = obj;
-        this.files.updateFileAssignment(obj);
-        this.detechChange();
-      });
+      this.subscription = new Subscription()
   }
 
   ngOnInit() {
-    this.asService.containersChanged.subscribe(() => {
+    const prefSub = this.preferenceService.preferencesChange.subscribe((data) => {
+      this.preferences = data;
+    });
+    this.subscription.add(prefSub);
+    this.preferences = this.preferenceService.data;
+
+    let obj = this.asService.selectedArchivalObjects();
+    if (obj.length === 0) {
+      this.standardItems.getAll();
+    }
+
+    const fileSub = this.files.filesChanged.subscribe((files) => {
+      this.detechChange();
+      if (this.saveService.saveLocation) {
+        this.saveService.save(false);
+      }
+    });
+    this.subscription.add(fileSub);
+
+    const objSub = this.objectService.objectChanged.subscribe((obj) => {
+      this.child = obj;
+      this.files.updateFileAssignment(obj);
       this.detechChange();
     });
+    this.subscription.add(objSub);
+
+    const containerSub = this.asService.containersChanged.subscribe(() => {
+      this.detechChange();
+    });
+    this.subscription.add(containerSub);
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 
   ngAfterViewInit() {
