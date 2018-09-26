@@ -9,7 +9,7 @@ import { ObjectService } from 'app/services/object.service';
 })
 export class FileViewComponent implements OnInit {
 
-  private objectViewWidth: string;
+  objectViewWidth: string;
 
   constructor(private objectService: ObjectService) { }
 

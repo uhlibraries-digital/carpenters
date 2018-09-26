@@ -1,5 +1,5 @@
 <ol class="object-list">
-  <li *ngFor="let obj of objects; trackBy: trackByChildUuid" 
+  <li *ngFor="let obj of objects" 
     class="object good"
     [class.selected]="obj === selectedObject"
     (click)="onClick(obj)"

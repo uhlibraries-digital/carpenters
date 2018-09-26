@@ -13,7 +13,7 @@ import { SaveService } from 'app/services/save.service';
 })
 export class ObjectListComponent implements OnInit, OnDestroy {
 
-  private objects: any;
+  objects: any;
   private selectedObject: any;
   private subscriptions: Subscription;
 
