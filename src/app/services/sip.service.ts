@@ -129,13 +129,29 @@ export class SipService {
     }
 
     for (let obj of this.selectedObjects) {
-      await this.createSip(obj);
+      if (!this.hasExported(obj.uuid)) {
+        this.cleanupExportProcessing(obj.uuid);
+        this.setExportStatusObject(obj.uuid, ExportStatusType.Processing);
+        await this.createSip(obj);
+        this.setExportStatusObject(obj.uuid, ExportStatusType.Done);
+      }
+      else {
+        this.incrementProgressBar(this.getObjectTotalProgress(obj));
+        this.log.info(`SIP already exported ${obj.pm_ark}`, false);
+      }
     }
+
     this.saveProject();
     this.log.success('Done packaging SIPs');
     this.progress.clearProgressBar(this.progressBarId);
     this.sipComplete.emit(true);
     this.deleteExportStatus();
+  }
+
+  public loadExportStatus(): ExportStatus {
+    const status = localStorage.getItem('exportStatus');
+    this.exportStatus = JSON.parse(status) || null as ExportStatus;
+    return this.exportStatus;
   }
 
   private isGoodToGo(): boolean {
@@ -168,10 +184,16 @@ export class SipService {
   private getTotalProgress(): number {
     let total = this.selectedObjects.length;
     for (let obj of this.selectedObjects) {
-      let files = obj.files.filter(file => file.purpose !== 'access-copy');
-      for (let file of files) {
-        total += file.size * 2;
-      }
+      total += this.getObjectTotalProgress(obj);
+    }
+    return total;
+  }
+
+  private getObjectTotalProgress(obj: any): number {
+    let total = 0;
+    let files = obj.files.filter(file => file.purpose !== 'access-copy');
+    for (let file of files) {
+      total += file.size * 2;
     }
     return total;
   }
@@ -221,6 +243,7 @@ export class SipService {
     }
     this.objectCount++;
 
+    this.setExportStatusLocation(obj.uuid, this.sipPath(obj));
     this.createDirectories(this.sipPath(obj), this.hasModifiedMasters(obj));
     this.createMetadataCsv(obj);
 
@@ -469,5 +492,54 @@ export class SipService {
 
   private deleteExportStatus(): void {
     localStorage.removeItem('exportStatus');
+  }
+
+  private setExportStatusObject(uuid: string, status: ExportStatusType): void {
+    const objects = Array.from(this.exportStatus.objects);
+    const i = objects.findIndex(obj => obj.uuid === uuid);
+    
+    if (i === -1) { 
+      return
+    }
+
+    objects[i].status = status;
+    this.exportStatus.objects = objects;
+    localStorage.setItem('exportStatus', JSON.stringify(this.exportStatus));
+  }
+
+  private hasExported(uuid: string): boolean {
+    const object = this.getExportObject(uuid);
+    if (!object) {
+      return false;
+    }
+    return object.status === ExportStatusType.Done &&
+      existsSync(object.location);
+  }
+
+  private setExportStatusLocation(uuid: string, location: string): void {
+    const objects = Array.from(this.exportStatus.objects);
+    const i = objects.findIndex(obj => obj.uuid === uuid);
+    if (i === -1) {
+      return;
+    }
+
+    objects[i].location = location;
+    this.exportStatus.objects = objects;
+  }
+
+  private cleanupExportProcessing(uuid: string): void {
+    const object = this.getExportObject(uuid);
+    if (!object) {
+      return;
+    }
+
+    if (object.status === ExportStatusType.Processing && object.location !== '') {
+      this.log.info(`Cleaning up SIP ${uuid}`, false);
+      rimraf.sync(object.location);
+    }
+  }
+
+  private getExportObject(uuid: string): ExportStatusObject {
+    return this.exportStatus.objects.find(obj => obj.uuid === uuid) || null;
   }
 }
