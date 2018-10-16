@@ -67,7 +67,7 @@ export class SipService {
     this.updateSettings();
   }
 
-  package(location: string, resource: any): Promise<any> {
+  async package(location: string, resource: any): Promise<any> {
     this.selectedResource = resource;
     this.location = location;
     this.mintArks = this.storage.get('mint_sip');
@@ -96,19 +96,15 @@ export class SipService {
       return Promise.reject(Error("Export Failed"));
     }
 
-    this.progress.setDescription(this.progressBarId, 'Creating preservation SIP' + (this.selectedObjects.length > 1 ? 's' : ''));
+    this.progress.setDescription(this.progressBarId, `Creating preservation SIP ${this.selectedObjects.length > 1 ? 's' : ''}`);
 
     this.log.info(
-      'Creating SIP' + (this.selectedObjects.length > 1 ? 's' : '') + '...',
+      `Creating SIP ${this.selectedObjects.length > 1 ? 's' : ''}...`,
     false);
 
-    let chunks = this.createChunks(this.selectedObjects, 8);
-    return Promise.all(chunks.reduce(
-      (acc, chunk) => acc.then(() => {
-        return Promise.all(chunk.map(object => this.createSip(object)));
-      }),
-      Promise.resolve()
-    ));
+    for (let obj of this.selectedObjects) {
+      await this.createSip(obj);
+    }
   }
 
   private isGoodToGo(): boolean {
@@ -138,14 +134,6 @@ export class SipService {
     }
   }
 
-  private createChunks(objs: any, size: number): any[] {
-    let chunks = [];
-    for (let i = 0; i < objs.length; i += size) {
-      chunks.push(objs.slice(i, i + size));
-    }
-    return chunks;
-  }
-
   private getTotalProgress(): number {
     let total = this.selectedObjects.length;
     for (let obj of this.selectedObjects) {
@@ -170,9 +158,10 @@ export class SipService {
     }
   }
 
-  private createSip(obj: any): Promise<any> {
+  private async createSip(obj: any): Promise<any> {
     if (this.mintArks && !obj.pm_ark) {
-      return this.mintSip(obj).then(ark => this.build(obj))
+      return this.mintSip(obj)
+        .then(ark => this.build(obj))
         .catch((e) => {
           this.log.error('Failed to mint ark: ' + e + ' trying again...', false);
           return this.createSip(obj)
