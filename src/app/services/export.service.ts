@@ -41,6 +41,16 @@ export class ExportService {
     this.shotlist.package(location);
   }
 
+  continueExportSip(): boolean {
+    const status = this.sip.loadExportStatus();
+    return status !== null ? true : false;
+  }
+
+  exportStatusSipProjectLocation(): string {
+    const status = this.sip.loadExportStatus();
+    return status.projectLocation || null;
+  }
+
   private saveDialog(fileFilters?: any): string {
     let path = '~/';
     if (this.saveService.saveLocation !== undefined) {
