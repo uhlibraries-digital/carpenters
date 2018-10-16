@@ -86,7 +86,7 @@ export class SipService {
     this.updateSettings();
   }
 
-  async package(location: string, resource: any): Promise<any> {
+  public async package(location: string, resource: any): Promise<any> {
     this.selectedResource = resource;
     this.location = location;
     this.mintArks = this.storage.get('mint_sip');
@@ -115,15 +115,27 @@ export class SipService {
       return Promise.reject(Error("Export Failed"));
     }
 
-    this.progress.setDescription(this.progressBarId, `Creating preservation SIP ${this.selectedObjects.length > 1 ? 's' : ''}`);
+    this.progress.setDescription(this.progressBarId, `Creating preservation SIP${this.selectedObjects.length > 1 ? 's' : ''}`);
 
     this.log.info(
-      `Creating SIP ${this.selectedObjects.length > 1 ? 's' : ''}...`,
+      `Creating SIP${this.selectedObjects.length > 1 ? 's' : ''}...`,
     false);
+
+    if (!this.loadExportStatus()) {
+      this.createExportStatus(location, this.selectedObjects);
+    }
+    else {
+      this.log.info(`Continuing export at ${location}`, false);
+    }
 
     for (let obj of this.selectedObjects) {
       await this.createSip(obj);
     }
+    this.saveProject();
+    this.log.success('Done packaging SIPs');
+    this.progress.clearProgressBar(this.progressBarId);
+    this.sipComplete.emit(true);
+    this.deleteExportStatus();
   }
 
   private isGoodToGo(): boolean {
@@ -168,13 +180,6 @@ export class SipService {
     this.barProgress += value;
     let progress = this.barProgress / this.totalProgress;
     this.progress.setProgressBar(this.progressBarId, progress);
-
-    if (progress === 1) {
-      this.saveProject();
-      this.log.success('Done packaging SIPs');
-      this.progress.clearProgressBar(this.progressBarId);
-      this.sipComplete.emit(true);
-    }
   }
 
   private async createSip(obj: any): Promise<any> {
@@ -445,4 +450,24 @@ export class SipService {
     return '';
   }
 
+  private createExportStatus(location: string, objects: any): void {
+    const exportObjects: ExportStatusObject[] = objects.map((obj) => {
+      return {
+        uuid: obj.uuid,
+        status: ExportStatusType.Waiting,
+        location: ''
+      } ;
+    });
+
+    this.exportStatus = {
+      projectLocation: this.saveService.saveLocation,
+      exportLocation: location,
+      objects: exportObjects
+    }
+    localStorage.setItem('exportStatus', JSON.stringify(this.exportStatus));
+  }
+
+  private deleteExportStatus(): void {
+    localStorage.removeItem('exportStatus');
+  }
 }
