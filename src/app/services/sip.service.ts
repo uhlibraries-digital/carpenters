@@ -28,6 +28,24 @@ import { MapField } from 'app/classes/map-field';
 import { File } from 'app/classes/file';
 import { Erc } from 'app/classes/erc';
 
+export enum ExportStatusType {
+  Waiting,
+  Processing,
+  Done
+}
+
+export interface ExportStatus {
+  projectLocation: string,
+  exportLocation: string,
+  objects: ExportStatusObject[]
+}
+
+export interface ExportStatusObject {
+  uuid: string,
+  status: ExportStatusType,
+  location: string
+}
+
 @Injectable()
 export class SipService {
 
@@ -43,6 +61,7 @@ export class SipService {
   private progressBarId: string;
   private totalProgress: number = 0;
   private barProgress: number = 0;
+  private exportStatus: ExportStatus = null;
 
   sipComplete: EventEmitter<boolean> = new EventEmitter<boolean>();
 
