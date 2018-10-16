@@ -60,9 +60,14 @@ export class SaveService {
     this.saveChanged.emit(this.saveLocation);
   }
 
-  open(): void {
+  open(location?: string): void {
     this.activity.start('open');
-    this.saveLocation = this.openDialog();
+    if (location) {
+      this.saveLocation = location;
+    }
+    else {
+      this.saveLocation = this.openDialog();
+    }
     if (!this.saveLocation) {
       this.activity.stop('open');
       return;
