@@ -317,7 +317,7 @@ export class SipService {
   private copyFiles(files: File[], path: string): Promise<any> {
     let promisses = [];
     for (let file of files) {
-      let filename = path + '/' + file.name;
+      let filename = path + '/' + file.filenameWithoutSuffix();
       promisses.push(
         this.copyFile(file, filename)
           .then((checksum) => {

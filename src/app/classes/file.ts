@@ -54,4 +54,8 @@ export class File {
   basename(path: string): string {
     return path.split(/[\\/]/).pop();
   }
+
+  filenameWithoutSuffix(): string {
+    return this.name.replace(/_[a-z]{2}\./i, '.');
+  }
 }
