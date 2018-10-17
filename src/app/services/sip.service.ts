@@ -43,7 +43,8 @@ export interface ExportStatus {
 export interface ExportStatusObject {
   uuid: string,
   status: ExportStatusType,
-  location: string
+  location: string,
+  ark: string
 }
 
 @Injectable()
@@ -129,10 +130,16 @@ export class SipService {
     }
 
     for (let obj of this.selectedObjects) {
+      if (!obj.pm_ark) {
+        obj.pm_ark = this.getExportStatusArk(obj.uuid);
+      }
+
       if (!this.hasExported(obj.uuid)) {
         this.cleanupExportProcessing(obj.uuid);
         this.setExportStatusObject(obj.uuid, ExportStatusType.Processing);
+
         await this.createSip(obj);
+        
         this.setExportStatusObject(obj.uuid, ExportStatusType.Done);
       }
       else {
@@ -244,6 +251,8 @@ export class SipService {
     this.objectCount++;
 
     this.setExportStatusLocation(obj.uuid, this.sipPath(obj));
+    this.setExportStatusArk(obj.uuid, obj.pm_ark);
+
     this.createDirectories(this.sipPath(obj), this.hasModifiedMasters(obj));
     this.createMetadataCsv(obj);
 
@@ -478,7 +487,8 @@ export class SipService {
       return {
         uuid: obj.uuid,
         status: ExportStatusType.Waiting,
-        location: ''
+        location: '',
+        ark: ''
       } ;
     });
 
@@ -527,6 +537,22 @@ export class SipService {
     this.exportStatus.objects = objects;
   }
 
+  private setExportStatusArk(uuid: string, ark: string): void {
+    const objects = Array.from(this.exportStatus.objects);
+    const i = objects.findIndex(obj => obj.uuid === uuid);
+    if (i === -1) {
+      return;
+    }
+
+    objects[i].ark = ark;
+    this.exportStatus.objects = objects;
+  }
+
+  private getExportStatusArk(uuid: string): string {
+    const object = this.getExportObject(uuid);
+    return object.ark || '';
+  }
+
   private cleanupExportProcessing(uuid: string): void {
     const object = this.getExportObject(uuid);
     if (!object) {
@@ -534,7 +560,6 @@ export class SipService {
     }
 
     if (object.status === ExportStatusType.Processing && object.location !== '') {
-      this.log.info(`Cleaning up SIP ${uuid}`, false);
       rimraf.sync(object.location);
     }
   }
