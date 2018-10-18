@@ -100,8 +100,8 @@ export class SaveService {
       this.projectChanged.emit(this.saveLocation);
       this.activity.stop('open');
 
-      const loadTime = this.now() - startLoad
-      console.log(`Project load time: ${loadTime}ms`)
+      const loadTime = this.now() - startLoad;
+      console.log(`Project load time: ${loadTime}ms`);
     });
     this.saveStatus.emit(true);
   }

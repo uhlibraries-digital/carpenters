@@ -161,6 +161,17 @@ export class SipService {
     return this.exportStatus;
   }
 
+  public deleteExportStatus(): void {
+    localStorage.removeItem('exportStatus');
+  }
+
+  public completedExportStatus(): number[] {
+    const done = this.exportStatus.objects.filter((obj) => {
+      return obj.status === ExportStatusType.Done;
+    });
+    return [done.length, this.exportStatus.objects.length];
+  }
+
   private isGoodToGo(): boolean {
     let gtg = true;
     for (let obj of this.selectedObjects) {
@@ -498,10 +509,6 @@ export class SipService {
       objects: exportObjects
     }
     localStorage.setItem('exportStatus', JSON.stringify(this.exportStatus));
-  }
-
-  private deleteExportStatus(): void {
-    localStorage.removeItem('exportStatus');
   }
 
   private setExportStatusObject(uuid: string, status: ExportStatusType): void {

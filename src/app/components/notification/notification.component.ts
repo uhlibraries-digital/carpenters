@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 
 import { LoggerService } from 'app/services/logger.service';
 import { ProgressBarService } from 'app/services/progress-bar.service';
+import { DecisionService } from 'app/services/decision.service';
 
 import { Entry } from 'app/classes/entry';
 import { ProgressBar } from 'app/classes/progress-bar';
@@ -15,12 +16,14 @@ export class NotificationComponent implements OnInit {
 
   entries: Entry[];
   progressbars: ProgressBar[];
+  question: string;
 
   @ViewChild('notifications') element: ElementRef;
 
   constructor(
     private log: LoggerService,
-    private progress: ProgressBarService) {
+    private progress: ProgressBarService,
+    private decision: DecisionService) {
   }
 
   ngOnInit(): void {
@@ -33,6 +36,9 @@ export class NotificationComponent implements OnInit {
     this.progress.changed.subscribe((bars) => {
       this.progressbars = bars;
     });
+    this.decision.changed.subscribe((question) => {
+      this.question = question;
+    })
   }
 
   notifyClass(n: any): string {
@@ -54,6 +60,10 @@ export class NotificationComponent implements OnInit {
       return { 'pointer-events': 'auto'};
     }
     return { 'pointer-events': 'none'};
+  }
+
+  answer(yes: boolean): void {
+    this.decision.answer(yes);
   }
 
 

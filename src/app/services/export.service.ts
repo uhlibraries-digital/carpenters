@@ -64,6 +64,14 @@ export class ExportService {
     return status.exportLocation || null;
   }
 
+  exportStatusClear(): void {
+    this.sip.deleteExportStatus();
+  }
+
+  exportStatusObjectComplete(): number[] {
+    return this.sip.completedExportStatus();
+  }
+
   private saveDialog(fileFilters?: any): string {
     let path = '~/';
     if (this.saveService.saveLocation !== undefined) {

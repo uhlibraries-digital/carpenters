@@ -1,5 +1,28 @@
 <div #notifications class="notifications scrollbars" [ngStyle]="notificationStyles()">
   <div
+    *ngIf="question"
+    class="notification warning">
+    <div class="notification-content">
+      <div class="message">{{ question }}</div>
+      <div class="button">
+        <button 
+          class="btn btn-primary"
+          type="button"
+          (click)="answer(true)"
+        >
+          Yes
+        </button>
+        <button 
+          class="btn btn-primary"
+          type="button"
+          (click)="answer(false)"
+        >
+          No
+        </button>
+      </div>
+    </div>
+  </div>
+  <div
     *ngFor="let bar of progressbars"
     class="notification info">
     <div class="notification-content">

@@ -11,6 +11,8 @@ import { LoggerService } from 'app/services/logger.service';
 import { ElectronService } from 'app/services/electron.service';
 import { PreferencesService } from 'app/services/preferences.service';
 import { FilesService } from 'app/services/files.service';
+import { ExportService } from 'app/services/export.service';
+import { DecisionService } from 'app/services/decision.service';
 
 @Component({
   selector: 'archivesspace',
@@ -40,6 +42,8 @@ export class ArchivesSpaceComponent implements OnInit {
     private log: LoggerService,
     private electronService: ElectronService,
     private preferenceService: PreferencesService,
+    private exportService: ExportService,
+    private decisionService: DecisionService,
     private filesService: FilesService) {
   }
 
@@ -107,6 +111,41 @@ export class ArchivesSpaceComponent implements OnInit {
       this.loadRepositories();
     });
     this.loadRepositories();
+
+    /* Application always starts here, so this is the only 
+       place we need to ask the question to continue export */
+    const exportAnswer = sessionStorage.getItem('exportAnswer');
+
+    if (this.exportService.continueExportSip() && !exportAnswer) {
+      const complete = this.exportService.exportStatusObjectComplete();
+      const message = 
+        `It looks like your current export didn't finish.
+         Exported ${complete[0]} of ${complete[1]} sip objects.
+         Would you like to continue this export? This is the only time I'll ask.`;
+
+      this.decisionService.ask(message);
+      this.decisionService.result().then(() => {
+        sessionStorage.setItem('exportAnswer', 'yes');
+        const project = this.exportService.exportStatusSipProjectLocation();
+        this.saveService.open(project);
+      })
+      .catch(() => {
+        sessionStorage.removeItem('exportAnswer');
+        this.exportService.exportStatusClear();
+      });
+    }
+
+    /* For Archival projects, we need to continue export after all the objects
+       are loaded from ASpace */
+    this.asService.selectedArchivalObjectsChanged.subscribe(() => {
+      const exportAnswer = sessionStorage.getItem('exportAnswer');
+      if (exportAnswer === 'yes') {
+        sessionStorage.removeItem('exportAnswer');
+        console.log('Continuing export');
+        const exportLocation = this.exportService.exportStatusExportLocation();
+        this.exportService.exportPreservation(exportLocation);
+      }
+    })
 
   }
 
