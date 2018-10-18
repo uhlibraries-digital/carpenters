@@ -17,7 +17,7 @@ import { StandardItemService } from './services/standard-item.service';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
 
   @ViewChild('preferencesDisplay') preferencesDisplay: any;
   @ViewChild('notesDisplay') notesDisplay: any;

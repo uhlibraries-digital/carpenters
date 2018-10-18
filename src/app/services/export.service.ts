@@ -25,8 +25,16 @@ export class ExportService {
     this.standardItem.resourceChanged.subscribe(resource => this.selectedResource = resource);
   }
 
-  exportPreservation() {
-    let location = this.saveDialog();
+  exportPreservation(exportLocation?: string) {
+    let location = '';
+
+    if (exportLocation) {
+      location = exportLocation;
+    }
+    else {
+      location = this.saveDialog();
+    }
+
     if (!location) {
       return;
     }
@@ -49,6 +57,11 @@ export class ExportService {
   exportStatusSipProjectLocation(): string {
     const status = this.sip.loadExportStatus();
     return status.projectLocation || null;
+  }
+
+  exportStatusExportLocation(): string {
+    const status = this.sip.loadExportStatus();
+    return status.exportLocation || null;
   }
 
   private saveDialog(fileFilters?: any): string {
