@@ -144,7 +144,7 @@ export class SipService {
       }
       else {
         this.incrementProgressBar(this.getObjectTotalProgress(obj));
-        this.log.info(`SIP already exported ${obj.pm_ark}`, false);
+        this.log.success(`SIP already exported ${obj.pm_ark}`, false);
       }
     }
 
@@ -542,6 +542,7 @@ export class SipService {
 
     objects[i].location = location;
     this.exportStatus.objects = objects;
+    localStorage.setItem('exportStatus', JSON.stringify(this.exportStatus));
   }
 
   private setExportStatusArk(uuid: string, ark: string): void {
@@ -553,6 +554,7 @@ export class SipService {
 
     objects[i].ark = ark;
     this.exportStatus.objects = objects;
+    localStorage.setItem('exportStatus', JSON.stringify(this.exportStatus));
   }
 
   private getExportStatusArk(uuid: string): string {
