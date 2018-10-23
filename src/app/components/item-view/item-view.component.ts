@@ -4,7 +4,6 @@ import { StandardItemService } from 'app/services/standard-item.service';
 import { LoggerService } from 'app/services/logger.service';
 import { ProductionNotesService } from 'app/services/production-notes.service';
 import { ElectronService } from 'app/services/electron.service';
-import { ExportService } from 'app/services/export.service';
 
 import { Item } from '../../classes/item';
 
@@ -29,8 +28,7 @@ export class ItemViewComponent implements OnInit, AfterViewChecked {
     private standardItem: StandardItemService,
     private note: ProductionNotesService,
     private changeRef: ChangeDetectorRef,
-    private electronService: ElectronService,
-    private exportService: ExportService) {
+    private electronService: ElectronService) {
   }
 
   ngOnInit(): void {
@@ -39,17 +37,6 @@ export class ItemViewComponent implements OnInit, AfterViewChecked {
 
     this.standardItem.itemChanged.subscribe(items => this.items = items);
     this.standardItem.resourceChanged.subscribe(resource => this.resource = resource);
-
-    /* Continue export dialog should be asked on app startup, which starts with
-       the ArchivesspaceComponent first. By this point the export question
-       was already asked and we need to continue a standard project */
-    const exportAnswer = sessionStorage.getItem('exportAnswer');
-    if (this.exportService.continueExportSip() && exportAnswer === 'yes') {
-      sessionStorage.removeItem('exportAnswer');
-      console.log('Continuing export');
-      const exportLocation = this.exportService.exportStatusExportLocation();
-      this.exportService.exportPreservation(exportLocation);
-    }
   }
 
   ngAfterViewChecked(): void {

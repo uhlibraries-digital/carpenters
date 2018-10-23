@@ -8,6 +8,7 @@ import { SaveService } from 'app/services/save.service';
 import { LoggerService } from 'app/services/logger.service';
 import { FilesService } from 'app/services/files.service';
 import { ElectronService } from 'app/services/electron.service';
+import { ExportService } from 'app/services/export.service';
 
 import { Item } from '../../classes/item';
 
@@ -27,7 +28,8 @@ export class StandardComponent implements OnInit {
     private saveService: SaveService,
     private log: LoggerService,
     private filesService: FilesService,
-    private electronService: ElectronService) {
+    private electronService: ElectronService,
+    private exportService: ExportService) {
   }
 
   ngOnInit(): void {
@@ -60,6 +62,17 @@ export class StandardComponent implements OnInit {
       this.saveService.save();
       this.log.info("Project committed");
     });
+
+    /* Continue export dialog should be asked on app startup, which starts with
+    the ArchivesspaceComponent first. By this point the export question
+    was already asked and we need to continue a standard project */
+    const exportAnswer = sessionStorage.getItem('exportAnswer');
+    if (this.exportService.continueExportSip() && exportAnswer === 'yes') {
+      sessionStorage.removeItem('exportAnswer');
+      console.log('Continuing export');
+      const exportLocation = this.exportService.exportStatusExportLocation();
+      this.exportService.exportPreservation(exportLocation);
+    }
   }
 
   toggleMintSip(mint: boolean): void {
