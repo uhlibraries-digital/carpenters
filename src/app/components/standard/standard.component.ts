@@ -37,7 +37,21 @@ export class StandardComponent implements OnInit {
     this.session.set('findingaid', 'false');
 
     this.items = this.standardItems.getAll();
-    this.standardItems.itemChanged.subscribe(items => this.items = items);
+    this.standardItems.itemChanged.subscribe((items) => {
+      this.items = items;
+
+      /* Continue export dialog should be asked on app startup, which starts with
+      the ArchivesspaceComponent first. By this point the export question
+      was already asked and we need to continue a standard project */
+      const exportAnswer = sessionStorage.getItem('exportAnswer');
+      if (this.exportService.continueExportSip() && exportAnswer === 'yes') {
+        sessionStorage.removeItem('exportAnswer');
+        console.log('Continuing export');
+        const exportLocation = this.exportService.exportStatusExportLocation();
+        this.exportService.exportPreservation(exportLocation);
+      }
+
+    });
 
     this.electronService.ipcRenderer.removeAllListeners('save-project');
     this.electronService.ipcRenderer.removeAllListeners('save-as-project');
@@ -62,17 +76,6 @@ export class StandardComponent implements OnInit {
       this.saveService.save();
       this.log.info("Project committed");
     });
-
-    /* Continue export dialog should be asked on app startup, which starts with
-    the ArchivesspaceComponent first. By this point the export question
-    was already asked and we need to continue a standard project */
-    const exportAnswer = sessionStorage.getItem('exportAnswer');
-    if (this.exportService.continueExportSip() && exportAnswer === 'yes') {
-      sessionStorage.removeItem('exportAnswer');
-      console.log('Continuing export');
-      const exportLocation = this.exportService.exportStatusExportLocation();
-      this.exportService.exportPreservation(exportLocation);
-    }
   }
 
   toggleMintSip(mint: boolean): void {
