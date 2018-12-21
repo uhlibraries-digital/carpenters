@@ -4,6 +4,7 @@ import { StandardItemService } from 'app/services/standard-item.service';
 import { LoggerService } from 'app/services/logger.service';
 import { ProductionNotesService } from 'app/services/production-notes.service';
 import { ElectronService } from 'app/services/electron.service';
+import { FilesService } from 'app/services/files.service';
 
 import { Item } from '../../classes/item';
 
@@ -28,7 +29,8 @@ export class ItemViewComponent implements OnInit, AfterViewChecked {
     private standardItem: StandardItemService,
     private note: ProductionNotesService,
     private changeRef: ChangeDetectorRef,
-    private electronService: ElectronService) {
+    private electronService: ElectronService,
+    private filesService: FilesService) {
   }
 
   ngOnInit(): void {
@@ -94,12 +96,15 @@ export class ItemViewComponent implements OnInit, AfterViewChecked {
   insertItem(index: number): void {
     let item = this.standardItem.insert(index);
     this.changeRef.detectChanges();
+    this.filesService.updateAllContainerLocations();
     this.log.success(item.title + ' inserted', false);
   }
 
   removeItem(index: number): void {
     let item = this.standardItem.remove(index);
     this.changeRef.detectChanges();
+    this.filesService.orphanContainerLocation(item);
+    this.filesService.updateAllContainerLocations();
     this.log.success(item.title + ' removed', false);
   }
 

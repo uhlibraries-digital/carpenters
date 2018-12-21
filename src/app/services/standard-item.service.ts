@@ -111,17 +111,33 @@ export class StandardItemService {
   }
 
   remove(index: number): Item {
-    let item = this.items.splice(index, 1);
+    let item = this.items.splice(index, 1).pop();
     this.reorderItems(index);
     this.itemChanged.emit(this.items);
-    return item.pop();
+    return item;
   }
 
   reorderItems(index: number): void {
     for (let i = index; i < this.items.length; i++) {
-      this.items[i].assignTitleAndContainer(i);
+      this.items[i] = this.assignTitleAndContainer(this.items[i], i);
     }
   }
 
+  assignTitleAndContainer(item: Item, index: number): Item {
+    if ( !item.title || item.title.match(/Item \d+/) ) {
+      item.title = 'Item ' + this.padLeft(index + 1, 3, '0');
+    }
+    item.containers = [{
+      type_1: 'Item',
+      indicator_1: index + 1
+    }];
+    return item;
+  }
+
+  private padLeft(value: any, length: number, character: string): string {
+    value = String(value);
+    if (value.length > length) { return value; }
+    return Array(length - value.length + 1).join(character || " ") + value;
+  }
 
 }

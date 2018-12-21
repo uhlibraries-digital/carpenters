@@ -155,7 +155,7 @@ export class FilesService {
 
   fullContainerPath(container: any): string {
     let c = this.convertFromASContainer(container);
-    return this.projectFilePath + '/' + this.containerToPath(c);
+    return this.projectFilePath + this.containerToPath(c);
   }
 
   orphanFile(obj: any, fileUuid: string): void {
@@ -189,6 +189,83 @@ export class FilesService {
       }
     });
     this.filesChanged.emit(obj.files);
+  }
+
+  orphanContainerLocation(obj: any): void {
+    if (obj.containersLoading) {
+      this.log.warn("Hold on, container information still loading")
+      return;
+    }
+    if (!obj.containers || !obj.containers[0]) {
+      this.log.error("Couldn't move file to orphan directory because there is no container information available", false);
+      return;
+    }
+    if (this.projectFilePath === '') {
+      return;
+    }
+
+    this.activity.start('orphan-container');
+    let containerPath = this.containerToPath(this.convertFromASContainer(obj.containers[0]));
+    let orphanPath = this.projectFilePath.replace(/\/Files\/?$/, '/Orphaned/');
+    let destPath = orphanPath + containerPath;
+    mkdirp.sync(orphanPath);
+
+    let dupCounter = 1;
+    let orgDestPath = destPath;
+    while(existsSync(destPath)) {
+      destPath = orgDestPath.slice(0, -1) + '-' + (dupCounter++) + '/';
+    }
+
+    rename(this.projectFilePath + containerPath, destPath, (err) => {
+      if (err) {
+        this.log.error(err.message, false);
+      }
+      this.activity.stop('orphan-container');
+    });
+  }
+
+  updateAllContainerLocations(): void {
+    for (let o of this.selectedObjects) {
+      this.updateContainerLocation(o);
+    }
+  }
+
+  updateContainerLocation(obj: any): void {
+    if (obj.containersLoading) {
+      this.log.warn("Hold on, container information still loading")
+      return;
+    }
+    if (!obj.containers || !obj.containers[0]) {
+      this.log.error("Couldn't move file to orphan directory because there is no container information available", false);
+      return;
+    }
+    if (this.projectFilePath === '') {
+      return;
+    }
+    if (obj.files.length === 0) {
+      return;
+    }
+
+    this.activity.start('update-container-location');
+
+    let expectedContainerPath = this.fullContainerPath(obj.containers[0]);
+    let isContainerPath = dirname(obj.files[0].path) + '/';
+
+    if (expectedContainerPath !== isContainerPath) {
+      this.log.info(`Updating file container locations for ${obj.title} because of a item add/remove`, false);
+      rename(isContainerPath, expectedContainerPath, (err) => {
+        if (err) {
+          this.log.error(err.message)
+        }
+        else {
+          for (let file of obj.files) {
+            file.path = expectedContainerPath + file.name;
+          }
+        }
+      })
+    }
+
+    this.activity.stop('update-container-location');
   }
 
   private selectFiles(): string[] {
@@ -304,8 +381,6 @@ export class FilesService {
 
     if (expectedFilePath !== file.path) {
       if (existsSync(expectedFilePath)) {
-        this.log.error("Can't move file " + file.path + " to " +
-          expectedFilePath + " because file already exists.");
         return false;
       }
       if (!existsSync(dirname(expectedFilePath))) {
