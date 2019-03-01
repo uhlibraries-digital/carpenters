@@ -40,28 +40,17 @@ export class ArchivesSpaceService {
     return this.request('/repositories');
   }
 
-  getResources(repositoryUri: string, page: number = 1, prevResults?: any): Promise<any> {
-    let url = repositoryUri + '/resources';
-    return this.request(url, {
-      page_size: 100,
-      page: page
-    }).then((result) => {
-      /* NEED TO FIGURE OUT WHAT TO DO WITH MORE THAN 100 RESOURCES */
-      if (prevResults) {
-        result.results = result.results.concat(prevResults.results);
-      }
-      if (result.this_page < result.last_page) {
-        return this.getResources(repositoryUri, result.this_page + 1, result);
-      }
-      else {
-        return result;
-      }
-    }).then((result) => {
-      result.results = result.results.filter((resource, index, self) =>
-        self.findIndex(r => r.uri === resource.uri) === index
-      );
-      return result;
-    });
+  async getResources(repositoryUri: string): Promise<any> {
+    const url = repositoryUri + '/search';
+    const pagesize = 100;
+
+    let result = await this.request(url, {page_size: pagesize, page: 1, "type[]": ["resource"]})
+    for (let page = 2; page <= result.last_page; page++) {
+      let presult = await this.request(url, {page_size: pagesize, page: page, "type[]": ["resource"]})
+      result.results = result.results.concat(presult.results)
+    }
+
+    return result;
   }
 
   getResource(uri: string): Promise<any> {
