@@ -185,6 +185,8 @@ export class SaveService {
     for (let ao of archivalObjects) {
       if (ao.files === undefined) { ao.files = []; }
 
+      const dates = ao.dates ? ao.dates.map(d => d.begin + (d.end ? '/' + d.end : '')) : '';
+
       let files = ao.files.map((value) => {
         let path = relative(dirname(this.saveLocation), value.path);
         return { path: path, purpose: value.purpose };
@@ -192,7 +194,7 @@ export class SaveService {
       let object: any = {
         uuid: ao.uuid,
         title: ao.title,
-        dates: ao.dates.map(d => d.begin + (d.end ? '/' + d.end : '')),
+        dates: dates,
         containers: ao.containers,
         uri: ao.record_uri,
         files: files,
