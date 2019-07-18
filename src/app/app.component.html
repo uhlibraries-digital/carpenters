@@ -97,4 +97,22 @@
   </div>
 </ng-template>
 
+<ng-template #itemsOptionDisplay let-c="close" let-d="dismiss">
+  <div class="modal-header">
+    <h4 class="modal-title">How many?</h4>
+  </div>
+  <div class="modal-body">
+    <div class="form-group">
+      <div class="input-group">
+        <label class="input-group-addon">Items</label> 
+        <input class="form-control" type="text" [(ngModel)]="archivalItemsCount" focus (keydown)="handleItemOptionKeyDown($event)" />
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="d()">Close</button>
+    <button type="button" class="btn btn-primary" (click)="c()">Add</button>
+  </div>
+</ng-template>
+
 <router-outlet></router-outlet>

@@ -31,6 +31,7 @@ import { FileDraggable } from './directives/file-draggable.directive';
 
 /* Services */
 import { ActivityService } from './services/activity.service';
+import { ArchivalItemService } from './services/archival-item-service';
 import { ArchivesSpaceService } from './services/archivesspace.service';
 import { CsvService } from './services/csv.service';
 import { DecisionService } from './services/decision.service';
@@ -86,6 +87,7 @@ import { FilePurposeFilterPipe } from './pipes/file-purpose-filter.pipe';
   ],
   providers: [
     ActivityService,
+    ArchivalItemService,
     ArchivesSpaceService,
     CsvService,
     DecisionService,

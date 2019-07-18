@@ -6,6 +6,7 @@ import { ArchivesSpaceService } from 'app/services/archivesspace.service';
 import { FilesService } from 'app/services/files.service';
 import { ProductionNotesService } from 'app/services/production-notes.service';
 import { ElectronService } from 'app/services/electron.service';
+import { ArchivalItemService } from 'app/services/archival-item-service';
 
 @Component({
   selector: 'tree-view',
@@ -24,8 +25,13 @@ export class TreeViewComponent implements AfterViewChecked {
     private changeRef: ChangeDetectorRef,
     private file: FilesService,
     private note: ProductionNotesService,
+    private archivalItemService: ArchivalItemService,
     private log: LoggerService,
     private electronService: ElectronService) {
+
+    this.archivalItemService.displayMultipleChanged.subscribe(() => {
+      this.changeRef.detectChanges();
+    })
   }
 
   ngAfterViewChecked(): void {
@@ -83,6 +89,12 @@ export class TreeViewComponent implements AfterViewChecked {
           this.addChild(c);
         }
       }));
+      contextMenu.append(new this.electronService.MenuItem({
+        label: 'Add Multiple Items',
+        click: () => {
+          this.archivalItemService.display(c);
+        }
+      }))
     }
 
     contextMenu.popup(this.electronService.remote.getCurrentWindow());

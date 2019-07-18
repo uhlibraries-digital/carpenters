@@ -11,6 +11,7 @@ import { LoggerService } from './services/logger.service';
 import { PreferencesService } from './services/preferences.service';
 import { ArchivesSpaceService } from './services/archivesspace.service';
 import { StandardItemService } from './services/standard-item.service';
+import { ArchivalItemService } from './services/archival-item-service';
 
 @Component({
   selector: 'app-root',
@@ -21,12 +22,17 @@ export class AppComponent implements OnInit {
 
   @ViewChild('preferencesDisplay') preferencesDisplay: any;
   @ViewChild('notesDisplay') notesDisplay: any;
+  @ViewChild('itemsOptionDisplay') itemsOptionDisplay: any;
 
   private preferences: any;
   private preferenceIndex: number = 0;
 
   private productionNotes: string = '';
   private productionNotesChild: any;
+
+  private archivalItemsCount: number;
+  private archivalItemsChild: any;
+  private archivalItemsModal: any;
 
   private quitting = false;
 
@@ -37,6 +43,7 @@ export class AppComponent implements OnInit {
     private exportService: ExportService,
     private modalService: NgbModal,
     private notes: ProductionNotesService,
+    private archivalItem: ArchivalItemService,
     private activity: ActivityService,
     public electronService: ElectronService,
     private log: LoggerService,
@@ -80,11 +87,19 @@ export class AppComponent implements OnInit {
       this.electronService.ipcRenderer.on('show-notes', (event, arg) => {
         this.showNotes();
       });
+      this.electronService.ipcRenderer.on('show-archival-items-option', (event, arg) => {
+        this.showItemsOption();
+      })
 
       this.notes.displayNote.subscribe((child) => {
         this.productionNotesChild = child;
         this.electronService.webContents.getFocusedWebContents().send('show-notes');
       });
+
+      this.archivalItem.displayMultipleItemOption.subscribe((child) => {
+        this.archivalItemsChild = child;
+        this.electronService.webContents.getFocusedWebContents().send('show-archival-items-option');
+      })
 
       this.activity.finishedKey.subscribe((key) => {
         if (key === 'save' && this.quitting) {
@@ -120,6 +135,31 @@ export class AppComponent implements OnInit {
       (rejected) => {
 
       });
+    }
+
+    showItemsOption(): void {
+      this.archivalItemsCount = null;
+      this.archivalItemsModal = this.modalService.open(this.itemsOptionDisplay, {
+        backdrop: 'static',
+        keyboard: true,
+        size: 'sm'
+      });
+      this.archivalItemsModal.result.then((result) => {
+        this.archivalItem.add(this.archivalItemsChild, this.archivalItemsCount);
+      },
+      (rejected) => {
+
+      });
+      let nativeEl = this.archivalItemsModal._windowCmptRef.instance._elRef.nativeElement;
+      let focusEl = nativeEl.querySelector(`[focus]`) as HTMLInputElement;
+      focusEl.focus();
+    }
+
+    handleItemOptionKeyDown(e: any) {
+      if (e.keyCode === 13) {
+        this.archivalItem.add(this.archivalItemsChild, this.archivalItemsCount);
+        this.archivalItemsModal.close();
+      }
     }
 
     promptAic(): Promise<void> {
