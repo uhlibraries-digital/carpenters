@@ -129,32 +129,7 @@ export class TreeViewComponent implements AfterViewChecked {
   }
 
   addChild(c: any): void {
-    if (c.containersLoading) {
-      this.log.warn("Hold on, container still loading");
-      return;
-    }
-    if (!c.containers[0]) { return; }
-
-    let index = c.children.length;
-    let container = this.file.convertFromASContainer(c.containers[0]);
-    container = this.file.addContainer(container, 'Item', index + 1);
-    c.children.push({
-      uuid: v4(),
-      title: 'Item ' + this.padLeft(index + 1, 3, '0'),
-      dates: [],
-      parent: c,
-      index: index,
-      selected: true,
-      children: [],
-      containers: [this.file.convertToASContainer(container)],
-      record_uri: undefined,
-      parent_uri: c.record_uri,
-      node_type: undefined,
-      artificial: true,
-      level: 'item',
-      files: []
-    });
-    c.expanded = true;
+    this.archivalItemService.addChild(c);
     this.changeRef.detectChanges();
   }
 
