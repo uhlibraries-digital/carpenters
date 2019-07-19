@@ -1,7 +1,5 @@
 import { Component, Input, ChangeDetectorRef, ViewChild, AfterViewChecked } from '@angular/core';
-import { v4 } from 'uuid';
 
-import { LoggerService } from 'app/services/logger.service';
 import { ArchivesSpaceService } from 'app/services/archivesspace.service';
 import { FilesService } from 'app/services/files.service';
 import { ProductionNotesService } from 'app/services/production-notes.service';
@@ -26,7 +24,6 @@ export class TreeViewComponent implements AfterViewChecked {
     private file: FilesService,
     private note: ProductionNotesService,
     private archivalItemService: ArchivalItemService,
-    private log: LoggerService,
     private electronService: ElectronService) {
 
     this.archivalItemService.displayMultipleChanged.subscribe(() => {
