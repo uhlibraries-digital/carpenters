@@ -6,6 +6,9 @@
     <div class="level" (click)="openArchivalObjectUrl(child)">
       <span class="parent-title" *ngIf="child.artificial">{{ child.parent.title }}</span>{{ child.title }}
     </div>
+    <div class="notes">
+      <div class="notes-content">{{ child.productionNotes }}</div>
+    </div>
     <div class="file-list">
       <div class="row">
         <div *ngFor="let purpose of files.purposeMap; trackBy: trackByPurposeName" class="col file-col text-truncate">

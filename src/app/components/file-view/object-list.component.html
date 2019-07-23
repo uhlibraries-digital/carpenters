@@ -10,6 +10,11 @@
     >
       {{ displayTitle(obj) }}
     </span>
-    <span class="object-container">{{ displayContainer(obj) }}</span>
+    <span 
+      class="object-container"
+      [class.notes]="obj.productionNotes && obj.productionNotes !== ''"
+    >
+      {{ displayContainer(obj) }}
+    </span>
   </li>
 </ol>

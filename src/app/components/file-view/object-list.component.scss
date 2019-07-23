@@ -1,3 +1,5 @@
+@import '~styles/_variables';
+
 .object-list {
   list-style: none;
   margin: 0;
@@ -53,4 +55,15 @@
   height: 18px;
   padding-left: 20px;
   color: #61afef;
+
+  &.notes {
+    padding-left: 0;
+  }
+
+  &.notes:before {
+    font-family: 'FontAwesome';
+    content: "\F024";
+    padding-right: 6px;
+    color: $notes-flag;
+  }
 }
