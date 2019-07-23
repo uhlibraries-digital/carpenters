@@ -29,11 +29,14 @@
       <ul class="items">
         <li
           *ngFor="let c of items; let i = index"
-          [class.production-note]="c.productionNotes"
           (contextmenu)="onContextMenu(i, c, $event)">
             <span *ngIf="!c.editTitle" (dblclick)="editTitle(c)">
               {{ c.title }}
               <span class="can-edit" (click)="editTitle(c)"></span>
+              <div *ngIf="c.productionNotes" class="production-note">
+                <span class="production-flag"></span>
+                <span class="text">{{ c.productionNotes }}</span>
+              </div>
             </span>
             <div *ngIf="c.editTitle"
               class="title-edit input-group">

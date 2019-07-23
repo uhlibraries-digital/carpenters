@@ -12,17 +12,22 @@
           type="checkbox"
           [(ngModel)]="c.selected"
           [class.subselection]="hasSelectedChildren(c)" />
-        <span
+        <div
           *ngIf="!c.editTitle"
-          class="title"
-          [class.production-note]="c.productionNotes"
-          (dblclick)="editTitle(c)"
-          (click)="toggle(c, $event)">
-            {{ displayTitle(c) }}
-            <span *ngIf="c.artificial" class="can-edit" (click)="editTitle(c)"></span>
-        </span>
+          class="title-container"
+        >
+          <span
+            (dblclick)="editTitle(c)"
+            (click)="toggle(c, $event)">
+              {{ displayTitle(c) }}
+              <span *ngIf="c.artificial" class="can-edit" (click)="editTitle(c)"></span>
+          </span>
+          <div *ngIf="c.productionNotes" class="production-note">
+            <span class="production-flag"></span>
+            <span class="text">{{ c.productionNotes }}</span>
+          </div>
+        </div>
         <div *ngIf="c.editTitle"
-          [class.production-note]="c.productionNotes"
           class="title title-edit input-group">
           <input
             class="field-input form-control"

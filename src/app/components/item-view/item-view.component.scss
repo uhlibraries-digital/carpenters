@@ -39,13 +39,39 @@
       margin: 0;
       padding: 0;
 
-      .production-note{
-          > span::after,
-          div::after {
+      .production-note {
+        position: relative;
+        display: inline-block;
+        cursor: pointer;
+
+        &:hover {
+          .text {
+            visibility: visible;
+          }
+        }
+
+        .production-flag {
+          &::before {
             font-family: 'FontAwesome';
             content: "\f024";
             padding-left: 10px;
             color: $notes-flag;
+          }
+        }
+
+        .text {
+          width: max-content;
+          max-width: 50vw;
+          top: 100%;
+          left: 50%;
+          margin-left: -6px;
+          visibility: hidden;
+          position: absolute;
+          z-index: 1000;
+          background-color: $notes-background;
+          color: $notes-flag;
+          border-radius: 6px;
+          padding: 5px 10px;
         }
       }
 
