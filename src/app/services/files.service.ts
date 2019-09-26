@@ -1,6 +1,6 @@
 import { Injectable, EventEmitter } from '@angular/core';
 import {
-  readdir, statSync, existsSync, rename,
+  readdir, statSync, existsSync, rename, readdirSync,
   createReadStream, createWriteStream
 } from 'fs';
 import { parse, dirname } from 'path';
@@ -330,10 +330,13 @@ export class FilesService {
     return returnString;
   }
 
-  public updateFileAssignments(): void {
-    for (let o of this.selectedObjects) {
-      this.updateFileAssignment(o);
-    }
+  public updateFileAssignments(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      for (let o of this.selectedObjects) {
+        this.updateFileAssignment(o);
+      }
+      return resolve();
+    });
   }
 
   public updateFileAssignment(obj: any) {
@@ -342,23 +345,21 @@ export class FilesService {
       }
   
       if (obj.containers.length === 1) {
-        this.activity.start('file-assignment');
         let containerPath = this.fullContainerPath(obj.containers[0]);
-        readdir(containerPath, (err, files) => {
-          this.activity.stop('file-assignment');
-          if (err) {
-            this.log.warn("Missing container folder: " + containerPath, false);
-            return;
-          }
-  
+        try {
+          const dirFiles = readdirSync(containerPath);
           obj.files = [];
-          files = files.filter((name) => {
+          const files = dirFiles.filter((name) => {
             return (!(/(^|\/)\.[^\/\.]/g).test(name)) && name !== 'Thumbs.db';
           }).map((name) => {
             return containerPath + name;
           });
           this.addFilesToObject(obj, '', files);
-        });
+        }
+        catch (error) {
+          this.log.warn("Missing container folder: " + containerPath, false);
+          return;
+        }
       }
   }
 

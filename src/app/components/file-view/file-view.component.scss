@@ -1,3 +1,31 @@
+@import '~styles/_variables';
+
+.file-view-actions {
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+  background-color: #21252b;
+}
+
+.btn-files-action {
+  float: right;
+  
+  &.updating {
+    background-image: -webkit-linear-gradient(-45deg, transparent 33%, #0275d8 33%, #0275d8 66%, transparent 66%);
+    background-size: 55px 30px, 100% 100%, 100% 100%;
+
+    animation: file-update-indeterminate-animation 5s linear infinite;
+  }
+}
+
+.file-view-container {
+  padding: 0;
+  display: flex;
+  flex: 1;
+  width: 100%;
+  height: 100%;
+}
+
 .panel-left {
   display: flex;
   background-color: #21252b;
@@ -7,6 +35,7 @@
   width: 300px;
   height: 100%;
   overflow: auto;
+  border-top: 1px solid #181a1f;
 }
 
 .panel-right {
@@ -20,4 +49,10 @@
   background-color: #282c34;
   border: 1px solid #181a1f;
   overflow: auto;
+}
+
+@keyframes file-update-indeterminate-animation {
+  100% {
+    background-position: 100px 0px;
+  }
 }

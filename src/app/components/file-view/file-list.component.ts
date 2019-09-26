@@ -50,7 +50,7 @@ export class FileListComponent implements OnInit, OnDestroy, AfterViewInit {
     const fileSub = this.files.filesChanged.subscribe((files) => {
       this.detechChange();
       if (this.saveService.saveLocation) {
-        this.saveService.save(false);
+        //this.saveService.save(false);
       }
     });
     this.subscription.add(fileSub);

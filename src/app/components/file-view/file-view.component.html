@@ -1,3 +1,15 @@
-<object-list [style.width]="objectViewWidth" class="panel-left scrollbars"></object-list>
-<resize></resize>
-<file-list class="panel-right scrollbars"></file-list>
+<div class="file-view-actions">
+  <button
+    #fileUpdateBtn
+    type="button"
+    class="btn btn-primary btn-files-action"
+    [class.updating]="updating"
+    (click)="updateFiles($event.target)">
+      Update File Assignments
+  </button>
+</div>
+<div class="file-view-container">
+  <object-list [style.width]="objectViewWidth" class="panel-left scrollbars"></object-list>
+  <resize></resize>
+  <file-list class="panel-right scrollbars"></file-list>
+</div>
