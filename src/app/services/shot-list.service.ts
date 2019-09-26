@@ -39,12 +39,12 @@ export class ShotListService {
   }
 
   private shotListCsvData(): any[] {
-    let csvData = [['Title', 'Location']];
+    let csvData = [['Title', 'Location', 'Notes']];
 
     for (let o of this.selectedObjects) {
       let container = this.filesService.convertFromASContainer(o.containers[0]);
       let path = this.filesService.containerToPath(container);
-      csvData.push([o.title, path]);
+      csvData.push([o.title, path, o.productionNotes]);
     }
 
     return csvData;
