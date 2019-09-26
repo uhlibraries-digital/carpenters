@@ -167,16 +167,22 @@ export class ArchivesSpaceComponent implements OnInit {
 
   loadResources(repository: string): void {
     this.activity.start();
-    this.asService.getResources(repository).then((resources) => {
-      this.resources = resources.results.sort(function(a, b) {
-        return a.title.localeCompare(b.title);
+    this.asService.getResources(repository)
+      .then((resources) => {
+        this.resources = resources.results.sort(function(a, b) {
+          return a.title.localeCompare(b.title);
+        });
+        this.activity.stop();
+        if (this.saveService.fromProjectFile()) {
+          this.resourceList.nativeElement.disabled = true;
+          this.repositoryList.nativeElement.disabled = true;
+        }
+      })
+      .catch((err) => {
+        this.activity.stop();
+        console.error(err);
+        this.log.error('Unable to load resources. Close Carpenters and try again.');
       });
-      this.activity.stop();
-      if (this.saveService.fromProjectFile()) {
-        this.resourceList.nativeElement.disabled = true;
-        this.repositoryList.nativeElement.disabled = true;
-      }
-    });
   }
 
   loadResource(uri: string): void {
