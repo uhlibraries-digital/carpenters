@@ -1,5 +1,6 @@
 <ol class="object-list">
-  <li *ngFor="let obj of objects" 
+  <li *ngFor="let obj of objects; let i = index" 
+    (contextmenu)="onContextMenu(i, obj, $event)"
     class="object good"
     [class.selected]="obj === selectedObject"
     (click)="onClick(obj)"
