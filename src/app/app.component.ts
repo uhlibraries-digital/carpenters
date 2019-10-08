@@ -131,6 +131,7 @@ export class AppComponent implements OnInit {
         size: 'lg'
       }).result.then((result) => {
         this.productionNotesChild.productionNotes = this.productionNotes;
+        this.notes.changed(this.productionNotesChild);
       },
       (rejected) => {
 

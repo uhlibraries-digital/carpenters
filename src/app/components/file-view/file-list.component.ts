@@ -13,6 +13,7 @@ import { LoggerService } from 'app/services/logger.service';
 import { ObjectService } from 'app/services/object.service';
 import { PreferencesService } from 'app/services/preferences.service';
 import { SaveService } from 'app/services/save.service';
+import { ProductionNotesService } from 'app/services/production-notes.service';
 
 @Component({
   selector: 'file-list',
@@ -36,6 +37,7 @@ export class FileListComponent implements OnInit, OnDestroy, AfterViewInit {
     private log: LoggerService,
     private preferenceService: PreferencesService,
     private objectService: ObjectService,
+    private notes: ProductionNotesService,
     private saveService: SaveService) {
       this.subscription = new Subscription()
   }
@@ -68,6 +70,11 @@ export class FileListComponent implements OnInit, OnDestroy, AfterViewInit {
       this.detechChange();
     });
     this.subscription.add(containerSub);
+
+    const notesSub = this.notes.noteChanged.subscribe(() => {
+      this.detechChange();
+    });
+    this.subscription.add(notesSub);
   }
 
   ngOnDestroy() {
