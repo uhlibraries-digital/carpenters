@@ -111,7 +111,7 @@ export class SipService {
     this.totalProgress = this.getTotalProgress();
 
     if (!this.isGoodToGo()) {
-      this.log.error("Export Failed");
+      this.log.error("Export failed, check log for more information");
       this.progress.clearProgressBar(this.progressBarId);
       return Promise.reject(Error("Export Failed"));
     }
@@ -175,6 +175,13 @@ export class SipService {
   private isGoodToGo(): boolean {
     let gtg = true;
     for (let obj of this.selectedObjects) {
+      // Check for DO ARK
+      if (obj.do_ark === undefined || obj.do_ark === '') {
+        this.log.error("Item '" + obj.title + "' doesn't have a digital object ark", false);
+        gtg = false;
+      }
+
+      // Check for preservation files
       let files = obj.files.filter(file => file.purpose === 'preservation');
       if (files.length === 0) {
         this.log.error("Item '" + obj.title + "' doesn't have preservation files");
@@ -197,6 +204,12 @@ export class SipService {
     if (this.saveService.saveLocation) {
       this.saveService.save();
     }
+  }
+
+  private projectName(): string {
+    return this.saveService.saveLocation ? 
+      basename(this.saveService.saveLocation, '.carp') : 
+      'untitled';
   }
 
   private getTotalProgress(): number {
@@ -289,6 +302,12 @@ export class SipService {
       this.padLeft(this.objectCount, 3, '0');
   }
 
+  private doArk(obj: any): string {
+    return obj.do_ark ?
+      String(obj.do_ark.split('/').slice(-1)) :
+      '';
+  }
+
   private createMetadataCsv(obj: any): Promise<any> {
     this.log.info('Creating metadata.csv for ' + this.getObjectTitle(obj), false);
 
@@ -364,17 +383,19 @@ export class SipService {
       mkdirp.sync(path + '/service/' + this.sipId(obj));
     }
 
-    promisses.push(this.copyFiles(pmFiles, path + '/objects/' + this.sipId(obj)));
-    promisses.push(this.copyFiles(mmFiles, path + '/service/' + this.sipId(obj)));
-    promisses.push(this.copyFiles(sdFiles, path + '/metadata/submissionDocumentation'));
+    const prefix = `${this.projectName().replace(' ', '_')}_${this.doArk(obj)}`;
+
+    promisses.push(this.copyFiles(pmFiles, path + '/objects/' + this.sipId(obj), prefix));
+    promisses.push(this.copyFiles(mmFiles, path + '/service/' + this.sipId(obj), prefix));
+    promisses.push(this.copyFiles(sdFiles, path + '/metadata/submissionDocumentation', prefix));
 
     return Promise.all(promisses);
   }
 
-  private copyFiles(files: File[], path: string): Promise<any> {
+  private copyFiles(files: File[], path: string, prefix?: string): Promise<any> {
     let promisses = [];
     for (let file of files) {
-      let filename = path + '/' + file.filenameWithoutSuffix();
+      const filename = `${path}/${file.exportFilename(prefix)}`
       promisses.push(
         this.copyFile(file, filename)
           .then((checksum) => {
@@ -396,13 +417,11 @@ export class SipService {
           throw Error('File does not exist: ' + file.path);
         }
 
-        let ws = createWriteStream(dest);
         let ws = createWriteStream(dest, { highWaterMark: Math.pow(2,20) });
         ws.on('finish', () => {
           resolve(checksum);
         });
 
-        let rs = createReadStream(file.path);
         let rs = createReadStream(file.path, { highWaterMark: Math.pow(2,20) });
         rs.on('data', (buffer) => {
           hash.update(buffer, 'utf8');

@@ -58,4 +58,11 @@ export class File {
   filenameWithoutSuffix(): string {
     return this.name.replace(/_[a-z]{2}\./i, '.');
   }
+
+  exportFilename(prefix?: string): string {
+    const match = this.name.match(/^[0-9]{4,}_(.*)/);
+    return match ? 
+      `${prefix}_${match[1]}`.replace(/_[a-z]{2}\./i, '.') : 
+      this.name.replace(/_[a-z]{2}\./i, '.');
+  }
 }
