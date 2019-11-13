@@ -115,6 +115,9 @@ export class SipService {
       this.progress.clearProgressBar(this.progressBarId);
       return Promise.reject(Error("Export Failed"));
     }
+    if (!this.hasDoArks()) {
+      this.log.warn("This project contains objects without DO Arks");
+    }
 
     this.progress.setDescription(this.progressBarId, `Creating preservation SIP${this.selectedObjects.length > 1 ? 's' : ''}`);
 
@@ -175,12 +178,6 @@ export class SipService {
   private isGoodToGo(): boolean {
     let gtg = true;
     for (let obj of this.selectedObjects) {
-      // Check for DO ARK
-      if (obj.do_ark === undefined || obj.do_ark === '') {
-        this.log.error("Item '" + obj.title + "' doesn't have a digital object ark", false);
-        gtg = false;
-      }
-
       // Check for preservation files
       let files = obj.files.filter(file => file.purpose === 'preservation');
       if (files.length === 0) {
@@ -198,6 +195,11 @@ export class SipService {
     }
 
     return gtg;
+  }
+
+  private hasDoArks(): boolean {
+    const doFilter = this.selectedObjects.filter(obj => obj.do_ark === undefined || obj.do_ark === '');
+    return doFilter.length === 0;
   }
 
   private saveProject(): void {
