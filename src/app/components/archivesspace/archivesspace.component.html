@@ -2,13 +2,13 @@
   <div class="form-inline">
     <div class="form-group">
       <label class="sr-only">Repository</label>
-      <select #repositoryList class="form-control" [ngModel]="selectedRepository" (ngModelChange)="loadResources($event)">
+      <select #repositoryList class="form-control repository-list" [ngModel]="selectedRepository" (ngModelChange)="loadResources($event)">
         <option *ngFor="let r of repositories" value="{{ r.uri }}">{{ r.name }}</option>
       </select>
     </div>
     <div class="form-group">
       <label class="sr-only">Resource</label>
-      <select #resourceList class="form-control" [ngModel]="selectedResourceUri" (ngModelChange)="loadResource($event)">
+      <select #resourceList class="form-control resource-list" [ngModel]="selectedResourceUri" (ngModelChange)="loadResource($event)">
         <option *ngFor="let resource of resources" value="{{ resource.uri }}">{{ resource.title }}</option>
       </select>
     </div>
