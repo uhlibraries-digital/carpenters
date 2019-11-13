@@ -397,11 +397,13 @@ export class SipService {
         }
 
         let ws = createWriteStream(dest);
+        let ws = createWriteStream(dest, { highWaterMark: Math.pow(2,20) });
         ws.on('finish', () => {
           resolve(checksum);
         });
 
         let rs = createReadStream(file.path);
+        let rs = createReadStream(file.path, { highWaterMark: Math.pow(2,20) });
         rs.on('data', (buffer) => {
           hash.update(buffer, 'utf8');
           this.incrementProgressBar(buffer.length);

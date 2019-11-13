@@ -105,7 +105,7 @@
     "@types/csv-stringify": "1.4.1",
     "@types/jasmine": "2.5.54",
     "@types/mime-types": "2.1.0",
-    "@types/node": "8.0.47",
+    "@types/node": "8.10.54",
     "autoprefixer": "7.1.4",
     "codelyzer": "3.2.0",
     "copyfiles": "1.2.0",
