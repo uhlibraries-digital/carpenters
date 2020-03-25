@@ -133,21 +133,27 @@ export class SipService {
     }
 
     for (let obj of this.selectedObjects) {
-      if (!obj.pm_ark) {
-        obj.pm_ark = this.getExportStatusArk(obj.uuid);
-      }
-
-      if (!this.hasExported(obj.uuid)) {
-        this.cleanupExportProcessing(obj.uuid);
-        this.setExportStatusObject(obj.uuid, ExportStatusType.Processing);
-
-        await this.createSip(obj);
-        
-        this.setExportStatusObject(obj.uuid, ExportStatusType.Done);
+      if (this.hasPreservationFiles(obj)) {
+        if (!obj.pm_ark) {
+          obj.pm_ark = this.getExportStatusArk(obj.uuid);
+        }
+  
+        if (!this.hasExported(obj.uuid)) {
+          this.cleanupExportProcessing(obj.uuid);
+          this.setExportStatusObject(obj.uuid, ExportStatusType.Processing);
+  
+          await this.createSip(obj);
+          
+          this.setExportStatusObject(obj.uuid, ExportStatusType.Done);
+        }
+        else {
+          this.incrementProgressBar(this.getObjectTotalProgress(obj));
+          this.log.success(`SIP already exported ${obj.pm_ark}`, false);
+        }
       }
       else {
         this.incrementProgressBar(this.getObjectTotalProgress(obj));
-        this.log.success(`SIP already exported ${obj.pm_ark}`, false);
+        this.log.warn("Item '" + obj.title + "' doesn't have preservation files");
       }
     }
 
@@ -178,13 +184,8 @@ export class SipService {
   private isGoodToGo(): boolean {
     let gtg = true;
     for (let obj of this.selectedObjects) {
-      // Check for preservation files
-      let files = obj.files.filter(file => file.purpose === 'preservation');
-      if (files.length === 0) {
-        this.log.error("Item '" + obj.title + "' doesn't have preservation files");
-        gtg = false;
-      }
-      else {
+      if (this.hasPreservationFiles(obj)) {
+        const files = obj.files.filter(file => file.purpose === 'preservation');
         for (let file of files) {
           if (!existsSync(file.path)) {
             this.log.error("Missing preservation file '" + file.path + "' for '" + obj.title + "' is missing");
@@ -195,6 +196,11 @@ export class SipService {
     }
 
     return gtg;
+  }
+
+  private hasPreservationFiles(obj: any) {
+    const files = obj.files.filter(file => file.purpose === 'preservation');
+    return files.length > 0
   }
 
   private hasDoArks(): boolean {
