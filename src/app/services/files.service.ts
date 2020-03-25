@@ -1,6 +1,11 @@
 import { Injectable, EventEmitter } from '@angular/core';
 import {
-  readdir, statSync, existsSync, rename, readdirSync,
+  readdir, 
+  statSync, 
+  existsSync, 
+  rename, 
+  renameSync,
+  readdirSync,
   createReadStream, createWriteStream
 } from 'fs';
 import { parse, dirname } from 'path';
@@ -216,12 +221,12 @@ export class FilesService {
       destPath = orgDestPath.slice(0, -1) + '-' + (dupCounter++) + '/';
     }
 
-    rename(this.projectFilePath + containerPath, destPath, (err) => {
-      if (err) {
-        this.log.error(err.message, false);
-      }
-      this.activity.stop('orphan-container');
-    });
+    try {
+      renameSync(this.projectFilePath + containerPath, destPath);
+    } catch(err) {
+      this.log.error(err.message, false);
+    }
+    this.activity.stop('orphan-container');
   }
 
   updateAllContainerLocations(): void {
@@ -242,27 +247,23 @@ export class FilesService {
     if (this.projectFilePath === '') {
       return;
     }
-    if (obj.files.length === 0) {
-      return;
-    }
 
     this.activity.start('update-container-location');
 
-    let expectedContainerPath = this.fullContainerPath(obj.containers[0]);
-    let isContainerPath = dirname(obj.files[0].path) + '/';
-
+    const expectedContainerPath = this.fullContainerPath(obj.containers[0]);
+    const isContainerPath = this.projectFilePath + obj.containerPath;
     if (expectedContainerPath !== isContainerPath) {
       this.log.info(`Updating file container locations for ${obj.title} because of a item add/remove`, false);
-      rename(isContainerPath, expectedContainerPath, (err) => {
-        if (err) {
-          this.log.error(err.message)
+      try {
+        renameSync(isContainerPath, expectedContainerPath)
+        for (let file of obj.files) {
+          file.path = expectedContainerPath + file.name;
         }
-        else {
-          for (let file of obj.files) {
-            file.path = expectedContainerPath + file.name;
-          }
-        }
-      })
+        const c = this.convertFromASContainer(obj.containers[0])
+        obj.containerPath =  this.containerToPath(c)
+      } catch(err) {
+        this.log.error(err.message)
+      }
     }
 
     this.activity.stop('update-container-location');

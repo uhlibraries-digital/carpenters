@@ -49,7 +49,8 @@ export class ArchivalItemService {
       node_type: undefined,
       artificial: true,
       level: 'item',
-      files: []
+      files: [],
+      containerPath: this.file.containerToPath(container)
     });
     c.expanded = true;
   }

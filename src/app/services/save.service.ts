@@ -281,6 +281,9 @@ export class SaveService {
     for (let o of obj.objects) {
       let item: Item = o;
       if (!this.itemExists(item, this.standardItem.items)) {
+        const container = this.convertFromASContainer(item.containers[0])
+        
+        item.containerPath = this.containerToPath(container)
         item.uuid = o.uuid || v4();
         item.files = this.convertToFileObjects(o.files);
         item.selected = true;
@@ -301,6 +304,9 @@ export class SaveService {
         return e.uri === c.record_uri && !e.artificial;
       });
       if (found) {
+        const container = this.convertFromASContainer(found.containers[0])
+
+        c.containerPath = this.containerToPath(container)
         c.uuid = found.uuid || v4();
         c.selected = true;
         c.containers = found.containers || [];
@@ -420,6 +426,34 @@ export class SaveService {
   private now() {
     const date = new Date();
     return date.getTime();
+  }
+
+  private convertFromASContainer(container: any): any {
+    let rContainer = [];
+    for (let i = 1; i <= 3; i++) {
+      rContainer.push({
+        type: container['type_' + i],
+        indicator: container['indicator_' + i]
+      });
+    }
+    return rContainer;
+  }
+
+  private containerToPath(container: any): string {
+    let returnString = '';
+    let newContainer = container.filter((value) => {
+      return value.type && value.type !== null;
+    });
+    for (let c of newContainer) {
+      returnString += c.type + '_' + this.padLeft(c.indicator, 3, '0') + '/';
+    }
+    return returnString;
+  }
+
+  private padLeft(value: any, length: number, character: string): string {
+    value = String(value);
+    if (value.length > length) { return value; }
+    return Array(length - value.length + 1).join(character || " ") + value;
   }
 
 }

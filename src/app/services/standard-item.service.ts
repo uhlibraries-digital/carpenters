@@ -131,7 +131,32 @@ export class StandardItemService {
       type_1: 'Item',
       indicator_1: index + 1
     }];
+
+    const container = this.convertFromASContainer(item.containers[0])
+    item.containerPath = this.containerToPath(container)
     return item;
+  }
+
+  private convertFromASContainer(container: any): any {
+    let rContainer = [];
+    for (let i = 1; i <= 3; i++) {
+      rContainer.push({
+        type: container['type_' + i],
+        indicator: container['indicator_' + i]
+      });
+    }
+    return rContainer;
+  }
+
+  private containerToPath(container: any): string {
+    let returnString = '';
+    let newContainer = container.filter((value) => {
+      return value.type && value.type !== null;
+    });
+    for (let c of newContainer) {
+      returnString += c.type + '_' + this.padLeft(c.indicator, 3, '0') + '/';
+    }
+    return returnString;
   }
 
   private padLeft(value: any, length: number, character: string): string {
