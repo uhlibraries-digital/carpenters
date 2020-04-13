@@ -3,6 +3,7 @@ import { Headers, Http, RequestOptions, URLSearchParams } from '@angular/http';
 import 'rxjs/add/operator/toPromise';
 
 import { Item } from 'app/classes/item';
+import { FilesService } from './files.service';
 
 @Injectable()
 export class StandardItemService {
@@ -104,65 +105,29 @@ export class StandardItemService {
   }
 
   insert(index: number): Item {
-    this.items.splice(index, 0, new Item());
-    this.reorderItems(index);
-    this.itemChanged.emit(this.items);
+    // this.items.splice(index, 0, new Item());
+    // this.reorderItems(index);
+    // this.itemChanged.emit(this.items);
     return this.items[index];
   }
 
-  remove(index: number): Item {
-    let item = this.items.splice(index, 1).pop();
-    this.reorderItems(index);
+  remove(fs: FilesService, index: number): Item | null {
+    const removedItem = this.items[index];
+    const newItems = Array.from(this.items);
+    newItems.splice(index, 1);
+
+    if (!fs.orphanContainerLocation(removedItem)) {
+      return null;
+    }
+
+    for (let i = index; i < newItems.length; i++) {
+      const newItem = newItems[i];
+      newItems[i] = fs.updateContainerLocation(newItem, i + 1);
+    }
+
+    this.items = newItems;
     this.itemChanged.emit(this.items);
-    return item;
+
+    return removedItem;
   }
-
-  reorderItems(index: number): void {
-    for (let i = index; i < this.items.length; i++) {
-      this.items[i] = this.assignTitleAndContainer(this.items[i], i);
-    }
-  }
-
-  assignTitleAndContainer(item: Item, index: number): Item {
-    if ( !item.title || item.title.match(/Item \d+/) ) {
-      item.title = 'Item ' + this.padLeft(index + 1, 3, '0');
-    }
-    item.containers = [{
-      type_1: 'Item',
-      indicator_1: index + 1
-    }];
-
-    const container = this.convertFromASContainer(item.containers[0])
-    item.containerPath = this.containerToPath(container)
-    return item;
-  }
-
-  private convertFromASContainer(container: any): any {
-    let rContainer = [];
-    for (let i = 1; i <= 3; i++) {
-      rContainer.push({
-        type: container['type_' + i],
-        indicator: container['indicator_' + i]
-      });
-    }
-    return rContainer;
-  }
-
-  private containerToPath(container: any): string {
-    let returnString = '';
-    let newContainer = container.filter((value) => {
-      return value.type && value.type !== null;
-    });
-    for (let c of newContainer) {
-      returnString += c.type + '_' + this.padLeft(c.indicator, 3, '0') + '/';
-    }
-    return returnString;
-  }
-
-  private padLeft(value: any, length: number, character: string): string {
-    value = String(value);
-    if (value.length > length) { return value; }
-    return Array(length - value.length + 1).join(character || " ") + value;
-  }
-
 }

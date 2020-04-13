@@ -11,7 +11,6 @@ export class Item {
   containers: any[];
   productionNotes: string;
   files: File[] = [];
-  containerPath: string = '';
   metadata: any;
 
   constructor(index?: number) {

@@ -96,16 +96,14 @@ export class ItemViewComponent implements OnInit, AfterViewChecked {
   insertItem(index: number): void {
     let item = this.standardItem.insert(index);
     this.changeRef.detectChanges();
-    this.filesService.updateAllContainerLocations();
+    // this.filesService.updateAllContainerLocations();
     this.log.success(item.title + ' inserted', false);
   }
 
   removeItem(index: number): void {
-    let item = this.standardItem.remove(index);
+    const removedItem = this.standardItem.remove(this.filesService, index);
     this.changeRef.detectChanges();
-    this.filesService.orphanContainerLocation(item);
-    this.filesService.updateAllContainerLocations();
-    this.log.success(item.title + ' removed', false);
+    this.log.success(removedItem.title + ' removed', false);
   }
 
   setTitle(): void {

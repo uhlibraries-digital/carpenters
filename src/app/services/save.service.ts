@@ -283,7 +283,6 @@ export class SaveService {
       if (!this.itemExists(item, this.standardItem.items)) {
         const container = this.convertFromASContainer(item.containers[0])
         
-        item.containerPath = this.containerToPath(container)
         item.uuid = o.uuid || v4();
         item.files = this.convertToFileObjects(o.files);
         item.selected = true;
@@ -306,7 +305,6 @@ export class SaveService {
       if (found) {
         const container = this.convertFromASContainer(found.containers[0])
 
-        c.containerPath = this.containerToPath(container)
         c.uuid = found.uuid || v4();
         c.selected = true;
         c.containers = found.containers || [];

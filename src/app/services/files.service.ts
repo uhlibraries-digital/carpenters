@@ -196,17 +196,17 @@ export class FilesService {
     this.filesChanged.emit(obj.files);
   }
 
-  orphanContainerLocation(obj: any): void {
+  orphanContainerLocation(obj: any): boolean {
     if (obj.containersLoading) {
       this.log.warn("Hold on, container information still loading")
-      return;
+      return false;
     }
     if (!obj.containers || !obj.containers[0]) {
       this.log.error("Couldn't move file to orphan directory because there is no container information available", false);
-      return;
+      return false;
     }
     if (this.projectFilePath === '') {
-      return;
+      return false;
     }
 
     this.activity.start('orphan-container');
@@ -225,48 +225,66 @@ export class FilesService {
       renameSync(this.projectFilePath + containerPath, destPath);
     } catch(err) {
       this.log.error(err.message, false);
+      this.activity.stop('orphan-container');
+      return false;
     }
     this.activity.stop('orphan-container');
+    return true;
   }
 
-  updateAllContainerLocations(): void {
-    for (let o of this.selectedObjects) {
-      this.updateContainerLocation(o);
-    }
-  }
-
-  updateContainerLocation(obj: any): void {
+  updateContainerLocation(obj: any, newIndicator: number): any | null {
     if (obj.containersLoading) {
       this.log.warn("Hold on, container information still loading")
-      return;
+      return null;
     }
     if (!obj.containers || !obj.containers[0]) {
       this.log.error("Couldn't move file to orphan directory because there is no container information available", false);
-      return;
+      return null;
     }
     if (this.projectFilePath === '') {
-      return;
+      return null;
     }
 
     this.activity.start('update-container-location');
 
-    const expectedContainerPath = this.fullContainerPath(obj.containers[0]);
-    const isContainerPath = this.projectFilePath + obj.containerPath;
-    if (expectedContainerPath !== isContainerPath) {
-      this.log.info(`Updating file container locations for ${obj.title} because of a item add/remove`, false);
-      try {
-        renameSync(isContainerPath, expectedContainerPath)
-        for (let file of obj.files) {
-          file.path = expectedContainerPath + file.name;
-        }
-        const c = this.convertFromASContainer(obj.containers[0])
-        obj.containerPath =  this.containerToPath(c)
-      } catch(err) {
-        this.log.error(err.message)
+    const newObject = JSON.parse(JSON.stringify(obj));
+    const newObjectWithContainer = this.assignTitleAndContainer(newObject, newIndicator);
+
+    const oldContainerPath = this.fullContainerPath(obj.containers[0]);
+    const newContainerPath = this.fullContainerPath(newObjectWithContainer.containers[0])    
+
+    try {
+      renameSync(oldContainerPath, newContainerPath);
+      for (let file of newObjectWithContainer.files) {
+        file.path = newContainerPath + file.name;
       }
+    } catch(err) {
+      this.log.error(err.message);
     }
 
     this.activity.stop('update-container-location');
+    return newObjectWithContainer;
+  }
+
+  private assignTitleAndContainer(obj: any, newIndicator: number): any {
+    let item = JSON.parse(JSON.stringify(obj));
+    if ( !item.title || item.title.match(/Item \d+/) ) {
+      item.title = 'Item ' + this.padLeft(newIndicator, 3, '0');
+    }
+
+    const containers = Array.from(item.containers);
+    const container: any = containers[0];
+    if (container.type_1.toLowerCase() === 'item') {
+      item.containers[0].indicator_1 = newIndicator;
+    }
+    else if (container.type_2.toLowerCase() === 'item') {
+      item.containers[0].indicator_2 = newIndicator;
+    }
+    else if (container.type_3.toLowerCase() === 'item') {
+      item.containers[0].indicator_3 = newIndicator;
+    }
+
+    return item;
   }
 
   private selectFiles(): string[] {
@@ -282,12 +300,6 @@ export class FilesService {
       ]
     });
     return (filenames) ? filenames : [];
-  }
-
-  private clearFiles(objects: any[]) {
-    for (let o of objects) {
-      o.files = [];
-    }
   }
 
   private padLeft(value: any, length: number, character: string): string {
@@ -307,17 +319,6 @@ export class FilesService {
         object.files.splice(i, 1);
       }
     }
-  }
-
-  private containerToString(container: any): string {
-    let returnString = '';
-    let newContainer = container.filter((value) => {
-      return value.type !== null;
-    });
-    for (let c of newContainer) {
-      returnString += c.type + ' ' + c.indicator + ', ';
-    }
-    return returnString.slice(0, -2);
   }
 
   public containerToPath(container: any): string {
