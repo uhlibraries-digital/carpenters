@@ -94,9 +94,8 @@ export class ItemViewComponent implements OnInit, AfterViewChecked {
   }
 
   insertItem(index: number): void {
-    let item = this.standardItem.insert(index);
+    const item = this.standardItem.insert(this.filesService, index);
     this.changeRef.detectChanges();
-    // this.filesService.updateAllContainerLocations();
     this.log.success(item.title + ' inserted', false);
   }
 

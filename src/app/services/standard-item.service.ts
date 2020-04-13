@@ -92,8 +92,9 @@ export class StandardItemService {
 
   fill(total: number): void {
     for (let i = 0; i < total; i++) {
-      let num = this.items.length;
-      this.items.push(new Item(num));
+      const num = this.items.length;
+      const newItem = new Item(num);
+      this.items.push(newItem);
     }
     this.itemChanged.emit(this.items);
   }
@@ -104,11 +105,25 @@ export class StandardItemService {
     return i;
   }
 
-  insert(index: number): Item {
-    // this.items.splice(index, 0, new Item());
-    // this.reorderItems(index);
-    // this.itemChanged.emit(this.items);
-    return this.items[index];
+  insert(fs: FilesService, index: number): Item {
+    const insertIndex = this.items.length - 1 === index ? index + 1 : index + 2;
+    const newItem = new Item(insertIndex);
+    const newItems = Array.from(this.items);
+
+    newItems.splice(index + 1, 0, newItem);
+
+    if (this.items.length - 1 !== index) {
+      for (let i = newItems.length - 1; i > index; i--) {
+        const item = newItems[i];
+        newItems[i] = fs.updateContainerLocation(item, i + 1);
+      }
+    }
+    fs.createFolderLocation(newItem);
+    
+    this.items = newItems;
+    this.itemChanged.emit(this.items);
+
+    return newItem;
   }
 
   remove(fs: FilesService, index: number): Item | null {

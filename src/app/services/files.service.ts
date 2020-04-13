@@ -158,6 +158,22 @@ export class FilesService {
     this.activity.stop('fileHierarchy');
   }
 
+  createFolderLocation(obj: any): void {
+    if (obj.containers.length === 0) {
+      return;
+    }
+    if (this.projectFilePath === '') {
+      return;
+    }
+
+    const newContainerPath = this.fullContainerPath(obj.containers[0]);
+    mkdirp.sync(newContainerPath, (err) => {
+      if (err) {
+        this.log.error(err.message);
+      }
+    })
+  }
+
   fullContainerPath(container: any): string {
     let c = this.convertFromASContainer(container);
     return this.projectFilePath + this.containerToPath(c);
@@ -190,6 +206,7 @@ export class FilesService {
     mkdirp.sync(destPath);
     rename(file.path, destPath + file.name, (err) => {
       if (err) {
+        console.error(err);
         this.log.error(err.message);
       }
     });
@@ -251,15 +268,20 @@ export class FilesService {
     const newObjectWithContainer = this.assignTitleAndContainer(newObject, newIndicator);
 
     const oldContainerPath = this.fullContainerPath(obj.containers[0]);
-    const newContainerPath = this.fullContainerPath(newObjectWithContainer.containers[0])    
+    const newContainerPath = this.fullContainerPath(newObjectWithContainer.containers[0]);
 
     try {
+      if (existsSync(newContainerPath)) {
+        throw new Error(`Directory '${newContainerPath}' already exists. Can't move files around`)
+      }
       renameSync(oldContainerPath, newContainerPath);
       for (let file of newObjectWithContainer.files) {
         file.path = newContainerPath + file.name;
       }
     } catch(err) {
+      console.error(err);
       this.log.error(err.message);
+      this.activity.stop('update-container-location');
     }
 
     this.activity.stop('update-container-location');
