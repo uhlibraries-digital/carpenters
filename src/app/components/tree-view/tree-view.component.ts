@@ -142,7 +142,7 @@ export class TreeViewComponent implements AfterViewChecked {
     let newIndex = 0;
     for (let c of parent.children) {
       if (c.artificial) {
-        if ( c.title.match(/Item \d+/) ) {
+        if ( c.title.match(/^Item \d+$/) ) {
           c.title = 'Item ' + this.padLeft(newIndex + 1, 3, '0');
         }
         c.index = newIndex;

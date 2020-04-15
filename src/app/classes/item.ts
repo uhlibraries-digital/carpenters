@@ -28,7 +28,7 @@ export class Item {
   }
 
   assignTitleAndContainer(index: number): void {
-    if ( !this.title || this.title.match(/Item \d+/) ) {
+    if ( !this.title || this.title.match(/^Item \d+$/) ) {
       this.title = 'Item ' + this.padLeft(index + 1, 3, '0');
     }
     this.containers = [{
