@@ -290,7 +290,7 @@ export class FilesService {
 
   private assignTitleAndContainer(obj: any, newIndicator: number): any {
     let item = JSON.parse(JSON.stringify(obj));
-    if ( !item.title || item.title.match(/Item \d+/) ) {
+    if ( !item.title || item.title.match(/^Item \d+$/) ) {
       item.title = 'Item ' + this.padLeft(newIndicator, 3, '0');
     }
 
