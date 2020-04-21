@@ -106,14 +106,14 @@ export class StandardItemService {
   }
 
   insert(fs: FilesService, index: number): Item {
-    const insertIndex = this.items.length - 1 === index ? index + 1 : index + 2;
+    const insertIndex = index + 1;
     const newItem = new Item(insertIndex);
     const newItems = Array.from(this.items);
 
-    newItems.splice(index + 1, 0, newItem);
+    newItems.splice(insertIndex, 0, newItem);
 
     if (this.items.length - 1 !== index) {
-      for (let i = newItems.length - 1; i > index; i--) {
+      for (let i = newItems.length - 1; i > insertIndex; i--) {
         const item = newItems[i];
         newItems[i] = fs.updateContainerLocation(item, i + 1);
       }
