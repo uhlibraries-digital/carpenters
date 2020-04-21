@@ -30,7 +30,7 @@
         <li
           *ngFor="let c of items; let i = index"
           (contextmenu)="onContextMenu(i, c, $event)">
-            <span *ngIf="!c.editTitle" (dblclick)="editTitle(c)">
+            <span *ngIf="!c.editTitle" (dblclick)="editTitle(c)" class="item-content">
               {{ c.title }}
               <span class="can-edit" (click)="editTitle(c)"></span>
               <div *ngIf="c.productionNotes" class="production-note">

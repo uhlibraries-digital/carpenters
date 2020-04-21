@@ -75,6 +75,10 @@
         }
       }
 
+      .item-content {
+        cursor: pointer;
+      }
+
       .can-edit::before{
         font-family: 'FontAwesome';
         content: "\f044";
