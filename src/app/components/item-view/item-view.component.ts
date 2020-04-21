@@ -5,6 +5,7 @@ import { LoggerService } from 'app/services/logger.service';
 import { ProductionNotesService } from 'app/services/production-notes.service';
 import { ElectronService } from 'app/services/electron.service';
 import { FilesService } from 'app/services/files.service';
+import { SaveService } from 'app/services/save.service';
 
 import { Item } from '../../classes/item';
 
@@ -30,6 +31,7 @@ export class ItemViewComponent implements OnInit, AfterViewChecked {
     private note: ProductionNotesService,
     private changeRef: ChangeDetectorRef,
     private electronService: ElectronService,
+    private saveService: SaveService,
     private filesService: FilesService) {
   }
 
@@ -94,15 +96,27 @@ export class ItemViewComponent implements OnInit, AfterViewChecked {
   }
 
   insertItem(index: number): void {
-    const item = this.standardItem.insert(this.filesService, index);
+    if (!this.saveService.saveLocation) {
+      this.log.warn("Please save project file before inserting items");
+    }
+    else {
+      const item = this.standardItem.insert(this.filesService, index);
+      this.log.success(item.title + ' inserted', false);
+      this.saveService.save();
+    }
     this.changeRef.detectChanges();
-    this.log.success(item.title + ' inserted', false);
   }
 
   removeItem(index: number): void {
-    const removedItem = this.standardItem.remove(this.filesService, index);
+    if (!this.saveService.saveLocation) {
+      this.log.warn("Please save project file before removing items");
+    }
+    else {
+      const removedItem = this.standardItem.remove(this.filesService, index);
+      this.log.success(removedItem.title + ' removed', false);
+      this.saveService.save();
+    }
     this.changeRef.detectChanges();
-    this.log.success(removedItem.title + ' removed', false);
   }
 
   setTitle(): void {
