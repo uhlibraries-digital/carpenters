@@ -285,7 +285,7 @@ export class SipService {
     this.setExportStatusLocation(obj.uuid, this.sipPath(obj));
     this.setExportStatusArk(obj.uuid, obj.pm_ark);
 
-    this.createDirectories(this.sipPath(obj), this.hasModifiedMasters(obj));
+    this.createDirectories(this.sipPath(obj));
     this.createMetadataCsv(obj);
 
     return this.copyObjectFiles(obj)
@@ -294,10 +294,10 @@ export class SipService {
       });
   }
 
-  private hasModifiedMasters(obj: any): boolean {
-    let mm = obj.files.filter(file => file.purpose === 'modified-master');
-    return mm.length > 0;
-  }
+  // private hasModifiedMasters(obj: any): boolean {
+  //   let mm = obj.files.filter(file => file.purpose === 'modified-master');
+  //   return mm.length > 0;
+  // }
 
   private sipPath(obj: any): string {
     let id = this.sipId(obj);
@@ -382,19 +382,19 @@ export class SipService {
     let promisses = [];
 
     let pmFiles = obj.files.filter(file => file.purpose === 'preservation');
-    let mmFiles = obj.files.filter(file => file.purpose === 'modified-master');
+    //let mmFiles = obj.files.filter(file => file.purpose === 'modified-master');
     let sdFiles = obj.files.filter(file => file.purpose === 'sub-documents');
 
     let path = this.sipPath(obj);
     mkdirp.sync(path + '/objects/' + this.sipId(obj));
-    if (mmFiles && mmFiles.length > 0) {
-      mkdirp.sync(path + '/service/' + this.sipId(obj));
-    }
+    // if (mmFiles && mmFiles.length > 0) {
+    //   mkdirp.sync(path + '/service/' + this.sipId(obj));
+    // }
 
     const prefix = `${this.projectName().replace(' ', '_')}_${this.doArk(obj)}`;
 
     promisses.push(this.copyFiles(pmFiles, path + '/objects/' + this.sipId(obj), prefix));
-    promisses.push(this.copyFiles(mmFiles, path + '/service/' + this.sipId(obj), prefix));
+    //promisses.push(this.copyFiles(mmFiles, path + '/service/' + this.sipId(obj), prefix));
     promisses.push(this.copyFiles(sdFiles, path + '/metadata/submissionDocumentation', prefix));
 
     return Promise.all(promisses);
