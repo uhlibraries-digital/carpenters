@@ -81,6 +81,9 @@ export class AppComponent implements OnInit {
           this.exportService.exportPreservation();
         }).catch(() => { });
       });
+      this.electronService.ipcRenderer.on('export-modified-masters', (event, arg) => {
+        this.exportService.exportModifedMasters();
+      });
       this.electronService.ipcRenderer.on('export-shot-list', (event, arg) => {
         this.exportService.exportShotList();
       });

@@ -4,6 +4,7 @@ import { ArchivesSpaceService } from './archivesspace.service';
 import { StandardItemService } from './standard-item.service';
 import { SaveService } from './save.service';
 import { SipService } from './sip.service';
+import { ModifiedMasterService } from './modified-master.service';
 import { ShotListService } from './shot-list.service';
 import { ElectronService } from './electron.service';
 
@@ -20,6 +21,7 @@ export class ExportService {
     private saveService: SaveService,
     private shotlist: ShotListService,
     private sip: SipService,
+    private mm: ModifiedMasterService,
     private electronService: ElectronService) {
     this.asService.selectedResourceChanged.subscribe(resource => this.selectedResource = resource);
     this.standardItem.resourceChanged.subscribe(resource => this.selectedResource = resource);
@@ -39,6 +41,15 @@ export class ExportService {
       return;
     }
     this.sip.package(location, this.selectedResource);
+  }
+
+  exportModifedMasters(exportLocation?: string) {
+    const location = exportLocation ? exportLocation : this.saveDialog();
+
+    if (!location) {
+      return;
+    }
+    this.mm.package(location, this.selectedResource);
   }
 
   exportShotList() {

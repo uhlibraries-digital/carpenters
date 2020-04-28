@@ -77,6 +77,13 @@ let menu: any[] = [
             }
           },
           {
+            label: 'Modified Masters...',
+            click(item, focusedWindow) {
+              if (!focusedWindow) return;
+              focusedWindow.webContents.send('export-modified-masters');
+            }
+          },
+          {
             label: 'Shot List...',
             click(item, focusedWindow) {
               if (!focusedWindow) return;

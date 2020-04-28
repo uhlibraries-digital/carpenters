@@ -42,6 +42,7 @@ import { GreensService } from './services/greens.service';
 import { LocalStorageService } from './services/local-storage.service';
 import { LoggerService } from './services/logger.service';
 import { MapService } from './services/map.service';
+import { ModifiedMasterService } from './services/modified-master.service';
 import { ObjectService } from './services/object.service';
 import { PreferencesService } from './services/preferences.service';
 import { ProductionNotesService } from './services/production-notes.service';
@@ -98,6 +99,7 @@ import { FilePurposeFilterPipe } from './pipes/file-purpose-filter.pipe';
     LocalStorageService,
     LoggerService,
     MapService,
+    ModifiedMasterService,
     ObjectService,
     PreferencesService,
     ProductionNotesService,
