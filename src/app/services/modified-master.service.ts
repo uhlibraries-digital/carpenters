@@ -63,6 +63,8 @@ export class ModifiedMasterService {
       return;
     }
 
+    this.log.info(`Creating modified masters package...`, false);
+
     this.barProgress = 0;
     this.progressBarId = this.progress.newProgressBar(
       1,
@@ -77,8 +79,8 @@ export class ModifiedMasterService {
     let csvData = [headers];
 
     for (let obj of this.selectedObjects) {
-      console.log('obj', obj);
       if (this.hasModifiedMasters(obj)) {
+        this.log.info(`Exporting modified master '${this.getObjectTitle(obj)}'`, false);
         this.progress.setDescription(this.progressBarId, `Getting metadata for ${obj.title}`);
         const objectRow = this.exportCsvMetadataRow(obj, headers);
         const fileRows = this.exportCsvFilesRows(obj, headers);
@@ -98,8 +100,18 @@ export class ModifiedMasterService {
     this.progress.setDescription(this.progressBarId, `Creating metadata.csv`);
     await this.csv.write(`${this.location}/metadata.csv`, csvData);
 
-    this.log.success('Done packaging Modified Masters');
+    this.log.success('Done packaging modified masters');
     this.progress.clearProgressBar(this.progressBarId);
+  }
+
+  private getObjectTitle(obj: any): string {
+    let title = obj.title;
+    if (obj.artificial) {
+      let match = obj.title.match(/\d+$/);
+      title = obj.parent.title + (match ? ' ' + match[0] : '');
+    }
+
+    return title;
   }
 
   private async copyModifiedMasterFiles(obj: any): Promise<void> {
