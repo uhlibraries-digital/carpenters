@@ -123,7 +123,7 @@
     "istanbul-instrumenter-loader": "3.0.0",
     "json-loader": "0.5.7",
     "less-loader": "4.0.5",
-    "minimist": "1.2.0",
+    "minimist": "1.2.3",
     "npm-run-all": "^4.1.1",
     "postcss-loader": "2.0.6",
     "postcss-url": "7.1.2",
